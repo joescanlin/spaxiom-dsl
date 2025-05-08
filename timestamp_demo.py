@@ -37,28 +37,28 @@ def main():
     try:
         for i in range(20):
             now = time.time()
-            
+
             # Read sensor value
             sensor_value = sensor.read()
             print(f"Iteration {i+1}: Sensor value = {sensor_value}")
-            
+
             # Evaluate the condition
             result = is_high.evaluate(now=now)
             print(f"  Condition is {result}")
             print(f"  Last changed: {is_high.last_changed:.2f}")
             print(f"  Seconds since change: {now - is_high.last_changed:.2f}")
-            
+
             # Check for transition
             transitioned = transitioned_to_true(is_high, now)
             print(f"  Transitioned to true: {transitioned}")
             print()
-            
+
             # Wait a bit
             time.sleep(0.5)
-            
+
     except KeyboardInterrupt:
         print("\nTest stopped by user")
 
 
 if __name__ == "__main__":
-    main() 
+    main()

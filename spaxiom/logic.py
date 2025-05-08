@@ -52,8 +52,8 @@ class Condition:
 
         # Make a copy of kwargs and ensure now isn't passed twice
         kwargs_copy = kwargs.copy()
-        if 'now' in kwargs_copy:
-            del kwargs_copy['now']
+        if "now" in kwargs_copy:
+            del kwargs_copy["now"]
 
         # Evaluate the function
         try:
@@ -61,7 +61,10 @@ class Condition:
         except (TypeError, ValueError):
             try:
                 # If it doesn't accept kwargs, try with just now
-                if hasattr(self.fn, '__code__') and 'now' in self.fn.__code__.co_varnames:
+                if (
+                    hasattr(self.fn, "__code__")
+                    and "now" in self.fn.__code__.co_varnames
+                ):
                     current_value = bool(self.fn(now))
                 else:
                     # If it doesn't accept any arguments, call without args
@@ -93,8 +96,8 @@ class Condition:
             The boolean result of evaluate
         """
         # Extract now from kwargs if present
-        now = kwargs.get('now')
-        
+        now = kwargs.get("now")
+
         # Call evaluate with extracted now and the remaining kwargs
         return self.evaluate(now=now, **kwargs)
 
@@ -113,7 +116,7 @@ class Condition:
 
         # Evaluate the condition at this timestamp
         current_value = self.evaluate(now=now)
-        
+
         # Return true if we just recorded a transition at this exact timestamp
         return current_value and self._last_transition_to_true == now
 
@@ -184,4 +187,4 @@ def transitioned_to_true(condition: Condition, now: Optional[float] = None) -> b
     Returns:
         True if the condition just transitioned to true
     """
-    return condition.transitioned_to_true(now) 
+    return condition.transitioned_to_true(now)

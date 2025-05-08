@@ -68,7 +68,10 @@ async def start_runtime(
             for condition, callback in EVENT_HANDLERS:
                 try:
                     # Evaluate the condition
-                    kwargs = {'history': condition_history[condition], 'now': current_time}
+                    kwargs = {
+                        "history": condition_history[condition],
+                        "now": current_time,
+                    }
                     current_state = condition(**kwargs)
 
                     # Add to history

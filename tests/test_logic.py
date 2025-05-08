@@ -147,23 +147,23 @@ def test_timestamp_tracking():
     # Initial state
     initial_time = time.time()
     result = toggle_condition.evaluate(initial_time)
-    
+
     assert result is True  # First call toggles to True
     assert toggle_condition.last_value is True
     assert toggle_condition.last_changed == initial_time
-    
+
     # Second evaluation at new time
     second_time = initial_time + 1.0
     result = toggle_condition.evaluate(second_time)
-    
+
     assert result is False  # Toggles back to False
     assert toggle_condition.last_value is False
     assert toggle_condition.last_changed == second_time
-    
+
     # Third evaluation with no change
     third_time = second_time + 1.0
     result = toggle_condition.evaluate(third_time)
-    
+
     assert result is True  # Toggles to True again
     assert toggle_condition.last_value is True
     assert toggle_condition.last_changed == third_time
@@ -174,29 +174,29 @@ def test_evaluate_method():
     # Create a condition that changes value on each call
     toggle_value = [True, False, True]
     call_index = 0
-    
+
     def toggle():
         nonlocal call_index
         result = toggle_value[call_index]
         call_index = (call_index + 1) % len(toggle_value)
         return result
-    
+
     condition = Condition(toggle)
-    
+
     # First evaluation - should be True
     t1 = 1000.0
     result1 = condition.evaluate(t1)
     assert result1 is True
     assert condition.last_value is True
     assert condition.last_changed == t1
-    
+
     # Second evaluation - should change to False
     t2 = 2000.0
     result2 = condition.evaluate(t2)
     assert result2 is False
     assert condition.last_value is False
     assert condition.last_changed == t2
-    
+
     # Third evaluation - should change to True
     t3 = 3000.0
     result3 = condition.evaluate(t3)
@@ -214,37 +214,39 @@ def test_transitioned_to_true():
         return state
 
     test_condition = Condition(get_state)
-    
+
     # Initial state is False
     t1 = 1000.0
     assert test_condition.evaluate(t1) is False
     assert test_condition.transitioned_to_true(t1) is False
     assert transitioned_to_true(test_condition, t1) is False
-    
+
     # Get the previous state values for debugging
     prev_value = test_condition.last_value
     prev_changed = test_condition.last_changed
-    
+
     # Change state to True
     state = True
     t2 = 2000.0
-    
+
     # Evaluate and check value
     result = test_condition.evaluate(t2)
     assert result is True
-    
+
     # Print debug info
     print(f"Debug: prev_value={prev_value}, current_value={test_condition.last_value}")
-    print(f"Debug: prev_changed={prev_changed}, current_changed={test_condition.last_changed}")
-    
+    print(
+        f"Debug: prev_changed={prev_changed}, current_changed={test_condition.last_changed}"
+    )
+
     # Directly check transitioned_to_true
     trans_result = test_condition.transitioned_to_true(t2)
     print(f"Debug: transitioned_to_true result: {trans_result}")
-    
+
     # It should have transitioned at this timestamp
     assert trans_result is True
     assert transitioned_to_true(test_condition, t2) is True
-    
+
     # Same state, different timestamp
     t3 = 3000.0
     assert test_condition.evaluate(t3) is True

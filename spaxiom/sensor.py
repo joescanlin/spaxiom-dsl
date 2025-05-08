@@ -77,11 +77,11 @@ class TogglingSensor(Sensor):
     """
 
     def __init__(
-        self, 
-        name: str, 
-        location: Tuple[float, float, float], 
-        toggle_interval: float = 2.0, 
-        high_value: float = 1.0, 
+        self,
+        name: str,
+        location: Tuple[float, float, float],
+        toggle_interval: float = 2.0,
+        high_value: float = 1.0,
         low_value: float = 0.0,
         metadata: Optional[Dict[str, Any]] = None,
     ):
