@@ -96,5 +96,10 @@ def run_script(script_path: str, poll_ms: int, history_length: int):
         sys.exit(1)
 
 
-if __name__ == "__main__":
+def main():
+    """Entry point for the spax-run command."""
     cli()
+
+
+if __name__ == "__main__":
+    main()

@@ -21,7 +21,7 @@ black = "^23.3.0"
 ruff = "^0.0.262"
 
 [tool.poetry.scripts]
-spax-run = "spaxiom.cli:cli"
+spax-run = "spaxiom.cli:main"
 
 [build-system]
 requires = ["poetry-core"]
