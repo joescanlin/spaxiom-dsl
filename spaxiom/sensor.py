@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Optional, Dict, Any, Tuple, Union
 import numpy as np
 import time
+import uuid
 
 from spaxiom.units import Quantity, QuantityType
 
@@ -64,6 +65,60 @@ class Sensor:
             May return None if the sensor has no more data to provide.
         """
         raise NotImplementedError("Sensor subclasses must implement _read_raw()")
+
+    def fuse_with(
+        self, other: "Sensor", strategy: str = "average", **kwargs
+    ) -> "Sensor":
+        """
+        Create a fusion sensor that combines this sensor with another.
+
+        Args:
+            other: Another sensor to fuse with
+            strategy: Fusion strategy to use ('average', 'weighted')
+            **kwargs: Additional arguments for the fusion strategy:
+                      - For 'weighted': 'weights' can be provided as [w1, w2]
+                      - For all strategies: 'name' and 'location' can be customized
+
+        Returns:
+            A fusion sensor that combines readings from both sensors
+
+        Raises:
+            ValueError: If an invalid strategy is specified
+        """
+        from spaxiom.fusion import WeightedFusion
+
+        # Generate a unique name if not provided
+        name = kwargs.get("name", f"fusion_{uuid.uuid4().hex[:8]}")
+
+        # Use sensors' locations to determine fusion location if not provided
+        location = kwargs.get("location", None)
+
+        if strategy == "average":
+            # Simple averaging with equal weights
+            return WeightedFusion(
+                name=name,
+                sensors=[self, other],
+                weights=[1.0, 1.0],
+                location=location,
+            )
+        elif strategy == "weighted":
+            # Weighted fusion with custom weights
+            weights = kwargs.get("weights", [0.5, 0.5])
+
+            # Ensure we have exactly two weights
+            if len(weights) != 2:
+                raise ValueError(
+                    f"Expected 2 weights for fusing 2 sensors, got {len(weights)}"
+                )
+
+            return WeightedFusion(
+                name=name,
+                sensors=[self, other],
+                weights=weights,
+                location=location,
+            )
+        else:
+            raise ValueError(f"Unknown fusion strategy: {strategy}")
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name='{self.name}', type='{self.sensor_type}', location={self.location})"
