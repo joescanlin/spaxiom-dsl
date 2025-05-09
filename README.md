@@ -1,6 +1,51 @@
+                ███████╗██████╗  █████╗ ██╗  ██╗██╗ ██████╗ ███╗   ███╗
+                ██╔════╝██╔══██╗██╔══██╗╚██╗██╔╝██║██╔═══██╗████╗ ████║
+                ███████╗██████╔╝███████║ ╚███╔╝ ██║██║   ██║██╔████╔██║
+                ╚════██║██╔═══╝ ██╔══██║ ██╔██╗ ██║██║   ██║██║╚██╔╝██║
+                ███████║██║     ██║  ██║██╔╝ ██╗██║╚██████╔╝██║ ╚═╝ ██║
+                ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝     ╚═╝
+```
+
 # Spaxiom-DSL
 
-An embedded domain-specific language for spatial sensor fusion and AI.
+An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
+
+```
+     ╔═══════════╗                   ╔═══════════╗
+     ║ SENSORS   ║                   ║ DETECTION ║
+     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
+     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
+     ╚═══════════╝                   ╚═══════════╝
+           │                               ▲
+           ▼                               │
+     ╔═══════════╗     ╔═══════════╗     ╔═══════════╗
+     ║           ║     ║           ║     ║           ║
+     ║  SPATIAL  ║════>║ TEMPORAL  ║════>║   EVENTS  ║
+     ║           ║     ║           ║     ║           ║
+     ╚═══════════╝     ╚═══════════╝     ╚═══════════╝
+```
+
+## What is Spaxiom?
+
+Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intelligent systems that work with:
+
+- **Spatial Data**: Zones, sensors, and physical spaces
+- **Temporal Logic**: Time-based conditions and historical analysis
+- **Event Processing**: Triggering actions based on complex conditions
+- **Entity Management**: Tracking and querying objects in your system
+- **Physical Units**: Working with measurements in a type-safe manner
+
+With Spaxiom, you can easily define complex conditions that span across space and time, and connect them to real-world events.
+
+## Key Features
+
+- 🏠 **Spatial Zones**: Define and work with 2D spatial regions
+- ⚡ **Sensors**: Interface with various sensor types and data streams
+- ⏱️ **Temporal Logic**: Create conditions that must be true for specific durations
+- 🔄 **Event Callbacks**: Register event handlers triggered by complex conditions
+- 👥 **Entity Tracking**: Maintain collections of entities with flexible attributes
+- 📏 **Physical Units**: Work with measurements and conversions seamlessly
+- 🧩 **Logical Operators**: Combine conditions using intuitive &, |, and ~ operators
 
 ## Installation
 
@@ -8,12 +53,71 @@ An embedded domain-specific language for spatial sensor fusion and AI.
 pip install -e .
 ```
 
-## Quick Example
+## Quick Examples
+
+### Spatial & Temporal Logic
 
 ```python
-from spaxiom import Spatial, fuse
-result = fuse(Spatial.from_lidar(lidar_data), Spatial.from_camera(camera_data))
+from spaxiom import Sensor, Zone, Condition, on, within
+
+# Define a zone and sensor
+office_zone = Zone(0, 0, 10, 10)
+motion_sensor = Sensor("motion1", "motion", (5, 5, 0))
+
+# Create condition based on sensor data
+motion_detected = Condition(lambda: motion_sensor.read() > 0.5)
+
+# Make it temporal - must be true for 5 seconds
+sustained_motion = within(5.0, motion_detected)
+
+# Register an event handler
+@on(sustained_motion)
+def alert_sustained_motion():
+    print("Motion has been detected for 5 seconds!")
 ```
+
+### Entity Management
+
+```python
+from spaxiom import EntitySet, Entity, exists, on, Condition
+
+# Create a collection of entities
+persons = EntitySet("Persons")
+
+# Add entities with attributes
+persons.add(Entity(attrs={"type": "person", "confidence": 0.9}))
+
+# Create condition based on entity existence
+person_detected = exists(persons, lambda p: p.attrs.get("confidence", 0) > 0.8)
+
+# Register an event handler
+@on(person_detected)
+def alert_person():
+    print("Person detected with high confidence!")
+```
+
+### Physical Units
+
+```python
+from spaxiom import Quantity
+
+# Create measurements with units
+distance = Quantity(10, "m")
+time = Quantity(2, "s")
+
+# Automatic unit conversion
+speed = distance / time  # 5 m/s
+
+# Convert to different units
+speed_kph = speed.to("km/hour")  # 18 km/h
+```
+
+## Documentation
+
+For more information, check out the documentation in the `docs/` directory:
+
+- [Temporal and Entity Operations](docs/temporal_and_entities.md)
+- [Quick Start Guide](docs/quickstart.md)
 
 ## License
 
