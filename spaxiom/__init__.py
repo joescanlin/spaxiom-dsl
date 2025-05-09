@@ -12,6 +12,7 @@ from .model import StubModel
 from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
 from .adaptors.file_sensor import FileSensor
+from .adaptors.mqtt_sensor import MQTTSensor
 
 __all__ = [
     "Sensor",
@@ -30,6 +31,7 @@ __all__ = [
     "intersection",
     "union",
     "FileSensor",
+    "MQTTSensor",
 ]
 
 __version__ = "0.0.1"
