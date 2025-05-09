@@ -3,7 +3,12 @@ Logic module with timestamped Conditions for Spaxiom DSL.
 """
 
 import time
-from typing import Callable, Optional
+from typing import Callable, Optional, TypeVar
+
+from spaxiom.entities import EntitySet, Entity
+
+# Type variable for entity filtering
+T = TypeVar("T", bound=Entity)
 
 
 class Condition:
@@ -188,3 +193,39 @@ def transitioned_to_true(condition: Condition, now: Optional[float] = None) -> b
         True if the condition just transitioned to true
     """
     return condition.transitioned_to_true(now)
+
+
+def exists(
+    entity_set: EntitySet[T], predicate: Optional[Callable[[T], bool]] = None
+) -> Condition:
+    """
+    Create a condition that is true when at least one entity in the set satisfies the predicate.
+
+    Args:
+        entity_set: The entity set to check
+        predicate: Function that takes an entity and returns a boolean.
+                   If None, the condition is true if the entity set has any entities.
+
+    Returns:
+        A Condition that is true when at least one entity satisfies the predicate
+
+    Example:
+        ```python
+        # Check if any entity in the sensors set has a temperature above 30
+        hot_sensor_exists = exists(sensors, lambda s: s.attrs.get("temperature", 0) > 30)
+
+        # Check if there are any entities in the set
+        has_entities = exists(sensors)
+        ```
+    """
+
+    def check_existence() -> bool:
+        if not entity_set:
+            return False
+
+        if predicate is None:
+            return len(entity_set) > 0
+
+        return any(predicate(entity) for entity in entity_set)
+
+    return Condition(check_existence)
