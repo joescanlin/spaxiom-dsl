@@ -2,6 +2,7 @@
 Spaxiom - An embedded domain-specific language for spatial sensor fusion and AI.
 """
 
+import sys
 from spaxiom.sensor import Sensor
 from spaxiom.zone import Zone
 from spaxiom.logic import Condition, transitioned_to_true, exists
@@ -38,5 +39,14 @@ __all__ = [
     "FileSensor",
     "MQTTSensor",
 ]
+
+# Import GPIO sensor if on Linux with gpiozero available
+if sys.platform.startswith("linux"):
+    try:
+        from .adaptors.gpio_sensor import GPIODigitalSensor, GPIOZERO_AVAILABLE
+        if GPIOZERO_AVAILABLE:
+            __all__.append("GPIODigitalSensor")
+    except ImportError:
+        pass
 
 __version__ = "0.0.2"
