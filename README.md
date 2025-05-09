@@ -114,10 +114,36 @@ speed_kph = speed.to("km/hour")  # 18 km/h
 
 ## Documentation
 
-For more information, check out the documentation in the `docs/` directory:
+### Online Documentation
+
+The full documentation is available online at: 
+https://joescanlin.github.io/spaxiom-dsl/
+
+### Local Documentation
+
+For local development, you can build and view the documentation using MkDocs:
+
+```bash
+# Install MkDocs and required extensions
+pip install mkdocs-material pymdown-extensions
+
+# Serve the documentation locally
+mkdocs serve
+
+# Build the documentation
+mkdocs build
+```
+
+The documentation source files are located in the `docs/` directory. Some key sections:
 
 - [Temporal and Entity Operations](docs/temporal_and_entities.md)
 - [Quick Start Guide](docs/quickstart.md)
+- [CLI Usage](docs/cli_usage.md)
+
+### Documentation Updates
+
+The documentation is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+Changes to files in the `docs/` directory or to `mkdocs.yml` will trigger a new build and deployment.
 
 ## License
 
