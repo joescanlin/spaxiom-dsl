@@ -32,7 +32,7 @@ class Sensor:
 
         SensorRegistry().add(self)
 
-    def read(self, unit: Optional[str] = None) -> Union[Any, QuantityType]:
+    def read(self, unit: Optional[str] = None) -> Union[Any, QuantityType, None]:
         """
         Read data from the sensor.
 
@@ -43,8 +43,12 @@ class Sensor:
         Returns:
             Sensor data in an appropriate format for the sensor type,
             optionally wrapped in a Quantity object if unit is specified.
+            Returns None if the sensor has no more data to provide.
         """
         value = self._read_raw()
+        if value is None:
+            return None
+
         if unit is not None:
             return Quantity(value, unit)
         return value
@@ -57,6 +61,7 @@ class Sensor:
 
         Returns:
             Raw sensor data in an appropriate format for the sensor type.
+            May return None if the sensor has no more data to provide.
         """
         raise NotImplementedError("Sensor subclasses must implement _read_raw()")
 

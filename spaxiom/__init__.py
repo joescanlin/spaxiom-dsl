@@ -11,6 +11,7 @@ from spaxiom.entities import Entity, EntitySet
 from .model import StubModel
 from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
+from .adaptors.file_sensor import FileSensor
 
 __all__ = [
     "Sensor",
@@ -28,6 +29,7 @@ __all__ = [
     "QuantityType",
     "intersection",
     "union",
+    "FileSensor",
 ]
 
 __version__ = "0.0.1"
