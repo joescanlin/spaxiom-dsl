@@ -64,6 +64,19 @@ class TestUnits(unittest.TestCase):
         self.assertEqual(speed.magnitude, 20)
         self.assertEqual(str(speed.units), "meter / second")
 
+    def test_comparison_operations(self):
+        """Test comparison operations between quantities with different but compatible units."""
+        # Test that 100 cm > 0.5 m evaluates to True
+        larger = Quantity(100, "cm")
+        smaller = Quantity(0.5, "m")
+        self.assertTrue(larger > smaller)
+        self.assertTrue(smaller < larger)
+
+        # Test other comparison operators
+        self.assertTrue(Quantity(1, "m") == Quantity(100, "cm"))
+        self.assertTrue(Quantity(1, "km") >= Quantity(1000, "m"))
+        self.assertTrue(Quantity(1, "hour") <= Quantity(60, "minutes"))
+
     def test_temperature_units(self):
         """Test handling of temperature units (offset units)."""
         temp_c = Quantity(20, "degC")
