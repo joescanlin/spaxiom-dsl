@@ -57,7 +57,7 @@ class FileSensor(Sensor):
         super().__init__(
             name=name, sensor_type="file", location=location, metadata=metadata
         )
-        
+
         # Then set additional attributes
         self.file_path = file_path
         self.column_name = column_name
@@ -68,23 +68,23 @@ class FileSensor(Sensor):
         self.current_row = 0
         self.data: List[float] = []
         self.column_index = -1
-        
+
         # Ensure the file exists
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"CSV file not found: {file_path}")
-        
+
         # Load the data from the file
         self._load_data()
-    
+
     def _load_data(self) -> None:
         """
         Load data from the CSV file and cache it.
         """
         self.data = []
-        
+
         with open(self.file_path, "r", newline="") as file:
             reader = csv.reader(file, delimiter=self.delimiter)
-            
+
             # Read the header row to find the column index
             if self.skip_header:
                 header = next(reader)
@@ -94,7 +94,7 @@ class FileSensor(Sensor):
                         f"Available columns: {', '.join(header)}"
                     )
                 self.column_index = header.index(self.column_name)
-            
+
             # Read all rows and store the values from the specified column
             for row in reader:
                 try:
@@ -119,12 +119,12 @@ class FileSensor(Sensor):
                     else:
                         # Use the column index determined from the header
                         value = float(row[self.column_index])
-                    
+
                     self.data.append(value)
                 except (ValueError, IndexError) as e:
                     # Skip rows with invalid data
                     print(f"Warning: Skipping row with invalid data: {e}")
-    
+
     def _read_raw(self) -> Union[float, None]:
         """
         Read the next value from the CSV data.
@@ -135,7 +135,7 @@ class FileSensor(Sensor):
         """
         if not self.data:
             return None
-        
+
         # Check if we've reached the end of the data
         if self.current_row >= len(self.data):
             if self.loop:
@@ -144,19 +144,19 @@ class FileSensor(Sensor):
             else:
                 # Return None if we're at the end and not looping
                 return None
-        
+
         # Get the current value and advance the row counter
         value = self.data[self.current_row]
         self.current_row += 1
-        
+
         return value
-    
+
     def reset(self) -> None:
         """
         Reset the sensor to the first row of data.
         """
         self.current_row = 0
-    
+
     def __repr__(self) -> str:
         """Return a string representation of the file sensor."""
         return (
