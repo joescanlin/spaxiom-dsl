@@ -6,34 +6,6 @@ authors = ["Joe Scanlin"]
 readme = "README.md"
 license = "MIT"
 packages = [{include = "spaxiom"}]
-long_description = """
-# Spaxiom-DSL
-
-An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
-
-## What is Spaxiom?
-
-Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intelligent systems that work with:
-
-- **Spatial Data**: Zones, sensors, and physical spaces
-- **Temporal Logic**: Time-based conditions and historical analysis
-- **Event Processing**: Triggering actions based on complex conditions
-- **Entity Management**: Tracking and querying objects in your system
-- **Physical Units**: Working with measurements in a type-safe manner
-
-With Spaxiom, you can easily define complex conditions that span across space and time, and connect them to real-world events.
-
-## Key Features
-
-- 🏠 **Spatial Zones**: Define and work with 2D spatial regions
-- ⚡ **Sensors**: Interface with various sensor types and data streams
-- ⏱️ **Temporal Logic**: Create conditions that must be true for specific durations
-- 🔄 **Event Callbacks**: Register event handlers triggered by complex conditions
-- 👥 **Entity Tracking**: Maintain collections of entities with flexible attributes
-- 📏 **Physical Units**: Work with measurements and conversions seamlessly
-- 🧩 **Logical Operators**: Combine conditions using intuitive &, |, and ~ operators
-"""
-long_description_content_type = "text/markdown"
 
 [tool.poetry.dependencies]
 python = "^3.8"
