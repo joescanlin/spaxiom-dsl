@@ -3,9 +3,11 @@ Sensor module for Spaxiom DSL.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, Tuple
+from typing import Optional, Dict, Any, Tuple, Union
 import numpy as np
 import time
+
+from spaxiom.units import Quantity, QuantityType
 
 
 @dataclass
@@ -30,14 +32,33 @@ class Sensor:
 
         SensorRegistry().add(self)
 
-    def read(self):
+    def read(self, unit: Optional[str] = None) -> Union[Any, QuantityType]:
         """
         Read data from the sensor.
 
+        Args:
+            unit: Optional unit string to return the value as a Quantity with units.
+                  If None, returns the raw value without units.
+
         Returns:
-            Sensor data in an appropriate format for the sensor type.
+            Sensor data in an appropriate format for the sensor type,
+            optionally wrapped in a Quantity object if unit is specified.
         """
-        raise NotImplementedError("Sensor subclasses must implement read()")
+        value = self._read_raw()
+        if unit is not None:
+            return Quantity(value, unit)
+        return value
+
+    def _read_raw(self) -> Any:
+        """
+        Read raw data from the sensor.
+
+        Subclasses should implement this method rather than overriding read().
+
+        Returns:
+            Raw sensor data in an appropriate format for the sensor type.
+        """
+        raise NotImplementedError("Sensor subclasses must implement _read_raw()")
 
     def __repr__(self):
         return f"{self.__class__.__name__}(name='{self.name}', type='{self.sensor_type}', location={self.location})"
@@ -58,7 +79,7 @@ class RandomSensor(Sensor):
             name=name, sensor_type="random", location=location, metadata=metadata
         )
 
-    def read(self) -> float:
+    def _read_raw(self) -> float:
         """
         Generate a random float value between 0 and 1.
 
@@ -106,7 +127,7 @@ class TogglingSensor(Sensor):
         self.current_state = False
         self.current_value = low_value
 
-    def read(self) -> float:
+    def _read_raw(self) -> float:
         """
         Read the current value, toggling if enough time has passed.
 

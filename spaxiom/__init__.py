@@ -9,6 +9,7 @@ from spaxiom.events import on
 from spaxiom.temporal import within
 from spaxiom.entities import Entity, EntitySet
 from .model import StubModel
+from .units import Quantity, ureg, QuantityType
 
 __all__ = [
     "Sensor",
@@ -21,6 +22,9 @@ __all__ = [
     "EntitySet",
     "exists",
     "StubModel",
+    "Quantity",
+    "ureg",
+    "QuantityType",
 ]
 
 __version__ = "0.0.1"
