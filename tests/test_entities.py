@@ -11,6 +11,7 @@ from spaxiom.entities import (
     get_entity_set,
     clear_entity_sets,
 )
+from spaxiom.logic import exists
 
 
 @pytest.fixture
@@ -161,3 +162,32 @@ def test_clear_entity_sets(clean_registry):
     clear_entity_sets()
 
     assert len(ENTITY_SETS) == 0
+
+
+def test_exists_with_people_entity_set(clean_registry):
+    """Test that exists() returns True for a populated EntitySet and False when cleared."""
+    # Create a 'People' entity set
+    people = EntitySet("People")
+
+    # Initially empty, exists should be False
+    people_exist = exists(people)
+    assert people_exist() is False
+
+    # Add two entities to the set
+    person1 = Entity(id="person1", attrs={"name": "Alice", "age": 30})
+    person2 = Entity(id="person2", attrs={"name": "Bob", "age": 25})
+
+    people.add(person1)
+    people.add(person2)
+
+    # Now exists should be True
+    assert people_exist() is True
+    assert len(people) == 2
+
+    # Clear the entities
+    people.remove(person1)
+    people.remove(person2)
+
+    # After clearing, exists should be False again
+    assert people_exist() is False
+    assert len(people) == 0
