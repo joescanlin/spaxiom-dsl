@@ -62,8 +62,8 @@ def main():
             name="temperature_sensor",
             file_path=csv_path,
             column_name="temp_c",  # Specified column name
-            unit="degC",           # Specify unit for temperature
-            location=(0, 0, 0),    # Default location
+            unit="degC",  # Specify unit for temperature
+            location=(0, 0, 0),  # Default location
         )
 
         # Reset sensor to ensure we start from the beginning
@@ -72,7 +72,7 @@ def main():
         # Process temperature data row by row
         print("Temperature readings from CSV:")
         print("-----------------------------")
-        
+
         reading_num = 1
         while True:
             # Read temperature with unit
@@ -100,4 +100,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main() 
+    main()
