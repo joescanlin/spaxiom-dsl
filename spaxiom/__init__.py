@@ -8,7 +8,7 @@ from spaxiom.logic import Condition, transitioned_to_true, exists
 from spaxiom.events import on
 from spaxiom.temporal import within, sequence
 from spaxiom.entities import Entity, EntitySet
-from .model import StubModel
+from .model import StubModel, OnnxModel
 from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
 from .fusion import weighted_average, WeightedFusion
@@ -27,6 +27,7 @@ __all__ = [
     "EntitySet",
     "exists",
     "StubModel",
+    "OnnxModel",
     "Quantity",
     "ureg",
     "QuantityType",
