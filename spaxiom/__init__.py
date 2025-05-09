@@ -10,6 +10,7 @@ from spaxiom.temporal import within
 from spaxiom.entities import Entity, EntitySet
 from .model import StubModel
 from .units import Quantity, ureg, QuantityType
+from .geo import intersection, union
 
 __all__ = [
     "Sensor",
@@ -25,6 +26,8 @@ __all__ = [
     "Quantity",
     "ureg",
     "QuantityType",
+    "intersection",
+    "union",
 ]
 
 __version__ = "0.0.1"
