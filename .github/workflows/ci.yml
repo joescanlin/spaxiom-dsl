@@ -45,6 +45,11 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     
+    # Add permissions needed for trusted publishing
+    permissions:
+      id-token: write  # Required for OIDC authentication with PyPI
+      contents: read   # Required to checkout the repository
+    
     steps:
     - uses: actions/checkout@v3
     
