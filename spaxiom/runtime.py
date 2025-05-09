@@ -13,8 +13,11 @@ from spaxiom.registry import SensorRegistry
 
 logger = logging.getLogger(__name__)
 
-# Maximum number of history entries to keep per condition
+# Maximum number of history entries to keep in global history
 MAX_HISTORY_LENGTH = 1000
+
+# Global history deque with (timestamp, condition_id, value) entries
+GLOBAL_HISTORY: Deque[Tuple[float, int, bool]] = deque(maxlen=MAX_HISTORY_LENGTH)
 
 
 async def start_runtime(
@@ -32,7 +35,7 @@ async def start_runtime(
     2. Evaluates all conditions
     3. Fires callbacks only on rising edges (when a condition changes from False to True)
     4. Logs when callbacks are triggered
-    5. Maintains history of condition values for temporal conditions
+    5. Maintains global history of condition values for temporal conditions
 
     Terminate with KeyboardInterrupt (Ctrl+C).
     """
@@ -40,21 +43,24 @@ async def start_runtime(
     # to detect rising edges (false -> true transitions)
     previous_states: Dict[Callable[[], bool], bool] = {}
 
-    # Track history of condition values for temporal conditions
-    # Each history entry is a tuple of (timestamp, value)
-    condition_history: Dict[Callable[[], bool], Deque[Tuple[float, bool]]] = {}
+    # Set the global history deque max length
+    global GLOBAL_HISTORY
+    GLOBAL_HISTORY = deque(maxlen=history_length)
 
-    # Initialize all conditions as False
-    for condition, _ in EVENT_HANDLERS:
+    # Create a mapping of conditions to their unique IDs for history tracking
+    condition_ids: Dict[Callable[[], bool], int] = {}
+
+    # Initialize all conditions as False and assign unique IDs
+    for i, (condition, _) in enumerate(EVENT_HANDLERS):
         previous_states[condition] = False
-        condition_history[condition] = deque(maxlen=history_length)
+        condition_ids[condition] = i
 
     try:
         print(f"[Spaxiom] Runtime started with poll interval of {poll_ms}ms")
 
         while True:
-            # Get current timestamp
-            current_time = time.time()
+            # Get current timestamp using monotonic time (doesn't go backwards)
+            current_time = time.monotonic()
 
             # Read all sensors to update their values
             registry = SensorRegistry()
@@ -67,15 +73,34 @@ async def start_runtime(
             # Check all event handlers for rising edges
             for condition, callback in EVENT_HANDLERS:
                 try:
-                    # Evaluate the condition
-                    kwargs = {
-                        "history": condition_history[condition],
-                        "now": current_time,
-                    }
-                    current_state = condition(**kwargs)
+                    # Get the condition ID
+                    condition_id = condition_ids[condition]
 
-                    # Add to history
-                    condition_history[condition].append((current_time, current_state))
+                    # Filter history for this condition
+                    condition_history = [
+                        (timestamp, value)
+                        for timestamp, cid, value in GLOBAL_HISTORY
+                        if cid == condition_id
+                    ]
+
+                    # Prepare kwargs for condition evaluation
+                    kwargs = {"now": current_time}
+
+                    # Only include history if we have entries for this condition
+                    if condition_history:
+                        kwargs["history"] = deque(
+                            condition_history, maxlen=history_length
+                        )
+
+                    # Evaluate the condition via its __call__ method
+                    try:
+                        current_state = bool(condition(**kwargs))
+                    except TypeError:
+                        # If it fails with kwargs, try with no arguments
+                        current_state = bool(condition())
+
+                    # Add to global history
+                    GLOBAL_HISTORY.append((current_time, condition_id, current_state))
 
                     # Check for rising edge (false -> true)
                     if current_state and not previous_states[condition]:
