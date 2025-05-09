@@ -165,3 +165,49 @@ def test_within_helper_integration():
 
     # The temporal part is True, so negated is False
     assert negated(now=now, history=history) is False
+
+
+def test_within_time_progression():
+    """
+    Test that within() only becomes True after the required duration has passed.
+
+    Creates a dummy Condition that is True for 3 simulated seconds,
+    wraps it in within(2, cond), and verifies it only flips to True
+    after at least 2 seconds have elapsed.
+    """
+    # Create a simple condition that's always True
+    always_true = Condition(lambda: True)
+
+    # Wrap in a temporal condition requiring 2 seconds duration
+    temporal_cond = within(2.0, always_true)
+
+    # Start time at 0
+    base_time = 1000.0  # Use a fixed base time for deterministic tests
+
+    # Initialize history deque as empty
+    history = deque()
+
+    # Test at t=0: condition should be False (not enough history)
+    t0 = base_time
+    history.append((t0, True))  # Add initial True value at t=0
+    assert temporal_cond(now=t0, history=history) is False
+
+    # Test at t=1: should still be False (not enough duration yet)
+    t1 = base_time + 1.0
+    history.append((t1, True))  # Still True at t=1
+    assert temporal_cond(now=t1, history=history) is False
+
+    # Test at t=1.9: should still be False (just short of required duration)
+    t1_9 = base_time + 1.9
+    history.append((t1_9, True))  # Still True at t=1.9
+    assert temporal_cond(now=t1_9, history=history) is False
+
+    # Test at t=2.0: should now be True (exactly at required duration)
+    t2 = base_time + 2.0
+    history.append((t2, True))  # Still True at t=2
+    assert temporal_cond(now=t2, history=history) is True
+
+    # Test at t=3.0: should still be True (beyond required duration)
+    t3 = base_time + 3.0
+    history.append((t3, True))  # Still True at t=3
+    assert temporal_cond(now=t3, history=history) is True
