@@ -2,7 +2,7 @@
 Temporal module for time-based condition evaluation in Spaxiom DSL.
 """
 
-from typing import Deque, Tuple
+from typing import Deque, Tuple, List, Dict
 import time
 
 from spaxiom.condition import Condition
@@ -77,6 +77,109 @@ class TemporalWindow:
         return has_early_enough_reading
 
 
+class SequencePattern:
+    """
+    A pattern that evaluates whether a sequence of conditions has occurred in order
+    within a specified time window.
+
+    Attributes:
+        conditions: List of conditions that must occur in sequence
+        within_s: Maximum duration in seconds for the entire sequence to occur
+    """
+
+    def __init__(self, conditions: List[Condition], within_s: float):
+        """
+        Initialize a sequence pattern with ordered conditions and time window.
+
+        Args:
+            conditions: Ordered list of conditions that must occur in sequence
+            within_s: Maximum duration in seconds for the entire sequence to occur
+
+        Raises:
+            ValueError: If conditions list is empty
+        """
+        if not conditions:
+            raise ValueError("Conditions list cannot be empty")
+
+        self.conditions = conditions
+        self.within_s = within_s
+        self._last_matched_indices: Dict[int, float] = (
+            {}
+        )  # Maps condition index to timestamp of last match
+
+    def evaluate(self, now: float, histories: List[Deque[Tuple[float, bool]]]) -> bool:
+        """
+        Evaluate whether the sequence of conditions has occurred in order within
+        the specified time window.
+
+        Args:
+            now: Current timestamp in seconds since epoch
+            histories: List of history deques for each condition in the sequence
+
+        Returns:
+            True if all conditions have occurred in sequence within the time window, False otherwise
+        """
+        if len(histories) != len(self.conditions):
+            return False
+
+        earliest_allowed_time = now - self.within_s
+        matched_indices = {}  # Temporary storage for matched timestamps
+
+        # Look for pattern start (first condition) first
+        first_condition_history = histories[0]
+        first_match_time = None
+
+        # Search backwards through history for the most recent transition to true for the first condition
+        for i in range(len(first_condition_history) - 1, 0, -1):
+            current = first_condition_history[i]
+            previous = first_condition_history[i - 1]
+
+            # Found a transition to true (previous=False, current=True)
+            if current[1] and not previous[1]:
+                # If this transition occurred within our time window
+                if current[0] >= earliest_allowed_time:
+                    first_match_time = current[0]
+                    matched_indices[0] = first_match_time
+                    break
+
+        # If we didn't find the first condition, the sequence can't match
+        if first_match_time is None:
+            return False
+
+        # Now check the rest of the conditions in order
+        last_match_time = first_match_time
+
+        for i in range(1, len(self.conditions)):
+            condition_history = histories[i]
+            match_found = False
+
+            # Search for transitions to true that occurred after the previous match
+            for j in range(len(condition_history) - 1, 0, -1):
+                current = condition_history[j]
+                previous = condition_history[j - 1]
+
+                # Found a transition to true that happened after the previous condition matched
+                if current[1] and not previous[1] and current[0] > last_match_time:
+                    matched_indices[i] = current[0]
+                    last_match_time = current[0]
+                    match_found = True
+                    break
+
+            # If any condition in the sequence didn't match, the whole sequence fails
+            if not match_found:
+                return False
+
+        # If we made it here, we found matches for all conditions in sequence
+        # Final check: is the entire sequence within our time window?
+        total_sequence_time = last_match_time - first_match_time
+        if total_sequence_time <= self.within_s:
+            # Store matched indices for future reference
+            self._last_matched_indices = matched_indices
+            return True
+
+        return False
+
+
 def within(seconds: float, cond: Condition) -> Condition:
     """
     Create a condition that is true when the base condition has been continuously
@@ -107,3 +210,42 @@ def within(seconds: float, cond: Condition) -> Condition:
         return window.evaluate(now, history)
 
     return Condition(temporal_condition)
+
+
+def sequence(*conditions: Condition, within_s: float) -> Condition:
+    """
+    Create a condition that is true when a sequence of conditions has occurred
+    in the specified order within a time window.
+
+    Args:
+        *conditions: Ordered list of conditions that must occur in sequence
+        within_s: Maximum duration in seconds for the entire sequence to occur
+
+    Returns:
+        A new Condition that evaluates to True when the sequence pattern is detected
+
+    Example:
+        ```python
+        door_opened = Condition(lambda: door_sensor.is_open())
+        person_detected = Condition(lambda: person_sensor.read() > 0.8)
+        light_turned_on = Condition(lambda: light_sensor.read() > 0.5)
+
+        # Pattern: door opened, then person detected, then light turned on, all within 10 seconds
+        entry_sequence = sequence(door_opened, person_detected, light_turned_on, within_s=10.0)
+        ```
+    """
+    if not conditions:
+        raise ValueError("At least one condition must be provided")
+
+    pattern = SequencePattern(list(conditions), within_s)
+
+    # The runtime will inject now and all condition histories
+    def sequence_condition(now=None, histories=None):
+        if now is None:
+            now = time.time()
+        if histories is None:
+            return False
+
+        return pattern.evaluate(now, histories)
+
+    return Condition(sequence_condition)

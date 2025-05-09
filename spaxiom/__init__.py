@@ -6,7 +6,7 @@ from spaxiom.sensor import Sensor
 from spaxiom.zone import Zone
 from spaxiom.logic import Condition, transitioned_to_true, exists
 from spaxiom.events import on
-from spaxiom.temporal import within
+from spaxiom.temporal import within, sequence
 from spaxiom.entities import Entity, EntitySet
 from .model import StubModel
 from .units import Quantity, ureg, QuantityType
@@ -21,6 +21,7 @@ __all__ = [
     "Condition",
     "on",
     "within",
+    "sequence",
     "transitioned_to_true",
     "Entity",
     "EntitySet",
