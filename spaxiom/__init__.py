@@ -8,6 +8,7 @@ from spaxiom.logic import Condition, transitioned_to_true, exists
 from spaxiom.events import on
 from spaxiom.temporal import within
 from spaxiom.entities import Entity, EntitySet
+from spaxiom.model import StubModel
 
 __all__ = [
     "Sensor",
@@ -19,6 +20,7 @@ __all__ = [
     "Entity",
     "EntitySet",
     "exists",
+    "StubModel",
 ]
 
 __version__ = "0.0.1"
