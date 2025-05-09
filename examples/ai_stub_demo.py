@@ -15,7 +15,7 @@ import time
 import asyncio
 
 # Add the parent directory to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from spaxiom import on, exists, EntitySet, Entity, StubModel
 from spaxiom.runtime import start_runtime
