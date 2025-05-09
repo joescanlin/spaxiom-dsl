@@ -113,6 +113,26 @@ class TestWeightedFusion:
         # Test default location (should be centroid of sensor locations)
         assert fusion.location == pytest.approx((1.0, 1.0, 1.0))
 
+    def test_fusion_two_stub_sensors_equal_weights(self):
+        """Test fusing exactly two sensors with fixed values 10 and 20 using equal weights."""
+        # Create two sensors with fixed values 10 and 20
+        sensor1 = MockSensor("stub1", 10.0)
+        sensor2 = MockSensor("stub2", 20.0)
+
+        # Create fusion with equal weights (1.0 for each)
+        fusion = WeightedFusion(
+            unique_fusion_name(), sensors=[sensor1, sensor2], weights=[1.0, 1.0]
+        )
+
+        # With equal weights, result should be exactly 15.0
+        assert fusion.read() == pytest.approx(15.0)
+
+        # Also verify that weights are properly set
+        assert fusion.weights == [1.0, 1.0]
+        assert len(fusion.sensors) == 2
+        assert fusion.sensors[0] == sensor1
+        assert fusion.sensors[1] == sensor2
+
     def test_fusion_with_custom_weights(self):
         """Test sensor fusion with custom weights."""
         # Create mock sensors with fixed values
