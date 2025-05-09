@@ -1,0 +1,47 @@
+site_name: Spaxiom DSL
+site_description: An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection
+site_author: Joe Scanlin
+repo_url: https://github.com/joescanlin/spaxiom-dsl
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: blue
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+
+markdown_extensions:
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - admonition
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Quick-Start: quickstart.md
+  - API:
+    - Overview: api/overview.md
+    - Sensors: api/sensors.md
+    - Zones: api/zones.md
+    - Conditions: api/conditions.md
+    - Events: api/events.md
+    - Entities: api/entities.md
+    - Fusion: api/fusion.md
+  - Temporal: temporal_and_entities.md
+  - CLI: cli_usage.md
+  - Examples:
+    - Overview: examples/overview.md
+    - Smart Building: examples/smart_building.md
+    - Sensor Fusion: examples/sensor_fusion.md
+    - Temporal Sequences: examples/temporal_sequences.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/joescanlin/spaxiom-dsl 
