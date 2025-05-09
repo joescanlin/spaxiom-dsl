@@ -48,10 +48,16 @@ if sys.platform.startswith("linux"):
     if gpiozero_spec is not None:
         # Import the GPIO sensor class
         from .adaptors.gpio_sensor import GPIODigitalSensor as _GPIODigitalSensor
-
         # Add it to the module namespace
         GPIODigitalSensor = _GPIODigitalSensor
         # Add it to __all__
         __all__.append("GPIODigitalSensor")
+        
+        # Also import the GPIO output class
+        from .actuators.gpio_output import GPIOOutput as _GPIOOutput
+        # Add it to the module namespace
+        GPIOOutput = _GPIOOutput
+        # Add it to __all__
+        __all__.append("GPIOOutput")
 
 __version__ = "0.0.2"
