@@ -11,6 +11,7 @@ from spaxiom.entities import Entity, EntitySet
 from .model import StubModel
 from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
+from .fusion import weighted_average, WeightedFusion
 from .adaptors.file_sensor import FileSensor
 from .adaptors.mqtt_sensor import MQTTSensor
 
@@ -30,6 +31,8 @@ __all__ = [
     "QuantityType",
     "intersection",
     "union",
+    "weighted_average",
+    "WeightedFusion",
     "FileSensor",
     "MQTTSensor",
 ]
