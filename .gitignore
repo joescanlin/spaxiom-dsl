@@ -24,4 +24,10 @@ build/
 
 # Local configuration
 .env
-.envrc 
+.envrc
+
+# Coverage reports
+.coverage
+coverage.xml
+coverage_html_report/
+htmlcov/ 

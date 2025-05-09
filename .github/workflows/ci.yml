@@ -1,80 +1,92 @@
+---
 name: Spaxiom CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     tags:
       - 'v*'  # Run workflow on version tags, e.g. v0.0.2
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install ruff black pytest
-        pip install pint>=0.23
-        pip install -e .
-        
-    - name: Lint with ruff
-      run: |
-        ruff check .
-        
-    - name: Check formatting with black
-      run: |
-        black --check .
-        
-    - name: Test with pytest
-      run: |
-        pytest -q 
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black pytest coverage
+          pip install pint>=0.23
+          pip install -e .
+
+      - name: Lint with ruff
+        run: |
+          ruff check .
+
+      - name: Check formatting with black
+        run: |
+          black --check .
+
+      - name: Test with coverage
+        run: |
+          coverage run -m pytest
+          coverage xml
+          coverage report -m
+
+      - name: Check coverage threshold
+        run: |
+          COVERAGE=$(coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
+          echo "Total coverage: $COVERAGE%"
+          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
+            echo "Coverage is below threshold of 60%"
+            exit 1
+          fi
 
   deploy:
     # Only run this job if the build job succeeds and this is a tag push
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    
+
     # Add permissions needed for trusted publishing
     permissions:
       id-token: write  # Required for OIDC authentication with PyPI
       contents: read   # Required to checkout the repository
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-        
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-        
-    - name: Build package
-      run: |
-        poetry build
-        
-    - name: List distribution files
-      run: |
-        ls -l dist/
-        
-    - name: Upload to TestPyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        repository-url: https://test.pypi.org/legacy/
-        password: ${{ secrets.TEST_PYPI_TOKEN }}
-        skip-existing: true
-        verbose: true 
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+
+      - name: Build package
+        run: |
+          poetry build
+
+      - name: List distribution files
+        run: |
+          ls -l dist/
+
+      - name: Upload to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+          password: ${{ secrets.TEST_PYPI_TOKEN }}
+          skip-existing: true
+          verbose: true
