@@ -14,7 +14,6 @@ import time
 from collections import deque
 from spaxiom import Sensor, Condition
 from spaxiom.temporal import SequencePattern
-from spaxiom.runtime import start_runtime
 
 
 class DoorSensor(Sensor):
