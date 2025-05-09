@@ -6,7 +6,7 @@ Spaxiom DSL provides a comprehensive API for working with spatial sensor fusion,
 
 ### Sensors
 
-The [`Sensor`](sensors.md) class is the foundation for all data acquisition in Spaxiom. Sensors provide readings from the physical or virtual world that can be processed and analyzed.
+The `Sensor` class is the foundation for all data acquisition in Spaxiom. Sensors provide readings from the physical or virtual world that can be processed and analyzed.
 
 ```python
 from spaxiom import Sensor
@@ -20,7 +20,7 @@ value = temp_sensor.read()
 
 ### Zones
 
-The [`Zone`](zones.md) class defines spatial regions that can contain sensors, entities, or other objects. Zones are used for spatial reasoning and containment checks.
+The `Zone` class defines spatial regions that can contain sensors, entities, or other objects. Zones are used for spatial reasoning and containment checks.
 
 ```python
 from spaxiom import Zone
@@ -34,7 +34,7 @@ is_in_zone = office_zone.contains((5, 5))
 
 ### Conditions
 
-The [`Condition`](conditions.md) class wraps boolean functions that can be combined with logical operators to create complex conditions for event triggering.
+The `Condition` class wraps boolean functions that can be combined with logical operators to create complex conditions for event triggering.
 
 ```python
 from spaxiom import Condition
@@ -49,7 +49,7 @@ hot_and_occupied = is_hot & is_occupied
 
 ### Events
 
-The [`on`](events.md) decorator registers callbacks that are triggered when specific conditions are met.
+The `on` decorator registers callbacks that are triggered when specific conditions are met.
 
 ```python
 from spaxiom import on
@@ -61,7 +61,7 @@ def alert_hot_and_occupied():
 
 ### Entities
 
-The [`Entity`](entities.md) and [`EntitySet`](entities.md) classes provide a way to track and query collections of objects with arbitrary attributes.
+The `Entity` and `EntitySet` classes provide a way to track and query collections of objects with arbitrary attributes.
 
 ```python
 from spaxiom import Entity, EntitySet
@@ -79,7 +79,7 @@ for person in persons:
 
 ### Fusion
 
-The [`WeightedFusion`](fusion.md) class allows combining multiple sensor inputs with specified weights to create derived sensors.
+The `WeightedFusion` class allows combining multiple sensor inputs with specified weights to create derived sensors.
 
 ```python
 from spaxiom import WeightedFusion

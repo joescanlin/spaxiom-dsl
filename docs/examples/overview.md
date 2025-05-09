@@ -30,7 +30,7 @@ def notify_zone_a_occupied():
 
 ## Sensor Fusion Example
 
-The [Sensor Fusion](sensor_fusion.md) example shows how to combine multiple sensor inputs:
+Sensor fusion allows combining multiple sensor inputs:
 
 - Creating different types of sensors (pressure, thermal, motion)
 - Combining sensor outputs using various fusion strategies
@@ -52,7 +52,7 @@ fused_value = fusion_sensor.read()
 
 ## Temporal Sequences Example
 
-The [Temporal Sequences](temporal_sequences.md) example demonstrates how to detect ordered sequences of events:
+Temporal sequences allow detecting ordered events:
 
 - Creating event sensors for different steps in a sequence
 - Defining a temporal sequence pattern with the `sequence()` function

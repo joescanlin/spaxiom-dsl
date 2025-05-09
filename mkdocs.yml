@@ -27,19 +27,11 @@ nav:
   - Quick-Start: quickstart.md
   - API:
     - Overview: api/overview.md
-    - Sensors: api/sensors.md
-    - Zones: api/zones.md
-    - Conditions: api/conditions.md
-    - Events: api/events.md
-    - Entities: api/entities.md
-    - Fusion: api/fusion.md
   - Temporal: temporal_and_entities.md
   - CLI: cli_usage.md
   - Examples:
     - Overview: examples/overview.md
     - Smart Building: examples/smart_building.md
-    - Sensor Fusion: examples/sensor_fusion.md
-    - Temporal Sequences: examples/temporal_sequences.md
 
 extra:
   social:
