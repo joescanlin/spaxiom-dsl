@@ -127,12 +127,30 @@ class OnnxModel(SensorModel):
         self.output_name = output_name
         self.providers = providers
         self._session = None
+        self._onnx_available = self._check_onnx_available()
+
+    def _check_onnx_available(self) -> bool:
+        """Check if onnxruntime is available."""
+        try:
+            import onnxruntime  # noqa: F401
+
+            return True
+        except ImportError:
+            return False
 
     def _ensure_session(self):
         """
         Ensure the ONNX session is loaded.
         Loads the session lazily if it hasn't been loaded yet.
+
+        Raises:
+            ImportError: If onnxruntime is not installed
         """
+        if not self._onnx_available:
+            raise ImportError(
+                "onnxruntime is not installed. Please install it with: pip install onnxruntime>=1.18"
+            )
+
         if self._session is None:
             import onnxruntime as ort
 
@@ -155,6 +173,7 @@ class OnnxModel(SensorModel):
 
         Raises:
             ValueError: If any of the required input names are missing
+            ImportError: If onnxruntime is not installed
         """
         # Ensure session is loaded
         self._ensure_session()

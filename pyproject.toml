@@ -14,7 +14,7 @@ numpy = ">=1.23"
 pint = ">=0.23"
 paho-mqtt = ">=2.0"
 click = ">=8.0"
-onnxruntime-lite = ">=1.18"
+onnxruntime = ">=1.18"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
