@@ -1,116 +1,96 @@
 #!/usr/bin/env python3
 """
-Sensor Summarization Demo using Spaxiom DSL.
+Sensor Summarization Demo for Spaxiom DSL.
 
-This demonstrates:
-1. Creating a RollingSummary to monitor the last N readings from a sensor
-2. Getting statistical information and trend indicators
-3. Using the to_text() method to get a human-readable summary
+This example demonstrates:
+1. Creating a RandomSensor for temperature data
+2. Using the summary() method to track statistics over time
+3. Printing summary statistics every minute with a window of 60 readings
 """
 
 import os
 import sys
 import time
-import random
+from datetime import datetime
 
 # Add the parent directory to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from spaxiom import RollingSummary
-from spaxiom.sensor import RandomSensor
-
-
-def simulate_temperature_sensor():
-    """Simulate a temperature sensor with some random variation."""
-    base_temp = 22.0  # Base temperature in Celsius
-    return base_temp + (random.random() * 2 - 1)  # +/- 1 degree
-
-
-def simulate_rising_temp():
-    """Simulate a rising temperature pattern."""
-    base_temp = 22.0
-    for i in range(10):
-        yield base_temp + (i * 0.5) + (random.random() * 0.2 - 0.1)
-
-
-def simulate_falling_temp():
-    """Simulate a falling temperature pattern."""
-    base_temp = 27.0
-    for i in range(10):
-        yield base_temp - (i * 0.5) + (random.random() * 0.2 - 0.1)
+from spaxiom import Condition, RandomSensor
 
 
 def main():
-    """Run the summarization demo."""
-    print("\nSpaxiom RollingSummary Demo")
-    print("==========================")
-    print(
-        "This demo shows how to monitor and summarize sensor readings in real-time.\n"
-    )
+    """Run the sensor summarization demo."""
+    print("\nSpaxiom Sensor Summarization Demo")
+    print("=================================")
+    print("This demo shows how to:")
+    print("1. Use RandomSensor for temperature readings")
+    print("2. Track statistics with the summary() method")
+    print("3. Print summaries every minute with a window of 60 readings\n")
 
-    # Create a temperature sensor
-    temp_sensor = RandomSensor(name="temp_sensor", location=(0, 0, 0))
+    # Create a random temperature sensor
+    # Location parameters are (x, y, z) coordinates
+    temp_sensor = RandomSensor(name="temp_sensor", location=(5, 5, 1))
 
-    # Create a rolling summary with a window of 5 readings
-    temp_summary = RollingSummary(window=5)
+    # Create a condition that returns the temperature value
+    # Scale the random value (0-1) to a realistic temperature range (20-30°C)
+    def get_temperature():
+        random_value = temp_sensor.read()
+        return 20.0 + (random_value * 10.0)  # Scale to 20-30°C range
 
-    # Demo 1: Showing random fluctuations
-    print("Part 1: Random temperature variations")
-    print("------------------------------------")
-    for i in range(10):
-        # Override random sensor with our simulated temperature
-        temp_value = simulate_temperature_sensor()
+    temp_condition = Condition(get_temperature)
 
-        # Add to the summary
-        temp_summary.add(temp_value)
+    # Create a summarizer with a window of 60 readings
+    temp_summary = temp_condition.summary(window=60)
 
-        # Print the reading and current summary
-        print(f"Reading #{i+1}: {temp_value:.2f}°C - Summary: {temp_summary.to_text()}")
-        time.sleep(0.5)
+    print("Starting temperature monitoring...")
+    print("Summary will be printed every minute (or every 60 readings)")
+    print("Press Ctrl+C to exit\n")
 
-    # Demo 2: Showing rising trend
-    print("\nPart 2: Rising temperature trend")
-    print("------------------------------")
-    temp_summary.clear()
+    # Start the simulation loop
+    try:
+        reading_count = 0
+        start_time = time.time()
 
-    for i, temp_value in enumerate(simulate_rising_temp()):
-        # Add to the summary
-        temp_summary.add(temp_value)
+        while True:
+            # Get current time
+            current_time = datetime.now().strftime("%H:%M:%S")
 
-        # Print the reading and current summary
-        print(f"Reading #{i+1}: {temp_value:.2f}°C - Summary: {temp_summary.to_text()}")
-        time.sleep(0.5)
+            # Read temperature
+            reading = get_temperature()
 
-    # Demo 3: Showing falling trend
-    print("\nPart 3: Falling temperature trend")
-    print("--------------------------------")
-    temp_summary.clear()
+            # Add to the summary
+            temp_summary.add(reading)
+            reading_count += 1
 
-    for i, temp_value in enumerate(simulate_falling_temp()):
-        # Add to the summary
-        temp_summary.add(temp_value)
+            # Print current reading
+            print(
+                f"[{current_time}] Reading #{reading_count}: {reading:.2f}°C", end="\r"
+            )
 
-        # Print the reading and current summary
-        print(f"Reading #{i+1}: {temp_value:.2f}°C - Summary: {temp_summary.to_text()}")
-        time.sleep(0.5)
+            # Print summary every 60 readings (simulating every minute)
+            if reading_count % 60 == 0:
+                summary_text = temp_summary.to_text()
+                elapsed_minutes = int((time.time() - start_time) / 60)
+                print(
+                    f"\n[Minute {elapsed_minutes}] Temperature summary: {summary_text}"
+                )
 
-    # Demo 4: Monitoring a random sensor directly
-    print("\nPart 4: Using with a live sensor")
-    print("------------------------------")
-    temp_summary.clear()
+            # Wait a bit (adjust this to control how fast readings are collected)
+            time.sleep(1.0)
 
-    for i in range(8):
-        # Get a reading from the sensor
-        value = temp_sensor.read()
+    except KeyboardInterrupt:
+        print("\n\nDemo stopped by user.")
 
-        # Add to the summary
-        temp_summary.add(value)
-
-        # Print the reading and current summary
-        print(f"Sensor reading #{i+1}: {value:.2f} - Summary: {temp_summary.to_text()}")
-        time.sleep(0.5)
-
-    print("\nDemo completed!")
+    # Print final statistics
+    print("\nFinal Statistics:")
+    print("================")
+    print(f"Total readings: {reading_count}")
+    print(f"Temperature summary: {temp_summary.to_text()}")
+    print(f"Average: {temp_summary.get_average():.2f}°C")
+    print(f"Max: {temp_summary.get_max():.2f}°C")
+    print(f"Min: {temp_summary.get_min():.2f}°C")
+    print(f"Trend: {temp_summary.get_trend() or 'insufficient data'}")
 
 
 if __name__ == "__main__":

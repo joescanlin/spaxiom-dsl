@@ -6,6 +6,7 @@ import time
 from typing import Callable, Optional, TypeVar
 
 from spaxiom.entities import EntitySet, Entity
+from spaxiom.summarize import RollingSummary
 
 # Type variable for entity filtering
 T = TypeVar("T", bound=Entity)
@@ -105,6 +106,34 @@ class Condition:
 
         # Call evaluate with extracted now and the remaining kwargs
         return self.evaluate(now=now, **kwargs)
+
+    def summary(self, window: int = 60) -> RollingSummary:
+        """
+        Create a RollingSummary for tracking statistics from a numeric sensor.
+
+        Use this method when the condition references a numeric sensor, and you
+        want to track statistics like average, max, and trend over time.
+
+        Args:
+            window: Number of readings to maintain in the rolling window (default: 60)
+
+        Returns:
+            A RollingSummary instance configured with the specified window size
+
+        Example:
+            ```python
+            # Create a condition based on a temperature sensor
+            temp_c = Condition(lambda: temp_sensor.read())
+
+            # Get a summary to track statistics
+            temp_stats = temp_c.summary(window=30)
+
+            # Later, update statistics and get a summary
+            temp_stats.add(temp_sensor.read())
+            print(f"Temperature: {temp_stats.to_text()}")  # e.g., "avg=22.5, max=24.1 🡑"
+            ```
+        """
+        return RollingSummary(window=window)
 
     def transitioned_to_true(self, now: Optional[float] = None) -> bool:
         """
