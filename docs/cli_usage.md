@@ -23,6 +23,47 @@ spax-run run <script_path> [options]
 - `--poll-ms`: Polling interval in milliseconds (default: 100)
 - `--history-length`: Maximum number of history entries to keep per condition (default: 1000)
 
+## Creating New Scripts
+
+The CLI also provides a convenient command for generating new Spaxiom script scaffolds:
+
+```bash
+spax-run new <script_name> [options]
+```
+
+### Options
+
+- `--output-dir`: Directory where the scaffold script will be created (default: current directory)
+- `--sensors`: Number of sensor placeholders to include (default: 2)
+- `--zones`: Number of zone placeholders to include (default: 1)
+- `--privacy/--no-privacy`: Include privacy settings for sensors (default: enabled)
+
+### Creating a Demo Script
+
+To create a quick demo application:
+
+```bash
+spax-run new demo
+```
+
+This will generate a `demo.py` file in the current directory with:
+- 2 sensors (one with privacy settings)
+- 1 zone
+- A sample condition and event handler
+- A properly configured main function
+
+You can customize the script with more sensors and zones:
+
+```bash
+spax-run new complex_demo --sensors 5 --zones 3
+```
+
+Then, run your generated script with:
+
+```bash
+spax-run run demo.py
+```
+
 ## Examples
 
 ### Running the Occupancy Demo
