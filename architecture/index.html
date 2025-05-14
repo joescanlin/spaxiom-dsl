@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../temporal_and_entities/">
+        <link rel="prev" href="../quickstart/">
       
       
-        <link rel="next" href="../examples/overview/">
+        <link rel="next" href="../api/overview/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>CLI - Spaxiom DSL</title>
+        <title>Architecture - Spaxiom DSL</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#spaxiom-cli-usage-guide" class="md-skip">
+        <a href="#spaxiom-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CLI
+              Architecture
             
           </span>
         </div>
@@ -295,10 +295,32 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../architecture/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Architecture
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -309,6 +331,104 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      Architecture Diagram
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Key Components
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Components">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Sources
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conditions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Actions
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Components
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data Flow
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -414,32 +534,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    CLI
-    
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../cli_usage/" class="md-nav__link">
         
   
   
@@ -450,170 +548,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Installation
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Basic Usage
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Basic Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#creating-new-scripts" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating New Scripts
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Creating New Scripts">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#options_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Options
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#creating-a-demo-script" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating a Demo Script
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#running-the-occupancy-demo" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running the Occupancy Demo
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#running-the-sequence-demo" class="md-nav__link">
-    <span class="md-ellipsis">
-      Running the Sequence Demo
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#customizing-polling-rate" class="md-nav__link">
-    <span class="md-ellipsis">
-      Customizing Polling Rate
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#managing-history-length" class="md-nav__link">
-    <span class="md-ellipsis">
-      Managing History Length
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enabling-verbose-logging" class="md-nav__link">
-    <span class="md-ellipsis">
-      Enabling Verbose Logging
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
-    <span class="md-ellipsis">
-      Getting Help
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#advanced-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      Advanced Usage
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -735,151 +669,51 @@
   
 
 
-<h1 id="spaxiom-cli-usage-guide">Spaxiom CLI Usage Guide<a class="headerlink" href="#spaxiom-cli-usage-guide" title="Permanent link">&para;</a></h1>
-<p>Spaxiom provides a command-line interface (CLI) for easily running Spaxiom DSL scripts. The CLI tool, <code>spax-run</code>, allows you to execute scripts that define sensors and event handlers without writing any additional runtime code.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>The <code>spax-run</code> command is automatically installed when you install the Spaxiom package:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom
-</code></pre></div>
-<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
-<p>The basic syntax for the CLI is:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>&lt;script_path&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
+<h1 id="spaxiom-architecture">Spaxiom Architecture<a class="headerlink" href="#spaxiom-architecture" title="Permanent link">&para;</a></h1>
+<p>This page provides an overview of the Spaxiom DSL architecture and how its components interact.</p>
+<h2 id="architecture-diagram">Architecture Diagram<a class="headerlink" href="#architecture-diagram" title="Permanent link">&para;</a></h2>
+<p>The following diagram shows the high-level architecture of the Spaxiom DSL framework:</p>
+<p><img alt="Spaxiom Architecture Diagram" src="../architecture_diagram.drawio" /></p>
+<p>You can open this diagram in <a href="https://app.diagrams.net/">diagrams.net</a> to explore it interactively.</p>
+<h2 id="key-components">Key Components<a class="headerlink" href="#key-components" title="Permanent link">&para;</a></h2>
+<h3 id="data-sources">Data Sources<a class="headerlink" href="#data-sources" title="Permanent link">&para;</a></h3>
+<p>Spaxiom supports various sensor types to collect data, including:
+- RandomSensor
+- GPIOSensor
+- MQTTSensor
+- FileSensor<br />
+- SimVector</p>
+<h3 id="runtime">Runtime<a class="headerlink" href="#runtime" title="Permanent link">&para;</a></h3>
+<p>The core runtime handles:
+- Sensor polling
+- Event loop management
+- History tracking
+- Plugin system</p>
+<h3 id="conditions">Conditions<a class="headerlink" href="#conditions" title="Permanent link">&para;</a></h3>
+<p>Conditions evaluate sensor data against specified criteria:
+- Basic conditions (λ)
+- Logical operators (&amp;, |, ~)
+- Temporal operators (within, sequence)
+- Entity-based conditions (exists)</p>
+<h3 id="actions">Actions<a class="headerlink" href="#actions" title="Permanent link">&para;</a></h3>
+<p>Actions execute when conditions are met:
+- Event handlers
+- GPIO outputs
+- Custom callbacks</p>
+<h3 id="additional-components">Additional Components<a class="headerlink" href="#additional-components" title="Permanent link">&para;</a></h3>
 <ul>
-<li><code>--poll-ms</code>: Polling interval in milliseconds (default: 100)</li>
-<li><code>--history-length</code>: Maximum number of history entries to keep per condition (default: 1000)</li>
-<li><code>--config</code>: YAML configuration file for sensors and zones</li>
-<li><code>--verbose</code>: Enable verbose logging for detailed runtime information</li>
+<li><strong>Privacy Manager</strong>: Controls access to sensitive sensor data</li>
+<li><strong>AI Module</strong>: Handles ONNX model integration and entity detection</li>
+<li><strong>Entity System</strong>: Manages entity tracking and attributes</li>
+<li><strong>Spatial Components</strong>: Defines zones and spatial relationships</li>
 </ul>
-<h2 id="creating-new-scripts">Creating New Scripts<a class="headerlink" href="#creating-new-scripts" title="Permanent link">&para;</a></h2>
-<p>The CLI also provides a convenient command for generating new Spaxiom script scaffolds:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>new<span class="w"> </span>&lt;script_name&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<h3 id="options_1">Options<a class="headerlink" href="#options_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>--output-dir</code>: Directory where the scaffold script will be created (default: current directory)</li>
-<li><code>--sensors</code>: Number of sensor placeholders to include (default: 2)</li>
-<li><code>--zones</code>: Number of zone placeholders to include (default: 1)</li>
-<li><code>--privacy/--no-privacy</code>: Include privacy settings for sensors (default: enabled)</li>
-</ul>
-<h3 id="creating-a-demo-script">Creating a Demo Script<a class="headerlink" href="#creating-a-demo-script" title="Permanent link">&para;</a></h3>
-<p>To create a quick demo application:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>new<span class="w"> </span>demo
-</code></pre></div>
-<p>This will generate a <code>demo.py</code> file in the current directory with:
-- 2 sensors (one with privacy settings)
-- 1 zone
-- A sample condition and event handler
-- A properly configured main function</p>
-<p>You can customize the script with more sensors and zones:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>new<span class="w"> </span>complex_demo<span class="w"> </span>--sensors<span class="w"> </span><span class="m">5</span><span class="w"> </span>--zones<span class="w"> </span><span class="m">3</span>
-</code></pre></div>
-<p>Then, run your generated script with:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>demo.py
-</code></pre></div>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
-<h3 id="running-the-occupancy-demo">Running the Occupancy Demo<a class="headerlink" href="#running-the-occupancy-demo" title="Permanent link">&para;</a></h3>
-<p>The occupancy demo (<code>examples/occupancy_demo.py</code>) demonstrates how to create multiple sensor types and define zones for occupancy detection.</p>
-<p>To run the demo:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/occupancy_demo.py
-</code></pre></div>
-<p>Example output:</p>
-<div class="highlight"><pre><span></span><code>Importing /path/to/examples/occupancy_demo.py...
-Script has a main() function. Executing it directly.
-
-Spaxiom Occupancy Detection Demo
---------------------------------
-Zone A: Zone(x1=0, y1=0, x2=10, y2=10)
-Zone B: Zone(x1=15, y1=0, x2=25, y2=10)
-
-Setting up sensors in zones A and B...
-Sensors initialized:
-  OccupancySensor(name=pressure_A, location=(5, 5, 0), sensor_type=pressure)
-  OccupancySensor(name=thermal_A, location=(5, 5, 0), sensor_type=thermal)
-  OccupancySensor(name=pressure_B, location=(20, 5, 0), sensor_type=pressure)
-
-Starting occupancy monitoring...
-The message &#39;** ZONE A OCCUPIED **&#39; will appear when:
-  1. Pressure is detected in Zone A
-  2. Thermal signature is detected in Zone A
-  3. No pressure is detected in Zone B
-  4. These conditions remain true for at least 1 second
-
-Press Ctrl+C to exit
-
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-** ZONE A OCCUPIED **
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-Pressure A: off | Thermal A: ON | Pressure B: ON | Occupancy Condition: false
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-** ZONE A OCCUPIED **
-</code></pre></div>
-<h3 id="running-the-sequence-demo">Running the Sequence Demo<a class="headerlink" href="#running-the-sequence-demo" title="Permanent link">&para;</a></h3>
-<p>The sequence demo demonstrates how to detect a temporal sequence of events:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--poll-ms<span class="w"> </span><span class="m">50</span>
-</code></pre></div>
-<p>Example output:</p>
-<div class="highlight"><pre><span></span><code>Importing /path/to/examples/sequence_demo.py...
-Script has a main() function. Executing it directly.
-Detected async main function. Running with asyncio.
-
-Sequence Pattern Example: Door → Person → Door Close
-----------------------------------------------------
-This example detects the sequence: door open → person present → door close
-When the pattern is detected within 10 seconds, it prints &#39;Entry detected&#39;
-Door front_door CLOSED at t=1685432017.81
-Person no longer detected by entry_area
-
-Starting runtime and waiting for events...
-
-[Spaxiom] Runtime started with poll interval of 50ms
-
-Simulating sequence: door open → person detected → door closed
-Door front_door OPENED at t=1685432018.81
-PERSON DETECTED by entry_area at t=1685432020.81
-Door front_door CLOSED at t=1685432022.81
-
-Waiting for sequence detection...
-Sequence successfully detected!
-
-Demo complete.
-</code></pre></div>
-<h3 id="customizing-polling-rate">Customizing Polling Rate<a class="headerlink" href="#customizing-polling-rate" title="Permanent link">&para;</a></h3>
-<p>For more responsive monitoring, you can decrease the polling interval:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/occupancy_demo.py<span class="w"> </span>--poll-ms<span class="w"> </span><span class="m">50</span>
-</code></pre></div>
-<p>This will make the runtime check sensor values more frequently (every 50ms instead of the default 100ms).</p>
-<h3 id="managing-history-length">Managing History Length<a class="headerlink" href="#managing-history-length" title="Permanent link">&para;</a></h3>
-<p>For memory-sensitive applications or when you need to track longer histories:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--history-length<span class="w"> </span><span class="m">2000</span>
-</code></pre></div>
-<p>This increases the maximum number of historical states kept for each condition from the default 1000 to 2000.</p>
-<h3 id="enabling-verbose-logging">Enabling Verbose Logging<a class="headerlink" href="#enabling-verbose-logging" title="Permanent link">&para;</a></h3>
-<p>For troubleshooting or development, you can enable verbose logging:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--verbose
-</code></pre></div>
-<p>With verbose logging enabled, you'll see detailed information about:
-- Sensor readings and updates
-- Condition evaluations
-- Plugin loading
-- Internal runtime events
-- Debugging information</p>
-<p>This is particularly useful when developing custom sensors or troubleshooting complex conditions.</p>
-<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
-<p>To view available commands and options:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>--help
-</code></pre></div>
-<p>For help on a specific command:</p>
-<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>--help
-</code></pre></div>
-<h2 id="advanced-usage">Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permanent link">&para;</a></h2>
-<p>The CLI detects whether your script has a <code>main()</code> function:</p>
-<ol>
-<li>If a <code>main()</code> function is present, it will be executed directly.</li>
-<li>If the <code>main()</code> function is asynchronous (an async function), it will be run with <code>asyncio.run()</code>.</li>
-<li>If no <code>main()</code> function is found, the Spaxiom runtime will be started automatically to process any registered sensors and event handlers. </li>
-</ol>
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h2>
+<p>The primary data flow follows this pattern:
+1. Sensors collect data
+2. Runtime processes the data
+3. Conditions evaluate the data
+4. Actions are triggered based on condition results</p>
+<p>Components such as the Privacy Manager, AI Module, and Spatial Components integrate with this main flow to provide additional functionality. </p>
 
 
 
