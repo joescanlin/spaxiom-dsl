@@ -370,6 +370,48 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#creating-a-custom-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a Custom Plugin
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creating a Custom Plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-a-co2sensor-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating a CO2Sensor Plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-the-co2sensor-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      Using the CO2Sensor Plugin
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-co2-monitoring-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Running the CO2 Monitoring Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -698,6 +740,231 @@ HIGH VALUE DETECTED: 0.723
 <li>Explore the examples in the <code>examples/</code> directory</li>
 <li>Read the API documentation for more advanced usage </li>
 </ul>
+<h2 id="creating-a-custom-plugin">Creating a Custom Plugin<a class="headerlink" href="#creating-a-custom-plugin" title="Permanent link">&para;</a></h2>
+<p>Spaxiom supports extending its functionality through plugins. This example shows how to create a custom CO2 sensor plugin.</p>
+<h3 id="creating-a-co2sensor-plugin">Creating a CO2Sensor Plugin<a class="headerlink" href="#creating-a-co2sensor-plugin" title="Permanent link">&para;</a></h3>
+<p>Create a file named <code>co2_plugin.py</code> with the following code:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_plugin</span><span class="p">,</span> <span class="n">Sensor</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CO2Sensor</span><span class="p">(</span><span class="n">Sensor</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A custom CO2 sensor that simulates carbon dioxide readings in parts per million (ppm).</span>
+
+<span class="sd">    Features:</span>
+<span class="sd">    - Baseline CO2 level with random fluctuations</span>
+<span class="sd">    - Configurable sensor sensitivity and range</span>
+<span class="sd">    - Simulates real-world CO2 concentration patterns</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">location</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span>
+        <span class="n">baseline_ppm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">400.0</span><span class="p">,</span>  <span class="c1"># Typical outdoor CO2 level</span>
+        <span class="n">fluctuation</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">50.0</span><span class="p">,</span>    <span class="c1"># Amount of random fluctuation</span>
+        <span class="n">max_ppm</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">2000.0</span><span class="p">,</span>      <span class="c1"># Maximum possible reading</span>
+        <span class="n">hz</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>              <span class="c1"># Polling frequency</span>
+        <span class="n">privacy</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;public&quot;</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the CO2 sensor with the given parameters.&quot;&quot;&quot;</span>
+        <span class="c1"># Calculate sample period from frequency</span>
+        <span class="n">sample_period</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">hz</span> <span class="k">if</span> <span class="n">hz</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
+
+        <span class="c1"># Set up metadata if not provided</span>
+        <span class="k">if</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">metadata</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metadata</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">&quot;unit&quot;</span><span class="p">:</span> <span class="s2">&quot;ppm&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;carbon_dioxide&quot;</span><span class="p">})</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">sensor_type</span><span class="o">=</span><span class="s2">&quot;co2&quot;</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">privacy</span><span class="o">=</span><span class="n">privacy</span><span class="p">,</span>
+            <span class="n">sample_period_s</span><span class="o">=</span><span class="n">sample_period</span><span class="p">,</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">baseline_ppm</span> <span class="o">=</span> <span class="n">baseline_ppm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fluctuation</span> <span class="o">=</span> <span class="n">fluctuation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_ppm</span> <span class="o">=</span> <span class="n">max_ppm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_reading_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_value</span> <span class="o">=</span> <span class="n">baseline_ppm</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_raw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a simulated CO2 reading in parts per million (ppm).</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A CO2 concentration value in ppm</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">time_diff</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_reading_time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_reading_time</span> <span class="o">=</span> <span class="n">now</span>
+
+        <span class="c1"># Simulate CO2 fluctuations</span>
+        <span class="n">drift</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">fluctuation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fluctuation</span><span class="p">)</span> <span class="o">*</span> <span class="n">time_diff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_value</span> <span class="o">+=</span> <span class="n">drift</span>
+
+        <span class="c1"># Ensure values stay within reasonable bounds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_value</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mf">300.0</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_ppm</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_value</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_high</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if CO2 levels are above a threshold.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            threshold: The CO2 concentration threshold in ppm</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if current CO2 level exceeds the threshold</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">threshold</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the CO2 sensor.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;CO2Sensor(name=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;, location=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">location</span><span class="si">}</span><span class="s2">, baseline=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">baseline_ppm</span><span class="si">}</span><span class="s2">ppm)&quot;</span>
+
+
+<span class="nd">@register_plugin</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_co2_sensors</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Register the CO2 sensor type with Spaxiom.</span>
+
+<span class="sd">    This function is decorated with @register_plugin, which means it will be </span>
+<span class="sd">    automatically called when the Spaxiom runtime starts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Plugin] Registering CO2Sensor plugin&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create a demonstration CO2 sensor</span>
+    <span class="n">CO2Sensor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;living_room_co2&quot;</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">baseline_ppm</span><span class="o">=</span><span class="mf">450.0</span><span class="p">,</span>  <span class="c1"># Slightly elevated indoor level</span>
+        <span class="n">hz</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;room&quot;</span><span class="p">:</span> <span class="s2">&quot;living_room&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Create another CO2 sensor with different parameters</span>
+    <span class="n">CO2Sensor</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bedroom_co2&quot;</span><span class="p">,</span>
+        <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
+        <span class="n">baseline_ppm</span><span class="o">=</span><span class="mf">420.0</span><span class="p">,</span>
+        <span class="n">fluctuation</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+        <span class="n">hz</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;room&quot;</span><span class="p">:</span> <span class="s2">&quot;bedroom&quot;</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;[Plugin] CO2Sensor plugin registered with 2 sensors&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="using-the-co2sensor-plugin">Using the CO2Sensor Plugin<a class="headerlink" href="#using-the-co2sensor-plugin" title="Permanent link">&para;</a></h3>
+<p>Create a file named <code>co2_monitor.py</code> to use the plugin:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">within</span><span class="p">,</span> <span class="n">SensorRegistry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_blocking</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the CO2 monitoring application.&quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">CO2 Monitoring with Spaxiom&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;===========================&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Manually import the plugin </span>
+    <span class="c1"># (Alternative: place it in the spaxiom_site_plugins package for auto-loading)</span>
+    <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s2">&quot;co2_plugin&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Get the registry to access the CO2 sensors</span>
+    <span class="n">registry</span> <span class="o">=</span> <span class="n">SensorRegistry</span><span class="p">()</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Get the CO2 sensors</span>
+        <span class="n">living_room_co2</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;living_room_co2&quot;</span><span class="p">)</span>
+        <span class="n">bedroom_co2</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;bedroom_co2&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Detected CO2 sensors:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">living_room_co2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  - </span><span class="si">{</span><span class="n">bedroom_co2</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Define CO2 level conditions</span>
+        <span class="n">living_room_high</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">living_room_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">800</span><span class="p">)</span>
+        <span class="n">bedroom_high</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bedroom_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">800</span><span class="p">)</span>
+
+        <span class="c1"># Define sustained conditions</span>
+        <span class="n">sustained_high_living</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">living_room_high</span><span class="p">)</span>
+        <span class="n">sustained_high_bedroom</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="n">bedroom_high</span><span class="p">)</span>
+
+        <span class="c1"># Define a condition for when both rooms have high CO2</span>
+        <span class="n">all_rooms_high</span> <span class="o">=</span> <span class="n">living_room_high</span> <span class="o">&amp;</span> <span class="n">bedroom_high</span>
+
+        <span class="c1"># Register event handlers</span>
+        <span class="nd">@on</span><span class="p">(</span><span class="n">living_room_high</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_living_room_high</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">living_room_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Alert] Living room CO2 level high: </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ppm&quot;</span><span class="p">)</span>
+
+        <span class="nd">@on</span><span class="p">(</span><span class="n">bedroom_high</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_bedroom_high</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">bedroom_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Alert] Bedroom CO2 level high: </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ppm&quot;</span><span class="p">)</span>
+
+        <span class="nd">@on</span><span class="p">(</span><span class="n">all_rooms_high</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_all_rooms_high</span><span class="p">():</span>
+            <span class="n">living</span> <span class="o">=</span> <span class="n">living_room_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="n">bed</span> <span class="o">=</span> <span class="n">bedroom_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Alert] All rooms have high CO2 levels! Living: </span><span class="si">{</span><span class="n">living</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ppm, Bedroom: </span><span class="si">{</span><span class="n">bed</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ppm&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;        You should open some windows for ventilation!&quot;</span><span class="p">)</span>
+
+        <span class="nd">@on</span><span class="p">(</span><span class="n">sustained_high_living</span><span class="p">)</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">on_sustained_living_room_high</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">living_room_co2</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[Warning] Living room CO2 has been high (</span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> ppm) for over 10 seconds!&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">CO2 monitoring active. Press Ctrl+C to exit...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Start the Spaxiom runtime - this will automatically poll the sensors</span>
+        <span class="c1"># and trigger the event handlers when conditions are met</span>
+        <span class="n">start_blocking</span><span class="p">(</span><span class="n">poll_ms</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Error: Could not find CO2 sensor: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Make sure the plugin was properly loaded.&quot;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="running-the-co2-monitoring-example">Running the CO2 Monitoring Example<a class="headerlink" href="#running-the-co2-monitoring-example" title="Permanent link">&para;</a></h3>
+<p>Run the example with:</p>
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>co2_monitor.py
+</code></pre></div>
+<p>You'll see output similar to this:</p>
+<div class="highlight"><pre><span></span><code>CO2 Monitoring with Spaxiom
+===========================
+[Plugin] Registering CO2Sensor plugin
+[Plugin] CO2Sensor plugin registered with 2 sensors
+
+Detected CO2 sensors:
+  - CO2Sensor(name=&#39;living_room_co2&#39;, location=(1.0, 2.0, 0.0), baseline=450.0ppm)
+  - CO2Sensor(name=&#39;bedroom_co2&#39;, location=(5.0, 3.0, 0.0), baseline=420.0ppm)
+
+CO2 monitoring active. Press Ctrl+C to exit...
+
+[Spaxiom] Runtime started with 2 sensor polling tasks
+[Spaxiom] Press Ctrl+C to stop
+[Alert] Living room CO2 level high: 803 ppm
+[Alert] Bedroom CO2 level high: 832 ppm
+[Alert] All rooms have high CO2 levels! Living: 803 ppm, Bedroom: 832 ppm
+        You should open some windows for ventilation!
+[Warning] Living room CO2 has been high (875 ppm) for over 10 seconds!
+^C
+[Spaxiom] Shutdown initiated, cancelling tasks...
+[Spaxiom] Shutdown complete.
+</code></pre></div>
+<p>This demonstrates how Spaxiom's plugin system allows you to extend the DSL with custom sensors and functionality. </p>
 
 
 
