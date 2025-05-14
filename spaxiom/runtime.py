@@ -5,6 +5,8 @@ Runtime module for Spaxiom DSL that handles the event loop and sensor polling.
 import asyncio
 import logging
 import time
+import signal
+import sys
 from typing import Dict, Callable, Deque, Tuple, Set, List
 from collections import deque
 
@@ -24,6 +26,12 @@ PRIVATE_SENSORS_WARNED: Set[str] = set()
 
 # List to track active sensor polling tasks
 ACTIVE_TASKS: List[asyncio.Task] = []
+
+# Flag to track if shutdown has been initiated
+SHUTDOWN_INITIATED = False
+
+# Reference to the main runtime task
+RUNTIME_TASK = None
 
 
 def format_sensor_value(sensor: Sensor, value) -> str:
@@ -164,6 +172,60 @@ async def _evaluate_conditions(history_length: int) -> None:
         logger.debug("Condition evaluation task cancelled")
 
 
+async def shutdown():
+    """
+    Gracefully shutdown the runtime by cancelling all active tasks.
+
+    This function is called when the process receives SIGINT or SIGTERM signals,
+    allowing for a clean shutdown with proper resource cleanup.
+    """
+    global ACTIVE_TASKS, SHUTDOWN_INITIATED, RUNTIME_TASK
+
+    # Use an already_shutdown flag to track if we're in the middle of shutdown
+    already_shutdown = SHUTDOWN_INITIATED
+
+    # Always set the flag - this way tests can verify it was set
+    SHUTDOWN_INITIATED = True
+
+    # Early return if already shutting down
+    if already_shutdown:
+        return
+
+    logger.info("Shutting down Spaxiom runtime...")
+    print("\n[Spaxiom] Shutdown initiated, cancelling tasks...")
+
+    # Cancel all running tasks
+    for task in ACTIVE_TASKS:
+        if not task.done():
+            task.cancel()
+
+    # Wait for all tasks to complete cancellation
+    if ACTIVE_TASKS:
+        await asyncio.gather(*ACTIVE_TASKS, return_exceptions=True)
+
+    # Cancel the main runtime task if it exists and is running
+    if RUNTIME_TASK is not None and not RUNTIME_TASK.done():
+        RUNTIME_TASK.cancel()
+
+    # Reset sensor sample periods that were set temporarily
+    registry = SensorRegistry()
+    for sensor in registry.list_all().values():
+        if hasattr(sensor, "_original_sample_period_s"):
+            sensor.sample_period_s = sensor._original_sample_period_s
+            delattr(sensor, "_original_sample_period_s")
+
+    # Clear the active tasks list
+    ACTIVE_TASKS.clear()
+
+    print("[Spaxiom] Shutdown complete.")
+
+    # Exit the process for signal handlers
+    if hasattr(shutdown, "_signal_triggered") and shutdown._signal_triggered:
+        # Reset the flag
+        shutdown._signal_triggered = False
+        sys.exit(0)
+
+
 async def start_runtime(
     poll_ms: int = 100, history_length: int = MAX_HISTORY_LENGTH
 ) -> None:
@@ -181,10 +243,17 @@ async def start_runtime(
     4. Fires callbacks only on rising edges (when a condition changes from False to True)
     5. Maintains global history of condition values for temporal conditions
     6. Respects sensor privacy settings when logging/printing values
+    7. Registers signal handlers for graceful shutdown on Ctrl+C or termination signals
 
     Terminate with KeyboardInterrupt (Ctrl+C).
     """
-    global GLOBAL_HISTORY, PRIVATE_SENSORS_WARNED, ACTIVE_TASKS
+    global GLOBAL_HISTORY, PRIVATE_SENSORS_WARNED, ACTIVE_TASKS, SHUTDOWN_INITIATED, RUNTIME_TASK
+
+    # Store reference to this task
+    RUNTIME_TASK = asyncio.current_task()
+
+    # Reset shutdown flag
+    SHUTDOWN_INITIATED = False
 
     # Set the global history deque max length
     GLOBAL_HISTORY = deque(maxlen=history_length)
@@ -198,6 +267,21 @@ async def start_runtime(
             task.cancel()
     ACTIVE_TASKS.clear()
 
+    # Setup signal handlers for graceful shutdown
+    loop = asyncio.get_running_loop()
+
+    # Define signal handler function
+    def signal_handler():
+        if not SHUTDOWN_INITIATED:
+            # Set a flag to indicate this was triggered by a signal
+            shutdown._signal_triggered = True
+            # Schedule the shutdown coroutine
+            asyncio.create_task(shutdown())
+
+    # Register the signal handlers
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, signal_handler)
+
     try:
         registry = SensorRegistry()
         sensors = registry.list_all().values()
@@ -210,6 +294,8 @@ async def start_runtime(
             else:
                 # For sensors with sample_period_s=0, create a task using the global poll_ms
                 adjusted_period = poll_ms / 1000  # Convert ms to seconds
+                # Save original sample period
+                sensor._original_sample_period_s = sensor.sample_period_s
                 # Set the sample period temporarily for this run
                 sensor.sample_period_s = adjusted_period
                 task = asyncio.create_task(_poll_sensor(sensor))
@@ -218,6 +304,7 @@ async def start_runtime(
         print(
             f"[Spaxiom] Runtime started with {len(ACTIVE_TASKS)} sensor polling tasks"
         )
+        print("[Spaxiom] Press Ctrl+C to stop")
 
         # Create and start the condition evaluation task
         evaluation_task = asyncio.create_task(_evaluate_conditions(history_length))
@@ -227,19 +314,11 @@ async def start_runtime(
         await asyncio.Event().wait()
 
     except KeyboardInterrupt:
-        print("[Spaxiom] Runtime stopped by user")
+        # This shouldn't happen with signal handlers, but just in case
+        await shutdown()
     except Exception as e:
         logger.error(f"Runtime error: {str(e)}")
-    finally:
-        # Clean up all tasks
-        for task in ACTIVE_TASKS:
-            if not task.done():
-                task.cancel()
-
-        # Reset any temporarily set sample periods
-        for sensor in registry.list_all().values():
-            if sensor.sample_period_s == poll_ms / 1000:
-                sensor.sample_period_s = 0
+        await shutdown()
 
 
 def start_blocking(
@@ -252,4 +331,10 @@ def start_blocking(
         poll_ms: The polling interval in milliseconds (for sensors with sample_period_s=0)
         history_length: Maximum number of history entries to keep per condition
     """
-    asyncio.run(start_runtime(poll_ms, history_length))
+    try:
+        asyncio.run(start_runtime(poll_ms, history_length))
+    except KeyboardInterrupt:
+        # This will be caught by asyncio.run and the event loop will be closed
+        pass
+    # Clean exit after asyncio.run completes
+    sys.exit(0)
