@@ -20,6 +20,7 @@ from .adaptors.mqtt_sensor import MQTTSensor
 from .summarize import RollingSummary
 from .config import load_yaml, create_sensor_from_cfg, load_sensors_from_yaml
 from .plugins import register_plugin
+from .sim.vec_sim import SimVector
 
 __all__ = [
     "Sensor",
@@ -51,6 +52,7 @@ __all__ = [
     "create_sensor_from_cfg",
     "load_sensors_from_yaml",
     "register_plugin",
+    "SimVector",
 ]
 
 # Import GPIO sensor if on Linux with gpiozero available
