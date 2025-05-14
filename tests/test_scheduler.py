@@ -126,7 +126,7 @@ class TestSchedulerIntegration:
 
 class TestShutdown:
     """Test the graceful shutdown functionality."""
-    
+
     @pytest.mark.asyncio
     async def test_shutdown(self):
         """Test that the shutdown function properly cancels all tasks."""
@@ -136,34 +136,34 @@ class TestShutdown:
             location=(0, 0, 0),
             hz=5.0,
         )
-        
+
         sensor2 = RandomSensor(
             name="sensor2",
             location=(1, 1, 0),
             hz=2.0,
         )
-        
+
         # Clear any existing tasks
         ACTIVE_TASKS.clear()
-        
+
         # Start polling tasks
         task1 = asyncio.create_task(_poll_sensor(sensor1))
         task2 = asyncio.create_task(_poll_sensor(sensor2))
-        
+
         # Add tasks to the ACTIVE_TASKS list
         ACTIVE_TASKS.append(task1)
         ACTIVE_TASKS.append(task2)
-        
+
         # Ensure tasks are running
         assert not task1.done()
         assert not task2.done()
-        
+
         # Call shutdown
         await shutdown()
-        
+
         # Verify all tasks were cancelled
         assert task1.done()
         assert task2.done()
-        
+
         # Verify the ACTIVE_TASKS list is empty
         assert len(ACTIVE_TASKS) == 0

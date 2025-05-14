@@ -129,7 +129,7 @@ class TestConfig:
                 pytest.skip("gpiozero is available but not on Linux")
             except ImportError:
                 pytest.skip("gpiozero not available")
-        
+
         config = {
             "name": "test_gpio",
             "type": "gpio_digital",
@@ -138,15 +138,15 @@ class TestConfig:
             "pull_up": True,
             "active_state": True,
         }
-        
+
         # Mock gpiozero to avoid actual hardware access
         try:
             from unittest.mock import patch, MagicMock
-            
+
             with patch("gpiozero.DigitalInputDevice") as mock_device:
                 mock_device.return_value = MagicMock()
                 sensor = create_sensor_from_cfg(config)
-                
+
                 assert sensor.name == "test_gpio"
                 assert sensor.sensor_type == "gpio_digital"
                 assert sensor.location == (0.0, 0.0, 0.0)

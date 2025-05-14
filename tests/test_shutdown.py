@@ -21,7 +21,7 @@ class TestShutdown:
             if not task.done():
                 task.cancel()
         ACTIVE_TASKS.clear()
-        
+
         # Clear the sensor registry
         SensorRegistry().clear()
 
@@ -73,7 +73,7 @@ class TestShutdown:
             if not task.done():
                 task.cancel()
         ACTIVE_TASKS.clear()
-        
+
         # Clear the sensor registry
         SensorRegistry().clear()
 
