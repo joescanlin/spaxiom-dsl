@@ -556,6 +556,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#enabling-verbose-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enabling Verbose Logging
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -718,6 +727,8 @@
 <ul>
 <li><code>--poll-ms</code>: Polling interval in milliseconds (default: 100)</li>
 <li><code>--history-length</code>: Maximum number of history entries to keep per condition (default: 1000)</li>
+<li><code>--config</code>: YAML configuration file for sensors and zones</li>
+<li><code>--verbose</code>: Enable verbose logging for detailed runtime information</li>
 </ul>
 <h2 id="creating-new-scripts">Creating New Scripts<a class="headerlink" href="#creating-new-scripts" title="Permanent link">&para;</a></h2>
 <p>The CLI also provides a convenient command for generating new Spaxiom script scaffolds:</p>
@@ -822,6 +833,17 @@ Demo complete.
 <div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--history-length<span class="w"> </span><span class="m">2000</span>
 </code></pre></div>
 <p>This increases the maximum number of historical states kept for each condition from the default 1000 to 2000.</p>
+<h3 id="enabling-verbose-logging">Enabling Verbose Logging<a class="headerlink" href="#enabling-verbose-logging" title="Permanent link">&para;</a></h3>
+<p>For troubleshooting or development, you can enable verbose logging:</p>
+<div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--verbose
+</code></pre></div>
+<p>With verbose logging enabled, you'll see detailed information about:
+- Sensor readings and updates
+- Condition evaluations
+- Plugin loading
+- Internal runtime events
+- Debugging information</p>
+<p>This is particularly useful when developing custom sensors or troubleshooting complex conditions.</p>
 <h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
 <p>To view available commands and options:</p>
 <div class="highlight"><pre><span></span><code>spax-run<span class="w"> </span>--help

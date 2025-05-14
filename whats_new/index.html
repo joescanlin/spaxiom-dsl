@@ -349,6 +349,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#cli-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      CLI Improvements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#other-improvements" class="md-nav__link">
     <span class="md-ellipsis">
       Other Improvements
@@ -759,6 +768,14 @@ spax-run<span class="w"> </span>new<span class="w"> </span>complex_app<span clas
 <span class="c1"># Disable privacy features</span>
 spax-run<span class="w"> </span>new<span class="w"> </span>simple_app<span class="w"> </span>--no-privacy
 </code></pre></div>
+<h2 id="cli-improvements">CLI Improvements<a class="headerlink" href="#cli-improvements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Added <code>--verbose</code> flag to enable detailed runtime logging:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Run with verbose logging for troubleshooting</span>
+spax-run<span class="w"> </span>run<span class="w"> </span>my_app.py<span class="w"> </span>--verbose
+</code></pre></div>
+<p>The verbose mode provides detailed information about sensor readings, condition evaluations, plugin loading, and internal runtime events, making it easier to debug complex applications.</p>
 <h2 id="other-improvements">Other Improvements<a class="headerlink" href="#other-improvements" title="Permanent link">&para;</a></h2>
 <ul>
 <li>Enhanced error handling across all modules</li>
