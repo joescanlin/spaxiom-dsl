@@ -41,15 +41,16 @@ jobs:
           coverage run -m pytest
           coverage xml
           coverage report -m
+          # This will automatically fail if coverage is below the threshold set in pyproject.toml
 
       - name: Check coverage threshold
         run: |
           COVERAGE=$(coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//')
           echo "Total coverage: $COVERAGE%"
-          if (( $(echo "$COVERAGE < 60" | bc -l) )); then
-            echo "Coverage is below threshold of 60%"
-            exit 1
-          fi
+          # Coverage will use the fail_under setting from pyproject.toml (80%)
+          coverage report --fail-under=0 || true  # Show the report, but don't fail yet
+          # Now use the actual check that will fail if below threshold
+          coverage report
 
   deploy-test:
     # Only run this job if the build job succeeds and this is a tag push (except v0.1.*)
