@@ -20,7 +20,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -28,7 +28,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.2afb09e1.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
@@ -551,11 +551,110 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#privacy-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy Operations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Privacy Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#privacy-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#basic-syntax_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Basic Syntax
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-sensors-with-privacy-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      Creating Sensors with Privacy Levels
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#privacy-inheritance-in-fusion-sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy Inheritance in Fusion Sensors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runtime-handling-of-private-sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      Runtime Handling of Private Sensors
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sensorregistry-privacy-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      SensorRegistry Privacy Methods
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#real-world-use-case" class="md-nav__link">
     <span class="md-ellipsis">
       Real-World Use Case
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Real-World Use Case">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#privacy-aware-real-world-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy-Aware Real-World Example
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -707,7 +806,7 @@
 
 
 <h1 id="temporal-and-entity-operations-in-spaxiom">Temporal and Entity Operations in Spaxiom<a class="headerlink" href="#temporal-and-entity-operations-in-spaxiom" title="Permanent link">&para;</a></h1>
-<p>This document explains how to use the temporal (<code>within()</code>) and entity (<code>exists()</code>) operations in Spaxiom DSL.</p>
+<p>This document explains how to use the temporal (<code>within()</code>), entity (<code>exists()</code>), and privacy operations in Spaxiom DSL.</p>
 <h2 id="temporal-operations">Temporal Operations<a class="headerlink" href="#temporal-operations" title="Permanent link">&para;</a></h2>
 <p>The <code>within()</code> function allows you to create conditions that must be true continuously for a specified duration before evaluating to true.</p>
 <h3 id="basic-syntax">Basic Syntax<a class="headerlink" href="#basic-syntax" title="Permanent link">&para;</a></h3>
@@ -834,6 +933,85 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A vehicle has been stopped for 10 seconds&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>This will only trigger the alert when a vehicle has been continuously present for 10 seconds.</p>
+<h2 id="privacy-operations">Privacy Operations<a class="headerlink" href="#privacy-operations" title="Permanent link">&para;</a></h2>
+<p>Spaxiom supports privacy tags for sensors, allowing you to control how sensitive data is handled in your applications.</p>
+<h3 id="privacy-levels">Privacy Levels<a class="headerlink" href="#privacy-levels" title="Permanent link">&para;</a></h3>
+<p>Sensors can be tagged with one of two privacy levels:
+- <code>"public"</code>: Default level, sensor values are displayed normally
+- <code>"private"</code>: Sensitive data, values are redacted in logs and outputs</p>
+<h3 id="basic-syntax_2">Basic Syntax<a class="headerlink" href="#basic-syntax_2" title="Permanent link">&para;</a></h3>
+<p>When creating a sensor, you can specify its privacy level:</p>
+<div class="highlight"><pre><span></span><code><span class="n">Sensor</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">sensor_type</span><span class="p">,</span> <span class="n">location</span><span class="p">,</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="o">|</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="examples_2">Examples<a class="headerlink" href="#examples_2" title="Permanent link">&para;</a></h3>
+<h4 id="creating-sensors-with-privacy-levels">Creating Sensors with Privacy Levels<a class="headerlink" href="#creating-sensors-with-privacy-levels" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span>
+
+<span class="c1"># Public sensor (default)</span>
+<span class="n">public_sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;living_room_temp&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># Private sensor (explicitly set)</span>
+<span class="n">private_sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;bedroom_occupancy&quot;</span><span class="p">,</span> <span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="privacy-inheritance-in-fusion-sensors">Privacy Inheritance in Fusion Sensors<a class="headerlink" href="#privacy-inheritance-in-fusion-sensors" title="Permanent link">&para;</a></h4>
+<p>Privacy settings are automatically inherited in fusion sensors. If any component sensor is private, the fusion result is also treated as private:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">RandomSensor</span>
+
+<span class="c1"># Create sensors with different privacy settings</span>
+<span class="n">public_sensor</span> <span class="o">=</span> <span class="n">RandomSensor</span><span class="p">(</span><span class="s2">&quot;public_temperature&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">private_sensor</span> <span class="o">=</span> <span class="n">RandomSensor</span><span class="p">(</span><span class="s2">&quot;private_humidity&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+
+<span class="c1"># Public + Public = Public</span>
+<span class="n">public_fusion</span> <span class="o">=</span> <span class="n">public_sensor</span><span class="o">.</span><span class="n">fuse_with</span><span class="p">(</span>
+    <span class="n">public_sensor</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;public_fusion&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Public + Private = Private (automatically)</span>
+<span class="n">mixed_fusion</span> <span class="o">=</span> <span class="n">public_sensor</span><span class="o">.</span><span class="n">fuse_with</span><span class="p">(</span>
+    <span class="n">private_sensor</span><span class="p">,</span>
+    <span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mixed_fusion&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Check privacy levels</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Public fusion privacy: </span><span class="si">{</span><span class="n">public_fusion</span><span class="o">.</span><span class="n">privacy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># &quot;public&quot;</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mixed fusion privacy: </span><span class="si">{</span><span class="n">mixed_fusion</span><span class="o">.</span><span class="n">privacy</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>    <span class="c1"># &quot;private&quot;</span>
+</code></pre></div>
+<h4 id="runtime-handling-of-private-sensors">Runtime Handling of Private Sensors<a class="headerlink" href="#runtime-handling-of-private-sensors" title="Permanent link">&para;</a></h4>
+<p>The runtime automatically redacts values from private sensors in logs and console output:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomSensor</span><span class="p">,</span> <span class="n">SensorRegistry</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_sensor_value</span>
+
+<span class="c1"># Create sensors with different privacy levels</span>
+<span class="n">public_sensor</span> <span class="o">=</span> <span class="n">RandomSensor</span><span class="p">(</span><span class="s2">&quot;living_room_temp&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">private_sensor</span> <span class="o">=</span> <span class="n">RandomSensor</span><span class="p">(</span><span class="s2">&quot;bedroom_motion&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+
+<span class="c1"># Using the format_sensor_value function respects privacy</span>
+<span class="n">public_value</span> <span class="o">=</span> <span class="n">public_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">private_value</span> <span class="o">=</span> <span class="n">private_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Public sensor value: </span><span class="si">{</span><span class="n">format_sensor_value</span><span class="p">(</span><span class="n">public_sensor</span><span class="p">,</span><span class="w"> </span><span class="n">public_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>   <span class="c1"># Shows actual value</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Private sensor value: </span><span class="si">{</span><span class="n">format_sensor_value</span><span class="p">(</span><span class="n">private_sensor</span><span class="p">,</span><span class="w"> </span><span class="n">private_value</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="c1"># Shows &quot;***&quot;</span>
+
+<span class="c1"># When using the runtime, private values are automatically redacted</span>
+<span class="c1"># and a warning is logged once per run per private sensor</span>
+</code></pre></div>
+<h4 id="sensorregistry-privacy-methods">SensorRegistry Privacy Methods<a class="headerlink" href="#sensorregistry-privacy-methods" title="Permanent link">&para;</a></h4>
+<p>You can use <code>SensorRegistry</code> to get sensors based on their privacy level:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">SensorRegistry</span>
+
+<span class="c1"># Get all sensors</span>
+<span class="n">registry</span> <span class="o">=</span> <span class="n">SensorRegistry</span><span class="p">()</span>
+<span class="n">all_sensors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">list_all</span><span class="p">()</span>
+
+<span class="c1"># Get only public sensors</span>
+<span class="n">public_sensors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">list_public</span><span class="p">()</span>
+
+<span class="c1"># Get only private sensors</span>
+<span class="n">private_sensors</span> <span class="o">=</span> <span class="n">registry</span><span class="o">.</span><span class="n">list_private</span><span class="p">()</span>
+</code></pre></div>
 <h2 id="real-world-use-case">Real-World Use Case<a class="headerlink" href="#real-world-use-case" title="Permanent link">&para;</a></h2>
 <p>Here's a more complex example combining multiple conditions:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">EntitySet</span><span class="p">,</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">Zone</span><span class="p">,</span> <span class="n">exists</span><span class="p">,</span> <span class="n">within</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">Condition</span>
@@ -859,6 +1037,67 @@
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ALERT: Person and vehicle in restricted zone for 30 seconds!&quot;</span><span class="p">)</span>
 </code></pre></div>
 <p>This example demonstrates a security system that alerts when both a person and a vehicle have been detected in a restricted zone for at least 30 seconds. </p>
+<h3 id="privacy-aware-real-world-example">Privacy-Aware Real-World Example<a class="headerlink" href="#privacy-aware-real-world-example" title="Permanent link">&para;</a></h3>
+<p>Here's an example of a smart home system that respects privacy:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Zone</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">within</span><span class="p">,</span> <span class="n">SensorRegistry</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_sensor_value</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="c1"># Configure logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+
+<span class="c1"># Create zones for different areas</span>
+<span class="n">living_room</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">bedroom</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">bathroom</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># Create sensors with appropriate privacy levels</span>
+<span class="n">living_room_temp</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;living_temp&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mf">2.5</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># public by default</span>
+<span class="n">bedroom_motion</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;bedroom_motion&quot;</span><span class="p">,</span> <span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+<span class="n">bathroom_presence</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;bathroom_presence&quot;</span><span class="p">,</span> <span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define conditions</span>
+<span class="n">high_temp</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">living_room_temp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">25.0</span><span class="p">)</span>
+<span class="n">bedroom_movement</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bedroom_motion</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+<span class="n">bathroom_occupied</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">bathroom_presence</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Create temporal conditions</span>
+<span class="n">sustained_high_temp</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">60.0</span><span class="p">,</span> <span class="n">high_temp</span><span class="p">)</span>
+<span class="n">sustained_bedroom_motion</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">bedroom_movement</span><span class="p">)</span>
+<span class="n">sustained_bathroom_presence</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">bathroom_occupied</span><span class="p">)</span>
+
+<span class="c1"># Register event handlers</span>
+<span class="nd">@on</span><span class="p">(</span><span class="n">sustained_high_temp</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">adjust_temperature</span><span class="p">():</span>
+    <span class="n">temp</span> <span class="o">=</span> <span class="n">living_room_temp</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="c1"># Public sensor, so we can log the actual value</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adjusting temperature - current value: </span><span class="si">{</span><span class="n">temp</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+    <span class="c1"># Set up temperature adjustment...</span>
+
+<span class="nd">@on</span><span class="p">(</span><span class="n">sustained_bedroom_motion</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bedroom_occupied</span><span class="p">():</span>
+    <span class="c1"># Private sensor, so we respect privacy in our logs</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">bedroom_motion</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">formatted</span> <span class="o">=</span> <span class="n">format_sensor_value</span><span class="p">(</span><span class="n">bedroom_motion</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bedroom motion detected: </span><span class="si">{</span><span class="n">formatted</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Adjust bedroom settings...</span>
+
+<span class="nd">@on</span><span class="p">(</span><span class="n">sustained_bathroom_presence</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bathroom_occupied</span><span class="p">():</span>
+    <span class="c1"># Private sensor, so we respect privacy in our logs</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">bathroom_presence</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="n">formatted</span> <span class="o">=</span> <span class="n">format_sensor_value</span><span class="p">(</span><span class="n">bathroom_presence</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bathroom presence detected: </span><span class="si">{</span><span class="n">formatted</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># Turn on fan and lights...</span>
+
+<span class="c1"># Start the runtime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_blocking</span>
+<span class="n">start_blocking</span><span class="p">()</span>
+</code></pre></div>
+<p>This example showcases a privacy-aware smart home system where:
+1. Public environmental sensors (like temperature) show their actual values
+2. Private occupancy sensors (in bedrooms and bathrooms) have their values redacted in logs
+3. The system still functions correctly with all sensors, but respects privacy in its outputs </p>
 
 
 
@@ -922,10 +1161,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>
