@@ -33,6 +33,9 @@ SHUTDOWN_INITIATED = False
 # Reference to the main runtime task
 RUNTIME_TASK = None
 
+# Flag to track if plugins have been initialized
+PLUGINS_INITIALIZED = False
+
 
 def format_sensor_value(sensor: Sensor, value) -> str:
     """
@@ -237,17 +240,18 @@ async def start_runtime(
         history_length: Maximum number of history entries to keep per condition
 
     This function:
-    1. Spawns tasks to poll sensors at their individual rates
-    2. For sensors with sample_period_s=0, uses the global poll rate
-    3. Evaluates all conditions using sensors' cached values
-    4. Fires callbacks only on rising edges (when a condition changes from False to True)
-    5. Maintains global history of condition values for temporal conditions
-    6. Respects sensor privacy settings when logging/printing values
-    7. Registers signal handlers for graceful shutdown on Ctrl+C or termination signals
+    1. Loads and initializes plugins
+    2. Spawns tasks to poll sensors at their individual rates
+    3. For sensors with sample_period_s=0, uses the global poll rate
+    4. Evaluates all conditions using sensors' cached values
+    5. Fires callbacks only on rising edges (when a condition changes from False to True)
+    6. Maintains global history of condition values for temporal conditions
+    7. Respects sensor privacy settings when logging/printing values
+    8. Registers signal handlers for graceful shutdown on Ctrl+C or termination signals
 
     Terminate with KeyboardInterrupt (Ctrl+C).
     """
-    global GLOBAL_HISTORY, PRIVATE_SENSORS_WARNED, ACTIVE_TASKS, SHUTDOWN_INITIATED, RUNTIME_TASK
+    global GLOBAL_HISTORY, PRIVATE_SENSORS_WARNED, ACTIVE_TASKS, SHUTDOWN_INITIATED, RUNTIME_TASK, PLUGINS_INITIALIZED
 
     # Store reference to this task
     RUNTIME_TASK = asyncio.current_task()
@@ -266,6 +270,24 @@ async def start_runtime(
         if not task.done():
             task.cancel()
     ACTIVE_TASKS.clear()
+
+    # Initialize plugins if not already done
+    if not PLUGINS_INITIALIZED:
+        try:
+            from spaxiom.plugins import discover_and_load_plugins, initialize_plugins
+
+            print("[Spaxiom] Discovering and loading plugins...")
+            discover_and_load_plugins()
+            initialize_plugins()
+            PLUGINS_INITIALIZED = True
+        except ImportError:
+            # The plugins module might not be available in older versions
+            logger.debug("Plugins module not available, skipping plugin initialization")
+        except Exception as e:
+            logger.error(f"Error initializing plugins: {str(e)}")
+            import traceback
+
+            logger.debug(traceback.format_exc())
 
     # Setup signal handlers for graceful shutdown
     loop = asyncio.get_running_loop()
