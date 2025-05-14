@@ -4,7 +4,8 @@ Spaxiom - An embedded domain-specific language for spatial sensor fusion and AI.
 
 import sys
 import importlib.util
-from spaxiom.sensor import Sensor, RandomSensor, TogglingSensor
+from spaxiom.core import Sensor, SensorRegistry
+from spaxiom.sensor import RandomSensor, TogglingSensor
 from spaxiom.zone import Zone
 from spaxiom.logic import Condition, transitioned_to_true, exists
 from spaxiom.events import on
@@ -20,6 +21,7 @@ from .summarize import RollingSummary
 
 __all__ = [
     "Sensor",
+    "SensorRegistry",
     "RandomSensor",
     "TogglingSensor",
     "Zone",

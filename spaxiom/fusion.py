@@ -2,10 +2,10 @@
 Fusion module for sensor data fusion in Spaxiom DSL.
 """
 
-from typing import List, Dict, Any, Optional, Tuple, Union
+from typing import List, Dict, Any, Optional, Tuple, Union, Literal
 import numpy as np
 
-from spaxiom.sensor import Sensor
+from spaxiom.core import Sensor
 
 
 def weighted_average(readings: List[float], weights: List[float]) -> float:
@@ -58,6 +58,7 @@ class WeightedFusion(Sensor):
         sensors: List of sensors to fuse
         weights: List of weights for each sensor
         location: Location of the fusion sensor (defaults to centroid of component sensors)
+        privacy: Privacy level of the fusion sensor ('public' or 'private')
     """
 
     def __init__(
@@ -66,6 +67,7 @@ class WeightedFusion(Sensor):
         sensors: List[Sensor],
         weights: List[float],
         location: Optional[Tuple[float, float, float]] = None,
+        privacy: Literal["public", "private"] = "public",
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """
@@ -76,6 +78,7 @@ class WeightedFusion(Sensor):
             sensors: List of sensors to fuse
             weights: List of weights for each sensor
             location: Optional location override (if None, uses centroid of component sensors)
+            privacy: Privacy level of the fusion sensor ('public' or 'private')
             metadata: Optional metadata dictionary
 
         Raises:
@@ -104,11 +107,18 @@ class WeightedFusion(Sensor):
             # Compute centroid
             location = tuple(np.mean(sensor_locations, axis=0).tolist())
 
+        # Check if any component sensors are private
+        # If any component sensor is private, the fusion should be private too
+        derived_privacy = privacy
+        if any(sensor.privacy == "private" for sensor in sensors):
+            derived_privacy = "private"
+
         # Initialize parent class
         super().__init__(
             name=name,
             sensor_type="weighted_fusion",
             location=location,
+            privacy=derived_privacy,
             metadata=metadata or {},
         )
 
@@ -144,4 +154,4 @@ class WeightedFusion(Sensor):
     def __repr__(self) -> str:
         """Return string representation of the fusion sensor."""
         sensor_names = [s.name for s in self.sensors]
-        return f"WeightedFusion(name='{self.name}', sensors={sensor_names}, weights={self.weights})"
+        return f"WeightedFusion(name='{self.name}', sensors={sensor_names}, weights={self.weights}, privacy='{self.privacy}')"
