@@ -2,9 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.0-beta] - 2025-05-14
+## [0.1.0-rc1] - 2025-06-01
 
 ### Added
+
+- **MQTT Integration**: Complete support for MQTT brokers
+  - `MQTTSensor` class for subscribing to topics
+  - Secure authentication with username/password
+  - Automatic reconnection handling
+
+- **YAML Configuration**: Support for YAML-based sensor configuration
+  - Load sensors directly from YAML files
+  - Simplified deployment for complex sensor networks
+  - Configuration validation with helpful error messages
+
+- **SimVector Module**: Advanced sensor simulation capabilities
+  - Vector-based approach for efficient time series simulation
+  - Configurable interpolation between keyframes
+  - Support for sine, step, and custom patterns
+
+- **Plugin System**: Extensible architecture for custom components
+  - Register custom sensors, outputs, and processing components
+  - Runtime discovery of extensions
+  - Plugin isolation for better stability
 
 - **ONNX Inference**: Added support for AI model inference using ONNX Runtime
   - Includes person detection example with ONNX model integration
@@ -34,9 +54,13 @@ All notable changes to this project will be documented in this file.
 ### Improved
 
 - Enhanced error handling across all modules
-- More comprehensive test coverage (over 60%)
-- Updated documentation with privacy and hardware examples
+- Comprehensive test coverage (over 80%)
+- Improved documentation with MQTT, YAML, and simulation examples
+- Performance optimizations for large sensor networks
 
 ### Fixed
 
+- Resolved issues with asyncio event loop in shutdown process
+- Fixed thread safety issues in sensor registry
+- Corrected behavior of temporal operators in edge cases
 - Several bug fixes and performance improvements 
