@@ -1,0 +1,759 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection">
+      
+      
+        <meta name="author" content="Joe Scanlin">
+      
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
+    
+    
+      
+        <title>Spaxiom DSL Formal Specification - Spaxiom DSL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.342714a4.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#spaxiom-dsl-formal-specification" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spaxiom DSL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Spaxiom DSL Formal Specification
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Spaxiom DSL
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whats_new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    What's New in 0.1.0
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick-Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    API
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../temporal_and_entities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Temporal
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli_usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CLI
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overview
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/smart_building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Smart Building
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="spaxiom-dsl-formal-specification">Spaxiom DSL Formal Specification<a class="headerlink" href="#spaxiom-dsl-formal-specification" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Spaxiom is an embedded domain-specific language (DSL) for spatial sensor fusion and temporal reasoning, implemented in Python. This document provides a formal grammar specification for the DSL, focusing on the key components and their composition rules.</p>
+<h2 id="bnf-grammar-specification">BNF Grammar Specification<a class="headerlink" href="#bnf-grammar-specification" title="Permanent link">&para;</a></h2>
+<p>The following Backus-Naur Form (BNF) grammar defines the core constructs of the Spaxiom DSL:</p>
+<div class="highlight"><pre><span></span><code><span class="p">&lt;</span><span class="nc">spaxiom-program</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">import-statements</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nc">declaration-list</span><span class="p">&gt;</span> [<span class="p">&lt;</span><span class="nc">main-function</span><span class="p">&gt;</span>]
+
+<span class="p">&lt;</span><span class="nc">import-statements</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;from spaxiom import&quot; <span class="p">&lt;</span><span class="nc">import-list</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">import-list</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">import-item</span><span class="p">&gt;</span> [&quot;,&quot; <span class="p">&lt;</span><span class="nc">import-item</span><span class="p">&gt;</span>]*
+<span class="p">&lt;</span><span class="nc">import-item</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nc">declaration-list</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">declaration</span><span class="p">&gt;</span>+
+<span class="p">&lt;</span><span class="nc">declaration</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">sensor-decl</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">zone-decl</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">condition-decl</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">event-handler-decl</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">entity-set-decl</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="nc">sensor-decl</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> &quot;=&quot; <span class="p">&lt;</span><span class="nc">sensor-type</span><span class="p">&gt;</span> &quot;(&quot; <span class="p">&lt;</span><span class="nc">sensor-args</span><span class="p">&gt;</span> &quot;)&quot;
+<span class="p">&lt;</span><span class="nc">sensor-type</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;Sensor&quot; | &quot;RandomSensor&quot; | &quot;TogglingSensor&quot; | &quot;GPIOSensor&quot; | <span class="p">&lt;</span><span class="nc">custom-sensor</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">sensor-args</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;name=&quot; <span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> &quot;,&quot; &quot;sensor_type=&quot; <span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> &quot;,&quot; &quot;location=&quot; <span class="p">&lt;</span><span class="nc">coordinate</span><span class="p">&gt;</span> [&quot;,&quot; <span class="p">&lt;</span><span class="nc">sensor-option</span><span class="p">&gt;</span>]*
+<span class="p">&lt;</span><span class="nc">sensor-option</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;privacy=&quot; <span class="p">&lt;</span><span class="nc">privacy-value</span><span class="p">&gt;</span> | &quot;sample_period_s=&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> | &quot;metadata=&quot; <span class="p">&lt;</span><span class="nc">dict</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">privacy-value</span><span class="p">&gt;</span> <span class="o">::=</span> &#39;&quot;public&quot;&#39; | &#39;&quot;private&quot;&#39;
+<span class="p">&lt;</span><span class="nc">coordinate</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;(&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;)&quot;
+
+<span class="p">&lt;</span><span class="nc">zone-decl</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> &quot;=&quot; &quot;Zone&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;)&quot;
+
+<span class="p">&lt;</span><span class="nc">condition-decl</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> &quot;=&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">simple-condition</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">combined-condition</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">temporal-condition</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">simple-condition</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;Condition&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">lambda-function</span><span class="p">&gt;</span> &quot;)&quot;
+<span class="p">&lt;</span><span class="nc">combined-condition</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nc">operator</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> | &quot;~&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">operator</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;&amp;&quot; | &quot;|&quot;
+<span class="p">&lt;</span><span class="nc">temporal-condition</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;within&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> &quot;)&quot; | &quot;sequence&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">condition-list</span><span class="p">&gt;</span> &quot;,&quot; <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> &quot;)&quot;
+<span class="p">&lt;</span><span class="nc">condition-list</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;[&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> [&quot;,&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span>]* &quot;]&quot;
+<span class="p">&lt;</span><span class="nc">lambda-function</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;lambda&quot; [&quot;:&quot; <span class="p">&lt;</span><span class="nc">python-expression</span><span class="p">&gt;</span>]
+
+<span class="p">&lt;</span><span class="nc">entity-set-decl</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> &quot;=&quot; &quot;EntitySet&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> &quot;)&quot;
+
+<span class="p">&lt;</span><span class="nc">event-handler-decl</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;@on&quot; &quot;(&quot; <span class="p">&lt;</span><span class="nc">condition-expr</span><span class="p">&gt;</span> &quot;)&quot; <span class="p">&lt;</span><span class="nc">newline</span><span class="p">&gt;</span> &quot;def&quot; <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> &quot;(&quot; &quot;)&quot; &quot;:&quot; <span class="p">&lt;</span><span class="nc">newline</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nc">handler-body</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">handler-body</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">python-statement</span><span class="p">&gt;</span>+
+
+<span class="p">&lt;</span><span class="nc">main-function</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;def main():&quot; <span class="p">&lt;</span><span class="nc">newline</span><span class="p">&gt;</span> <span class="p">&lt;</span><span class="nc">python-statement</span><span class="p">&gt;</span>+
+
+<span class="p">&lt;</span><span class="nc">python-statement</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">valid-python-code</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">python-expression</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">valid-python-expression</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">dict</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;{&quot; [<span class="p">&lt;</span><span class="nc">key-value-pair</span><span class="p">&gt;</span> [&quot;,&quot; <span class="p">&lt;</span><span class="nc">key-value-pair</span><span class="p">&gt;</span>]*] &quot;}&quot;
+<span class="p">&lt;</span><span class="nc">key-value-pair</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> &quot;:&quot; <span class="p">&lt;</span><span class="nc">value</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">value</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">dict</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">list</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">list</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;[&quot; [<span class="p">&lt;</span><span class="nc">value</span><span class="p">&gt;</span> [&quot;,&quot; <span class="p">&lt;</span><span class="nc">value</span><span class="p">&gt;</span>]*] &quot;]&quot;
+<span class="p">&lt;</span><span class="nc">string</span><span class="p">&gt;</span> <span class="o">::=</span> &#39;&quot;&#39; <span class="p">&lt;</span><span class="nc">characters</span><span class="p">&gt;</span> &#39;&quot;&#39; | &quot;&#39;&quot; <span class="p">&lt;</span><span class="nc">characters</span><span class="p">&gt;</span> &quot;&#39;&quot;
+<span class="p">&lt;</span><span class="nc">number</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">integer</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">float</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">integer</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">digit</span><span class="p">&gt;</span>+
+<span class="p">&lt;</span><span class="nc">float</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">digit</span><span class="p">&gt;</span>+ &quot;.&quot; <span class="p">&lt;</span><span class="nc">digit</span><span class="p">&gt;</span>*
+<span class="p">&lt;</span><span class="nc">digit</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;0&quot; | &quot;1&quot; | &quot;2&quot; | &quot;3&quot; | &quot;4&quot; | &quot;5&quot; | &quot;6&quot; | &quot;7&quot; | &quot;8&quot; | &quot;9&quot;
+<span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">letter</span><span class="p">&gt;</span> [<span class="p">&lt;</span><span class="nc">letter</span><span class="p">&gt;</span> | <span class="p">&lt;</span><span class="nc">digit</span><span class="p">&gt;</span> | &quot;_&quot;]*
+<span class="p">&lt;</span><span class="nc">letter</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;A&quot; | &quot;B&quot; | ... | &quot;Z&quot; | &quot;a&quot; | &quot;b&quot; | ... | &quot;z&quot;
+<span class="p">&lt;</span><span class="nc">newline</span><span class="p">&gt;</span> <span class="o">::=</span> &quot;\n&quot;
+<span class="p">&lt;</span><span class="nc">characters</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">character</span><span class="p">&gt;</span>*
+<span class="p">&lt;</span><span class="nc">character</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">any-valid-character</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nc">custom-sensor</span><span class="p">&gt;</span> <span class="o">::=</span> <span class="p">&lt;</span><span class="nc">identifier</span><span class="p">&gt;</span>
+</code></pre></div>
+<h2 id="operator-precedence">Operator Precedence<a class="headerlink" href="#operator-precedence" title="Permanent link">&para;</a></h2>
+<p>The Spaxiom DSL adopts standard logical operator precedence for conditions, which are implemented using Python's operator overloading mechanism. The precedence order from highest to lowest is:</p>
+<ol>
+<li><code>~</code> (NOT) - Unary operator with highest precedence</li>
+<li><code>&amp;</code> (AND) - Binary operator with medium precedence</li>
+<li><code>|</code> (OR) - Binary operator with lowest precedence</li>
+</ol>
+<p>This means that expressions are evaluated in the following order:</p>
+<div class="highlight"><pre><span></span><code>~A &amp; B | C
+</code></pre></div>
+<p>is equivalent to:</p>
+<div class="highlight"><pre><span></span><code>((~A) &amp; B) | C
+</code></pre></div>
+<h3 id="precedence-rules">Precedence Rules<a class="headerlink" href="#precedence-rules" title="Permanent link">&para;</a></h3>
+<p>The precedence of operators in the Spaxiom DSL follows these rules:</p>
+<ol>
+<li><strong>Negation (<code>~</code>) has the highest precedence</strong>:</li>
+<li>When you negate a condition using <code>~</code>, this is always applied first.</li>
+<li>
+<p>Example: <code>~condition1 &amp; condition2</code> is interpreted as <code>(~condition1) &amp; condition2</code>.</p>
+</li>
+<li>
+<p><strong>Conjunction (<code>&amp;</code>) has higher precedence than disjunction</strong>:</p>
+</li>
+<li>The AND operator is applied before the OR operator.</li>
+<li>
+<p>Example: <code>condition1 &amp; condition2 | condition3</code> is interpreted as <code>(condition1 &amp; condition2) | condition3</code>.</p>
+</li>
+<li>
+<p><strong>Disjunction (<code>|</code>) has the lowest precedence</strong>:</p>
+</li>
+<li>The OR operator is applied last in a complex expression.</li>
+<li>
+<p>Example: <code>condition1 | condition2 &amp; condition3</code> is interpreted as <code>condition1 | (condition2 &amp; condition3)</code>.</p>
+</li>
+<li>
+<p><strong>Parentheses can be used to override default precedence</strong>:</p>
+</li>
+<li>For clarity or to change the order of operations, use parentheses.</li>
+<li>Example: <code>condition1 | (condition2 &amp; ~condition3)</code>.</li>
+</ol>
+<h3 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h3>
+<p>These precedence rules are implemented in the <code>Condition</code> class through the following methods:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__and__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Condition&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Condition&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement the &amp; operator (logical AND).&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combined_condition</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Short-circuit evaluation</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">other</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Condition</span><span class="p">(</span><span class="n">combined_condition</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="s2">&quot;Condition&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Condition&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement the | operator (logical OR).&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">combined_condition</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1"># Short-circuit evaluation</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">other</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Condition</span><span class="p">(</span><span class="n">combined_condition</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="fm">__invert__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Condition&quot;</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Implement the ~ operator (logical NOT).&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inverted_condition</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Condition</span><span class="p">(</span><span class="n">inverted_condition</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h2>
+<p>Here are some examples of how to use logical operators in Spaxiom with their evaluation order:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Individual conditions</span>
+<span class="n">in_zone</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">zone</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">sensor</span><span class="o">.</span><span class="n">location</span><span class="p">))</span>
+<span class="n">is_hot</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">temperature</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">30.0</span><span class="p">)</span>
+<span class="n">is_moving</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">motion</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Combined conditions with operator precedence</span>
+
+<span class="c1"># 1. Simple AND: Both conditions must be true</span>
+<span class="n">in_hot_zone</span> <span class="o">=</span> <span class="n">in_zone</span> <span class="o">&amp;</span> <span class="n">is_hot</span>  <span class="c1"># Evaluates: in_zone AND is_hot</span>
+
+<span class="c1"># 2. Simple OR: Either condition can be true </span>
+<span class="n">alert_condition</span> <span class="o">=</span> <span class="n">in_zone</span> <span class="o">|</span> <span class="n">is_hot</span>  <span class="c1"># Evaluates: in_zone OR is_hot</span>
+
+<span class="c1"># 3. NOT applied to a single condition</span>
+<span class="n">not_in_zone</span> <span class="o">=</span> <span class="o">~</span><span class="n">in_zone</span>  <span class="c1"># Evaluates: NOT in_zone</span>
+
+<span class="c1"># 4. Complex expression with all operators</span>
+<span class="n">complex_condition</span> <span class="o">=</span> <span class="o">~</span><span class="n">is_hot</span> <span class="o">&amp;</span> <span class="n">in_zone</span> <span class="o">|</span> <span class="n">is_moving</span>
+<span class="c1"># Evaluates as: ((NOT is_hot) AND in_zone) OR is_moving</span>
+
+<span class="c1"># 5. Using parentheses to override precedence</span>
+<span class="n">override_precedence</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">is_hot</span> <span class="o">&amp;</span> <span class="n">in_zone</span><span class="p">)</span> <span class="o">|</span> <span class="n">is_moving</span>
+<span class="c1"># Evaluates as: (NOT (is_hot AND in_zone)) OR is_moving</span>
+
+<span class="c1"># 6. Another example with parentheses</span>
+<span class="n">another_override</span> <span class="o">=</span> <span class="n">is_hot</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">in_zone</span> <span class="o">|</span> <span class="n">is_moving</span><span class="p">)</span>
+<span class="c1"># Evaluates as: is_hot AND (in_zone OR is_moving)</span>
+</code></pre></div>
+<h2 id="temporal-operators">Temporal Operators<a class="headerlink" href="#temporal-operators" title="Permanent link">&para;</a></h2>
+<p>The temporal operators like <code>within</code> and <code>sequence</code> have their own precedence rules, and they typically operate on condition expressions:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Condition must be true for at least 5 seconds</span>
+<span class="n">sustained_condition</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">is_hot</span> <span class="o">&amp;</span> <span class="n">in_zone</span><span class="p">)</span>
+
+<span class="c1"># Sequence of conditions must happen in order within 10 seconds</span>
+<span class="n">entry_sequence</span> <span class="o">=</span> <span class="n">sequence</span><span class="p">([</span><span class="n">door_open</span><span class="p">,</span> <span class="n">person_detected</span><span class="p">,</span> <span class="n">door_closed</span><span class="p">],</span> <span class="mf">10.0</span><span class="p">)</span>
+</code></pre></div>
+<p>These temporal operators wrap condition expressions and create new condition objects that can be further combined with the logical operators described above. </p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/joescanlin/spaxiom-dsl" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.13a4f30d.min.js"></script>
+      
+    
+  </body>
+</html>
