@@ -143,6 +143,17 @@ spax-run new complex_app --sensors 5 --zones 3
 spax-run new simple_app --no-privacy
 ```
 
+## CLI Improvements
+
+- Added `--verbose` flag to enable detailed runtime logging:
+
+```bash
+# Run with verbose logging for troubleshooting
+spax-run run my_app.py --verbose
+```
+
+The verbose mode provides detailed information about sensor readings, condition evaluations, plugin loading, and internal runtime events, making it easier to debug complex applications.
+
 ## Other Improvements
 
 - Enhanced error handling across all modules

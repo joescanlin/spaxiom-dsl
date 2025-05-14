@@ -22,6 +22,8 @@ spax-run run <script_path> [options]
 
 - `--poll-ms`: Polling interval in milliseconds (default: 100)
 - `--history-length`: Maximum number of history entries to keep per condition (default: 1000)
+- `--config`: YAML configuration file for sensors and zones
+- `--verbose`: Enable verbose logging for detailed runtime information
 
 ## Creating New Scripts
 
@@ -166,6 +168,23 @@ spax-run run examples/sequence_demo.py --history-length 2000
 ```
 
 This increases the maximum number of historical states kept for each condition from the default 1000 to 2000.
+
+### Enabling Verbose Logging
+
+For troubleshooting or development, you can enable verbose logging:
+
+```bash
+spax-run run examples/sequence_demo.py --verbose
+```
+
+With verbose logging enabled, you'll see detailed information about:
+- Sensor readings and updates
+- Condition evaluations
+- Plugin loading
+- Internal runtime events
+- Debugging information
+
+This is particularly useful when developing custom sensors or troubleshooting complex conditions.
 
 ## Getting Help
 

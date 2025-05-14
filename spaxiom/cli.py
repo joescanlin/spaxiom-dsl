@@ -10,6 +10,7 @@ import asyncio
 import inspect
 import importlib.util
 import click
+import logging
 
 from spaxiom.runtime import start_blocking
 from spaxiom.config import load_sensors_from_yaml
@@ -40,7 +41,12 @@ def cli():
     type=click.Path(exists=True, readable=True, dir_okay=False),
     help="YAML configuration file for sensors and zones",
 )
-def run_script(script_path: str, poll_ms: int, history_length: int, config: str = None):
+@click.option(
+    "--verbose",
+    is_flag=True,
+    help="Enable verbose logging for detailed runtime information",
+)
+def run_script(script_path: str, poll_ms: int, history_length: int, config: str = None, verbose: bool = False):
     """
     Run a Spaxiom script.
 
@@ -54,6 +60,21 @@ def run_script(script_path: str, poll_ms: int, history_length: int, config: str 
         spax-run examples/sequence_demo.py --poll-ms 50
         spax-run examples/sequence_demo.py --config sensors.yaml
     """
+    # Configure logging based on verbose flag
+    log_level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    
+    # Get the spaxiom logger
+    logger = logging.getLogger("spaxiom")
+    logger.setLevel(log_level)
+    
+    if verbose:
+        click.echo("Verbose logging enabled")
+        
     script_path = os.path.abspath(script_path)
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
