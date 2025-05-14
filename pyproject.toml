@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "spaxiom"
-version = "0.1.0rc1"
+version = "0.1.0rc2"
 description = "An embedded domain-specific language for spatial sensor fusion and AI"
 authors = ["Joe Scanlin"]
 readme = "README.md"

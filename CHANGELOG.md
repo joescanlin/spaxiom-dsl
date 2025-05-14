@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.0-rc2] - 2025-06-01
+
+### Fixed
+- Fixed README formatting to properly display badges and ASCII art
+- Improved PyPI package appearance
+
 ## [0.1.0-rc1] - 2025-06-01
 
 ### Added
