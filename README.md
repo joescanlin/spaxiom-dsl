@@ -48,6 +48,7 @@ With Spaxiom, you can easily define complex conditions that span across space an
 - 👥 **Entity Tracking**: Maintain collections of entities with flexible attributes
 - 📏 **Physical Units**: Work with measurements and conversions seamlessly
 - 🧩 **Logical Operators**: Combine conditions using intuitive &, |, and ~ operators
+- 📄 **YAML Configuration**: Define sensors and system setup through YAML files
 
 ## Installation
 
@@ -112,6 +113,44 @@ speed = distance / time  # 5 m/s
 
 # Convert to different units
 speed_kph = speed.to("km/hour")  # 18 km/h
+```
+
+### YAML Configuration
+
+```python
+from spaxiom import load_sensors_from_yaml, on, Condition, within
+
+# Load sensors from YAML configuration file
+sensors = load_sensors_from_yaml("sensors_config.yaml")
+
+# Access sensors by name from the registry
+from spaxiom import SensorRegistry
+registry = SensorRegistry()
+motion_sensor = registry.get("motion_sensor1")
+
+# Create condition based on sensor from config
+motion_detected = Condition(lambda: motion_sensor.read() > 0.5)
+
+# Register event handler
+@on(motion_detected)
+def alert_motion():
+    print("Motion detected!")
+```
+
+Example YAML configuration:
+
+```yaml
+sensors:
+  - name: motion_sensor1
+    type: gpio_digital
+    pin: 17
+    location: [0, 0, 0]
+    pull_up: true
+    
+  - name: temperature_sensor1
+    type: random
+    location: [1, 2, 0]
+    hz: 5.0
 ```
 
 ## Documentation

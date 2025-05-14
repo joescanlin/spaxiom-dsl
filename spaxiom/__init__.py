@@ -18,6 +18,7 @@ from .fusion import weighted_average, WeightedFusion
 from .adaptors.file_sensor import FileSensor
 from .adaptors.mqtt_sensor import MQTTSensor
 from .summarize import RollingSummary
+from .config import load_yaml, create_sensor_from_cfg, load_sensors_from_yaml
 
 __all__ = [
     "Sensor",
@@ -45,6 +46,9 @@ __all__ = [
     "FileSensor",
     "MQTTSensor",
     "RollingSummary",
+    "load_yaml",
+    "create_sensor_from_cfg",
+    "load_sensors_from_yaml",
 ]
 
 # Import GPIO sensor if on Linux with gpiozero available

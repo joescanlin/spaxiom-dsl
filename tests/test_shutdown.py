@@ -6,6 +6,7 @@ import asyncio
 import pytest
 from spaxiom.sensor import RandomSensor
 from spaxiom.runtime import start_runtime, shutdown, ACTIVE_TASKS
+from spaxiom.core import SensorRegistry
 
 
 class TestShutdown:
@@ -20,6 +21,9 @@ class TestShutdown:
             if not task.done():
                 task.cancel()
         ACTIVE_TASKS.clear()
+        
+        # Clear the sensor registry
+        SensorRegistry().clear()
 
         # Create some dummy sensors with different update frequencies
         _ = RandomSensor(  # noqa: F841
@@ -69,6 +73,9 @@ class TestShutdown:
             if not task.done():
                 task.cancel()
         ACTIVE_TASKS.clear()
+        
+        # Clear the sensor registry
+        SensorRegistry().clear()
 
         # First Run: Create tasks and run
         _ = RandomSensor(  # noqa: F841
