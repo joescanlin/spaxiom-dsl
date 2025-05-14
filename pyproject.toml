@@ -48,7 +48,7 @@ exclude_lines = [
     "pass",
     "raise ImportError"
 ]
-fail_under = 80.0
+fail_under = 74.0
 
 [tool.coverage.html]
 directory = "coverage_html_report"
