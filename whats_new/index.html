@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../whats_new/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../api/overview/">
+        <link rel="next" href="../quickstart/">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
@@ -24,7 +24,7 @@
     
     
       
-        <title>Quick-Start - Spaxiom DSL</title>
+        <title>What's New in 0.1.0 - Spaxiom DSL</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#spaxiom-dsl-quick-start-guide" class="md-skip">
+        <a href="#whats-new-in-spaxiom-010" class="md-skip">
           Skip to content
         </a>
       
@@ -110,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Quick-Start
+              What's New in 0.1.0
             
           </span>
         </div>
@@ -251,28 +251,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../whats_new/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    What's New in 0.1.0
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -290,7 +268,7 @@
   
   
   <span class="md-ellipsis">
-    Quick-Start
+    What's New in 0.1.0
     
   </span>
   
@@ -303,7 +281,7 @@
   
   
   <span class="md-ellipsis">
-    Quick-Start
+    What's New in 0.1.0
     
   </span>
   
@@ -326,45 +304,63 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
+  <a href="#onnx-inference" class="md-nav__link">
     <span class="md-ellipsis">
-      Installation
+      ONNX Inference
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#hello-runtime-example" class="md-nav__link">
+  <a href="#gpio-hardware-integration" class="md-nav__link">
     <span class="md-ellipsis">
-      Hello Runtime Example
+      GPIO Hardware Integration
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-the-example" class="md-nav__link">
+  <a href="#privacy-controls" class="md-nav__link">
     <span class="md-ellipsis">
-      Running the Example
+      Privacy Controls
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-output" class="md-nav__link">
+  <a href="#statistical-analysis" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Output
+      Statistical Analysis
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
+  <a href="#cli-scaffold-tool" class="md-nav__link">
     <span class="md-ellipsis">
-      Next Steps
+      CLI Scaffold Tool
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Other Improvements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#getting-started-with-010" class="md-nav__link">
+    <span class="md-ellipsis">
+      Getting Started with 0.1.0
     </span>
   </a>
   
@@ -374,6 +370,28 @@
   
 </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Quick-Start
+    
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -614,90 +632,148 @@
   
 
 
-<h1 id="spaxiom-dsl-quick-start-guide">Spaxiom DSL Quick Start Guide<a class="headerlink" href="#spaxiom-dsl-quick-start-guide" title="Permanent link">&para;</a></h1>
-<p>This guide will help you get started with Spaxiom DSL, a Python library for spatial sensor fusion and AI.</p>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>You can install Spaxiom directly from the repository:</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Clone the repository</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/username/spaxiom-dsl.git
-<span class="nb">cd</span><span class="w"> </span>spaxiom-dsl
-
-<span class="c1"># Install in development mode</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-
-<span class="c1"># To install with development dependencies</span>
-pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
-</code></pre></div>
-<h2 id="hello-runtime-example">Hello Runtime Example<a class="headerlink" href="#hello-runtime-example" title="Permanent link">&para;</a></h2>
-<p>Create a file named <code>hello_runtime.py</code> with the following code:</p>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Zone</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.sensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">RandomSensor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.runtime</span><span class="w"> </span><span class="kn">import</span> <span class="n">start_blocking</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-
-<span class="c1"># Create a random sensor at location (0, 0, 0)</span>
-<span class="n">rs</span> <span class="o">=</span> <span class="n">RandomSensor</span><span class="p">(</span><span class="s1">&#39;random1&#39;</span><span class="p">,</span> <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
-
-<span class="c1"># Define a zone for detection</span>
-<span class="n">detection_zone</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
-
-<span class="c1"># Define conditions</span>
-<span class="n">high_value</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.7</span><span class="p">)</span>
-<span class="n">in_zone</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">detection_zone</span><span class="o">.</span><span class="n">contains</span><span class="p">((</span><span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">(),</span> <span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">())))</span>
-
-<span class="c1"># Register event handlers</span>
-<span class="nd">@on</span><span class="p">(</span><span class="n">high_value</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">alert_high_value</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;HIGH VALUE DETECTED: </span><span class="si">{</span><span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-<span class="nd">@on</span><span class="p">(</span><span class="n">in_zone</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">alert_in_zone</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;POINT IN ZONE: (</span><span class="si">{</span><span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">rs</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
-
-<span class="nd">@on</span><span class="p">(</span><span class="n">high_value</span> <span class="o">&amp;</span> <span class="n">in_zone</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">alert_high_in_zone</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;HIGH VALUE AND IN ZONE!&quot;</span><span class="p">)</span>
-
-<span class="c1"># Start the runtime with a 500ms polling interval</span>
-<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting Spaxiom Runtime...&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Press Ctrl+C to exit&quot;</span><span class="p">)</span>
-    <span class="n">start_blocking</span><span class="p">(</span><span class="n">poll_ms</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
-</code></pre></div>
-<h2 id="running-the-example">Running the Example<a class="headerlink" href="#running-the-example" title="Permanent link">&para;</a></h2>
-<p>Run the example with:</p>
-<div class="highlight"><pre><span></span><code>python<span class="w"> </span>hello_runtime.py
-</code></pre></div>
-<h2 id="example-output">Example Output<a class="headerlink" href="#example-output" title="Permanent link">&para;</a></h2>
-<p>When you run the example, you'll see output similar to this:</p>
-<div class="highlight"><pre><span></span><code>Starting Spaxiom Runtime...
-Press Ctrl+C to exit
-[Spaxiom] Runtime started with poll interval of 500ms
-[Spaxiom] Fired alert_high_value
-HIGH VALUE DETECTED: 0.781
-[Spaxiom] Fired alert_in_zone
-POINT IN ZONE: (0.345, 0.567)
-[Spaxiom] Fired alert_high_value
-HIGH VALUE DETECTED: 0.892
-[Spaxiom] Fired alert_high_in_zone
-HIGH VALUE AND IN ZONE!
-[Spaxiom] Fired alert_in_zone
-POINT IN ZONE: (0.456, 0.234)
-[Spaxiom] Fired alert_high_value
-HIGH VALUE DETECTED: 0.723
-^C
-[Spaxiom] Runtime stopped by user
-</code></pre></div>
-<p>The output shows:
-1. The runtime starting with a 500ms polling interval
-2. Event handlers being triggered when their conditions are met
-3. The runtime stopping when you press Ctrl+C</p>
-<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h1 id="whats-new-in-spaxiom-010">What's New in Spaxiom 0.1.0<a class="headerlink" href="#whats-new-in-spaxiom-010" title="Permanent link">&para;</a></h1>
+<p>We're excited to announce the first beta release of Spaxiom 0.1.0! This release includes several major features that greatly enhance the capabilities of the Spaxiom DSL.</p>
+<h2 id="onnx-inference">ONNX Inference<a class="headerlink" href="#onnx-inference" title="Permanent link">&para;</a></h2>
+<p>Spaxiom now supports AI model inference using ONNX Runtime, allowing you to integrate machine learning models with your sensor network:</p>
 <ul>
-<li>Check out the <a href="../spec_draft/">Specification</a> for more details on the DSL syntax</li>
-<li>Explore the examples in the <code>examples/</code> directory</li>
-<li>Read the API documentation for more advanced usage </li>
+<li>Run real-time object detection directly within your Spaxiom applications</li>
+<li>Generate entities automatically from detection results</li>
+<li>Integrate with spatial and temporal reasoning</li>
 </ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">ONNXDetector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">on</span><span class="p">,</span> <span class="n">exists</span>
+
+<span class="c1"># Initialize ONNX-based person detector</span>
+<span class="n">detector</span> <span class="o">=</span> <span class="n">ONNXDetector</span><span class="p">(</span>
+    <span class="n">model_path</span><span class="o">=</span><span class="s2">&quot;models/person_detector.onnx&quot;</span><span class="p">,</span>
+    <span class="n">input_name</span><span class="o">=</span><span class="s2">&quot;image&quot;</span><span class="p">,</span>
+    <span class="n">output_name</span><span class="o">=</span><span class="s2">&quot;detection&quot;</span><span class="p">,</span>
+    <span class="n">confidence_threshold</span><span class="o">=</span><span class="mf">0.5</span>
+<span class="p">)</span>
+
+<span class="c1"># Create an entity set to store detected persons</span>
+<span class="n">persons</span> <span class="o">=</span> <span class="n">EntitySet</span><span class="p">(</span><span class="s2">&quot;Persons&quot;</span><span class="p">)</span>
+
+<span class="c1"># Define condition based on entity detection</span>
+<span class="n">person_detected</span> <span class="o">=</span> <span class="n">exists</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">p</span><span class="p">:</span> <span class="n">p</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;confidence&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.7</span><span class="p">)</span>
+
+<span class="c1"># Register an event handler</span>
+<span class="nd">@on</span><span class="p">(</span><span class="n">person_detected</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">alert_person_detected</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Person detected with high confidence!&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>See the <a href="examples/onnx_person_demo.py">ONNX Person Detection example</a> for a complete implementation.</p>
+<h2 id="gpio-hardware-integration">GPIO Hardware Integration<a class="headerlink" href="#gpio-hardware-integration" title="Permanent link">&para;</a></h2>
+<p>Connect your Spaxiom applications to the physical world with our new GPIO adapters for Raspberry Pi and similar devices:</p>
+<ul>
+<li>Read sensor data from digital pins using <code>GPIOSensor</code></li>
+<li>Control output devices with <code>GPIOOutput</code></li>
+<li>Compatible with both RPi.GPIO and gpiozero libraries</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.gpio</span><span class="w"> </span><span class="kn">import</span> <span class="n">GPIOSensor</span><span class="p">,</span> <span class="n">GPIOOutput</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">on</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">within</span>
+
+<span class="c1"># Create a door sensor on GPIO pin 17</span>
+<span class="n">door_sensor</span> <span class="o">=</span> <span class="n">GPIOSensor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;front_door&quot;</span><span class="p">,</span>
+    <span class="n">pin</span><span class="o">=</span><span class="mi">17</span><span class="p">,</span>
+    <span class="n">sensor_type</span><span class="o">=</span><span class="s2">&quot;door&quot;</span><span class="p">,</span>
+    <span class="n">pull_up</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">active_low</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Create an LED output on GPIO pin 18</span>
+<span class="n">led</span> <span class="o">=</span> <span class="n">GPIOOutput</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;alert_light&quot;</span><span class="p">,</span>
+    <span class="n">pin</span><span class="o">=</span><span class="mi">18</span>
+<span class="p">)</span>
+
+<span class="c1"># Define condition and register handler</span>
+<span class="n">door_open</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">door_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">door_open_long</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">30.0</span><span class="p">,</span> <span class="n">door_open</span><span class="p">)</span>
+
+<span class="nd">@on</span><span class="p">(</span><span class="n">door_open_long</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">alert_door_left_open</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Door has been open for 30 seconds!&quot;</span><span class="p">)</span>
+    <span class="n">led</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># Turn on the LED</span>
+</code></pre></div>
+<h2 id="privacy-controls">Privacy Controls<a class="headerlink" href="#privacy-controls" title="Permanent link">&para;</a></h2>
+<p>Enhance data protection and privacy with our new privacy tagging system:</p>
+<ul>
+<li>Mark sensors as private to control data visibility</li>
+<li>Automatic redaction of private sensor values in logs</li>
+<li>Privacy warnings when accessing restricted data</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span>
+
+<span class="c1"># Create a sensor with privacy settings</span>
+<span class="n">temperature</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;bedroom_temp&quot;</span><span class="p">,</span>
+    <span class="n">sensor_type</span><span class="o">=</span><span class="s2">&quot;temperature&quot;</span><span class="p">,</span>
+    <span class="n">location</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">privacy</span><span class="o">=</span><span class="s2">&quot;private&quot;</span>  <span class="c1"># Mark this sensor as private</span>
+<span class="p">)</span>
+
+<span class="c1"># Private values will be redacted in logs and outputs</span>
+</code></pre></div>
+<h2 id="statistical-analysis">Statistical Analysis<a class="headerlink" href="#statistical-analysis" title="Permanent link">&para;</a></h2>
+<p>Perform statistical analysis on sensor data streams with the new summarization capabilities:</p>
+<ul>
+<li>Call <code>summary()</code> on Condition instances to get a RollingSummary object</li>
+<li>Track statistics like min, max, mean, and variance</li>
+<li>Monitor trends and patterns over time</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Condition</span>
+
+<span class="c1"># Create a temperature sensor</span>
+<span class="n">temp_sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;room_temp&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># Create a condition that reads the temperature</span>
+<span class="n">temp_reading</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">temp_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+
+<span class="c1"># Get a summary object for statistical analysis</span>
+<span class="n">temp_stats</span> <span class="o">=</span> <span class="n">temp_reading</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">window_size</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># In your event handler or elsewhere:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">print_stats</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Min: </span><span class="si">{</span><span class="n">temp_stats</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Max: </span><span class="si">{</span><span class="n">temp_stats</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean: </span><span class="si">{</span><span class="n">temp_stats</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">°C&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Variance: </span><span class="si">{</span><span class="n">temp_stats</span><span class="o">.</span><span class="n">variance</span><span class="p">()</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="cli-scaffold-tool">CLI Scaffold Tool<a class="headerlink" href="#cli-scaffold-tool" title="Permanent link">&para;</a></h2>
+<p>Quickly start new projects with the CLI scaffolding tool:</p>
+<ul>
+<li>Generate script templates with <code>spax-run new</code></li>
+<li>Customize the number of sensors and zones</li>
+<li>Configure privacy settings</li>
+<li>Get a ready-to-run application structure</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create a basic demo</span>
+spax-run<span class="w"> </span>new<span class="w"> </span>my_app
+
+<span class="c1"># Customize with more sensors and zones</span>
+spax-run<span class="w"> </span>new<span class="w"> </span>complex_app<span class="w"> </span>--sensors<span class="w"> </span><span class="m">5</span><span class="w"> </span>--zones<span class="w"> </span><span class="m">3</span><span class="w"> </span>
+
+<span class="c1"># Disable privacy features</span>
+spax-run<span class="w"> </span>new<span class="w"> </span>simple_app<span class="w"> </span>--no-privacy
+</code></pre></div>
+<h2 id="other-improvements">Other Improvements<a class="headerlink" href="#other-improvements" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Enhanced error handling across all modules</li>
+<li>More comprehensive test coverage (over 60%)</li>
+<li>Updated documentation with privacy and hardware examples</li>
+<li>Various bug fixes and performance improvements</li>
+</ul>
+<h2 id="getting-started-with-010">Getting Started with 0.1.0<a class="headerlink" href="#getting-started-with-010" title="Permanent link">&para;</a></h2>
+<p>To upgrade to the latest version:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>spaxiom
+</code></pre></div>
+<p>For new installations:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom
+</code></pre></div>
+<p>Check out the <a href="../quickstart/">Quick Start Guide</a> to begin using these new features! </p>
 
 
 
