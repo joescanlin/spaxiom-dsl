@@ -8,6 +8,8 @@
 
 # Spaxiom-DSL
 
+![Status: Beta](https://img.shields.io/badge/Status-Beta-blue)
+
 An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
 
 ```
