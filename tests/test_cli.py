@@ -3,14 +3,12 @@ Tests for the Spaxiom CLI module.
 """
 
 import os
-import sys
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock
-import pytest
 from click.testing import CliRunner
 
-from spaxiom.cli import cli, create_scaffold, run_script
+from spaxiom.cli import cli
 
 
 class TestCLI(unittest.TestCase):
