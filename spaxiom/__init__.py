@@ -16,6 +16,7 @@ from .geo import intersection, union
 from .fusion import weighted_average, WeightedFusion
 from .adaptors.file_sensor import FileSensor
 from .adaptors.mqtt_sensor import MQTTSensor
+from .summarize import RollingSummary
 
 __all__ = [
     "Sensor",
@@ -39,6 +40,7 @@ __all__ = [
     "WeightedFusion",
     "FileSensor",
     "MQTTSensor",
+    "RollingSummary",
 ]
 
 # Import GPIO sensor if on Linux with gpiozero available
