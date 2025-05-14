@@ -12,6 +12,7 @@ import importlib.util
 import click
 
 from spaxiom.runtime import start_blocking
+from spaxiom.config import load_sensors_from_yaml
 
 
 @click.group()
@@ -34,15 +35,24 @@ def cli():
     default=1000,
     help="Maximum number of history entries to keep per condition",
 )
-def run_script(script_path: str, poll_ms: int, history_length: int):
+@click.option(
+    "--config",
+    type=click.Path(exists=True, readable=True, dir_okay=False),
+    help="YAML configuration file for sensors and zones",
+)
+def run_script(script_path: str, poll_ms: int, history_length: int, config: str = None):
     """
     Run a Spaxiom script.
 
     This command imports the specified Python script, which is expected to register
     sensors and event handlers, and then starts the Spaxiom runtime.
 
+    If a configuration file is provided via --config, sensors and zones defined
+    in the YAML file will be instantiated before running the script.
+
     Example:
         spax-run examples/sequence_demo.py --poll-ms 50
+        spax-run examples/sequence_demo.py --config sensors.yaml
     """
     script_path = os.path.abspath(script_path)
     script_dir = os.path.dirname(script_path)
@@ -55,6 +65,16 @@ def run_script(script_path: str, poll_ms: int, history_length: int):
     # Add script directory to sys.path to allow importing modules
     if script_dir not in sys.path:
         sys.path.insert(0, script_dir)
+
+    # Load configuration if provided
+    if config:
+        try:
+            click.echo(f"Loading configuration from {config}...")
+            sensors = load_sensors_from_yaml(config)
+            click.echo(f"Loaded {len(sensors)} sensors from configuration.")
+        except Exception as e:
+            click.echo(f"Error loading configuration: {str(e)}", err=True)
+            sys.exit(1)
 
     # Import the script
     try:

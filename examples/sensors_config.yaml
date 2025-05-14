@@ -1,0 +1,26 @@
+# Example configuration for sensors and zones
+sensors:
+  - name: temperature_sensor
+    type: random
+    location: [1.0, 2.0, 0.0]
+    hz: 5.0
+    metadata:
+      unit: "celsius"
+      room: "living_room"
+    
+  - name: motion_sensor
+    type: toggle
+    location: [5.0, 5.0, 0.0]
+    toggle_interval: 3.0
+    high_value: 1.0
+    low_value: 0.0
+    hz: 10.0
+    privacy: "private"
+    
+  - name: humidity_sensor
+    type: random
+    location: [2.0, 3.0, 0.0]
+    hz: 2.0
+    metadata:
+      unit: "percent"
+      room: "bedroom" 
