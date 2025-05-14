@@ -20,6 +20,7 @@ class Sensor:
         sensor_type: Type of sensor (e.g., "lidar", "camera", "radar")
         location: Spatial coordinates (x, y, z) of the sensor
         privacy: Privacy level of the sensor data ('public' or 'private')
+        sample_period_s: Sampling period in seconds (0 means use global polling)
         metadata: Optional metadata dictionary
     """
 
@@ -27,6 +28,7 @@ class Sensor:
     sensor_type: str
     location: Tuple[float, float, float]
     privacy: Literal["public", "private"] = "public"
+    sample_period_s: float = 0.0
     metadata: Optional[Dict[str, Any]] = None
 
     def __post_init__(self):
@@ -34,6 +36,9 @@ class Sensor:
         from spaxiom.core import SensorRegistry
 
         SensorRegistry().add(self)
+
+        # Initialize last_value field
+        self.last_value = None
 
     def read(self, unit: Optional[str] = None) -> Union[Any, QuantityType, None]:
         """
@@ -49,12 +54,35 @@ class Sensor:
             Returns None if the sensor has no more data to provide.
         """
         value = self._read_raw()
+        self.last_value = value
+
         if value is None:
             return None
 
         if unit is not None:
             return Quantity(value, unit)
         return value
+
+    def get_last_value(
+        self, unit: Optional[str] = None
+    ) -> Union[Any, QuantityType, None]:
+        """
+        Get the cached last value from the sensor without triggering a new read.
+
+        Args:
+            unit: Optional unit string to return the value as a Quantity with units.
+                  If None, returns the raw value without units.
+
+        Returns:
+            The last sensor reading, optionally wrapped in a Quantity object if unit is specified.
+            Returns None if no reading has been made yet.
+        """
+        if self.last_value is None:
+            return None
+
+        if unit is not None:
+            return Quantity(self.last_value, unit)
+        return self.last_value
 
     def _read_raw(self) -> Any:
         """
