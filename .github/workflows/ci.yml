@@ -58,9 +58,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v') && !startsWith(github.ref, 'refs/tags/v0.1.')
     runs-on: ubuntu-latest
 
-    # Add permissions needed for trusted publishing
+    # Use basic permissions since we're using a token, not OIDC
     permissions:
-      id-token: write  # Required for OIDC authentication with PyPI
       contents: read   # Required to checkout the repository
 
     steps:
@@ -98,9 +97,8 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/v0.1.')
     runs-on: ubuntu-latest
 
-    # Add permissions needed for trusted publishing
+    # Use basic permissions since we're using a token, not OIDC
     permissions:
-      id-token: write  # Required for OIDC authentication with PyPI
       contents: read   # Required to checkout the repository
 
     steps:
