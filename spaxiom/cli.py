@@ -46,7 +46,13 @@ def cli():
     is_flag=True,
     help="Enable verbose logging for detailed runtime information",
 )
-def run_script(script_path: str, poll_ms: int, history_length: int, config: str = None, verbose: bool = False):
+def run_script(
+    script_path: str,
+    poll_ms: int,
+    history_length: int,
+    config: str = None,
+    verbose: bool = False,
+):
     """
     Run a Spaxiom script.
 
@@ -67,14 +73,14 @@ def run_script(script_path: str, poll_ms: int, history_length: int, config: str 
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
-    
+
     # Get the spaxiom logger
     logger = logging.getLogger("spaxiom")
     logger.setLevel(log_level)
-    
+
     if verbose:
         click.echo("Verbose logging enabled")
-        
+
     script_path = os.path.abspath(script_path)
     script_dir = os.path.dirname(script_path)
     script_name = os.path.basename(script_path)
