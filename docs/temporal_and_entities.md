@@ -1,6 +1,6 @@
 # Temporal and Entity Operations in Spaxiom
 
-This document explains how to use the temporal (`within()`) and entity (`exists()`) operations in Spaxiom DSL.
+This document explains how to use the temporal (`within()`), entity (`exists()`), and privacy operations in Spaxiom DSL.
 
 ## Temporal Operations
 
@@ -165,6 +165,109 @@ def alert_stopped_vehicle():
 
 This will only trigger the alert when a vehicle has been continuously present for 10 seconds.
 
+## Privacy Operations
+
+Spaxiom supports privacy tags for sensors, allowing you to control how sensitive data is handled in your applications.
+
+### Privacy Levels
+
+Sensors can be tagged with one of two privacy levels:
+- `"public"`: Default level, sensor values are displayed normally
+- `"private"`: Sensitive data, values are redacted in logs and outputs
+
+### Basic Syntax
+
+When creating a sensor, you can specify its privacy level:
+
+```python
+Sensor(name, sensor_type, location, privacy="public"|"private")
+```
+
+### Examples
+
+#### Creating Sensors with Privacy Levels
+
+```python
+from spaxiom import Sensor
+
+# Public sensor (default)
+public_sensor = Sensor("living_room_temp", "temperature", (0, 0, 0))
+
+# Private sensor (explicitly set)
+private_sensor = Sensor("bedroom_occupancy", "presence", (5, 5, 0), privacy="private")
+```
+
+#### Privacy Inheritance in Fusion Sensors
+
+Privacy settings are automatically inherited in fusion sensors. If any component sensor is private, the fusion result is also treated as private:
+
+```python
+from spaxiom import Sensor, RandomSensor
+
+# Create sensors with different privacy settings
+public_sensor = RandomSensor("public_temperature", (0, 0, 0))
+private_sensor = RandomSensor("private_humidity", (0, 0, 0), privacy="private")
+
+# Public + Public = Public
+public_fusion = public_sensor.fuse_with(
+    public_sensor,
+    strategy="average",
+    name="public_fusion"
+)
+
+# Public + Private = Private (automatically)
+mixed_fusion = public_sensor.fuse_with(
+    private_sensor,
+    strategy="average",
+    name="mixed_fusion"
+)
+
+# Check privacy levels
+print(f"Public fusion privacy: {public_fusion.privacy}")  # "public"
+print(f"Mixed fusion privacy: {mixed_fusion.privacy}")    # "private"
+```
+
+#### Runtime Handling of Private Sensors
+
+The runtime automatically redacts values from private sensors in logs and console output:
+
+```python
+from spaxiom import RandomSensor, SensorRegistry, Condition, on
+from spaxiom.runtime import format_sensor_value
+
+# Create sensors with different privacy levels
+public_sensor = RandomSensor("living_room_temp", (0, 0, 0))
+private_sensor = RandomSensor("bedroom_motion", (5, 0, 0), privacy="private")
+
+# Using the format_sensor_value function respects privacy
+public_value = public_sensor.read()
+private_value = private_sensor.read()
+
+print(f"Public sensor value: {format_sensor_value(public_sensor, public_value)}")   # Shows actual value
+print(f"Private sensor value: {format_sensor_value(private_sensor, private_value)}") # Shows "***"
+
+# When using the runtime, private values are automatically redacted
+# and a warning is logged once per run per private sensor
+```
+
+#### SensorRegistry Privacy Methods
+
+You can use `SensorRegistry` to get sensors based on their privacy level:
+
+```python
+from spaxiom import SensorRegistry
+
+# Get all sensors
+registry = SensorRegistry()
+all_sensors = registry.list_all()
+
+# Get only public sensors
+public_sensors = registry.list_public()
+
+# Get only private sensors
+private_sensors = registry.list_private()
+```
+
 ## Real-World Use Case
 
 Here's a more complex example combining multiple conditions:
@@ -194,3 +297,69 @@ def security_alert():
 ```
 
 This example demonstrates a security system that alerts when both a person and a vehicle have been detected in a restricted zone for at least 30 seconds. 
+
+### Privacy-Aware Real-World Example
+
+Here's an example of a smart home system that respects privacy:
+
+```python
+from spaxiom import Sensor, Zone, Condition, on, within, SensorRegistry
+from spaxiom.runtime import format_sensor_value
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+
+# Create zones for different areas
+living_room = Zone(0, 0, 5, 5)
+bedroom = Zone(6, 0, 10, 5)
+bathroom = Zone(6, 6, 10, 10)
+
+# Create sensors with appropriate privacy levels
+living_room_temp = Sensor("living_temp", "temperature", (2.5, 2.5, 0))  # public by default
+bedroom_motion = Sensor("bedroom_motion", "motion", (8, 2.5, 0), privacy="private")
+bathroom_presence = Sensor("bathroom_presence", "presence", (8, 8, 0), privacy="private")
+
+# Define conditions
+high_temp = Condition(lambda: living_room_temp.read() > 25.0)
+bedroom_movement = Condition(lambda: bedroom_motion.read() > 0.5)
+bathroom_occupied = Condition(lambda: bathroom_presence.read() > 0.5)
+
+# Create temporal conditions
+sustained_high_temp = within(60.0, high_temp)
+sustained_bedroom_motion = within(5.0, bedroom_movement)
+sustained_bathroom_presence = within(2.0, bathroom_occupied)
+
+# Register event handlers
+@on(sustained_high_temp)
+def adjust_temperature():
+    temp = living_room_temp.read()
+    # Public sensor, so we can log the actual value
+    logging.info(f"Adjusting temperature - current value: {temp}°C")
+    # Set up temperature adjustment...
+
+@on(sustained_bedroom_motion)
+def bedroom_occupied():
+    # Private sensor, so we respect privacy in our logs
+    value = bedroom_motion.read()
+    formatted = format_sensor_value(bedroom_motion, value)
+    logging.info(f"Bedroom motion detected: {formatted}")
+    # Adjust bedroom settings...
+
+@on(sustained_bathroom_presence)
+def bathroom_occupied():
+    # Private sensor, so we respect privacy in our logs
+    value = bathroom_presence.read()
+    formatted = format_sensor_value(bathroom_presence, value)
+    logging.info(f"Bathroom presence detected: {formatted}")
+    # Turn on fan and lights...
+
+# Start the runtime
+from spaxiom.runtime import start_blocking
+start_blocking()
+```
+
+This example showcases a privacy-aware smart home system where:
+1. Public environmental sensors (like temperature) show their actual values
+2. Private occupancy sensors (in bedrooms and bathrooms) have their values redacted in logs
+3. The system still functions correctly with all sensors, but respects privacy in its outputs 
