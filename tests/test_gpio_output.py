@@ -69,28 +69,28 @@ class TestGPIOOutput:
     def setup_method(self):
         """Set up mocks before each test."""
         # Mock platform check to make the tests think we're on Linux
-        self.platform_patch = patch('sys.platform', 'linux')
+        self.platform_patch = patch("sys.platform", "linux")
         self.platform_patch.start()
-        
+
         # Create a mock for gpiozero
         self.mock_gpiozero = MockGPIOZero()
-        
+
         # Mock gpiozero import - this needs to be set up BEFORE importing the module
-        sys.modules['gpiozero'] = self.mock_gpiozero
-        
+        sys.modules["gpiozero"] = self.mock_gpiozero
+
         # Now that our mocks are in place, import the module
         from spaxiom.actuators import gpio_output
-        
+
         # Reset the module state to force initialization with our mocks
         gpio_output.GPIOZERO_AVAILABLE = True
 
     def teardown_method(self):
         """Clean up after each test."""
         self.platform_patch.stop()
-        
+
         # Remove our mock from sys.modules
-        if 'gpiozero' in sys.modules:
-            del sys.modules['gpiozero']
+        if "gpiozero" in sys.modules:
+            del sys.modules["gpiozero"]
 
     def test_initialization(self):
         """Test GPIOOutput initialization."""
@@ -124,21 +124,22 @@ class TestGPIOOutput:
         """Test that GPIOOutput raises ImportError when gpiozero is not available."""
         # First, restore real platform
         self.platform_patch.stop()
-        
+
         # Now patch to use a non-Linux platform
-        with patch('sys.platform', 'darwin'):
+        with patch("sys.platform", "darwin"):
             # Re-import to update GPIOZERO_AVAILABLE under the patched environment
             import importlib
             from spaxiom.actuators import gpio_output
+
             importlib.reload(gpio_output)
-            
+
             with pytest.raises(ImportError):
                 gpio_output.GPIOOutput(name="unavailable", pin=17)
-        
+
         # Restore Linux platform for other tests
-        self.platform_patch = patch('sys.platform', 'linux')
+        self.platform_patch = patch("sys.platform", "linux")
         self.platform_patch.start()
-        
+
         # Re-import with Linux platform
         importlib.reload(gpio_output)
         gpio_output.GPIOZERO_AVAILABLE = True
@@ -148,27 +149,28 @@ class TestGPIOOutput:
         # Create a new module-level gpiozero mock with LED that raises exception
         error_mock_gpiozero = MagicMock()
         error_mock_gpiozero.LED = MagicMock(side_effect=RuntimeError("GPIO error"))
-        
+
         # Replace the mock in sys.modules
-        old_mock = sys.modules['gpiozero']
-        sys.modules['gpiozero'] = error_mock_gpiozero
-        
+        old_mock = sys.modules["gpiozero"]
+        sys.modules["gpiozero"] = error_mock_gpiozero
+
         try:
             # Import the module with the new mock
             import importlib
             from spaxiom.actuators import gpio_output
+
             importlib.reload(gpio_output)
-            
+
             from spaxiom.actuators.gpio_output import GPIOOutput
-            
+
             with pytest.raises(RuntimeError) as exc_info:
                 GPIOOutput(name="error_output", pin=17)
-            
+
             assert "Failed to initialize GPIO pin" in str(exc_info.value)
         finally:
             # Restore the original mock
-            sys.modules['gpiozero'] = old_mock
-            
+            sys.modules["gpiozero"] = old_mock
+
             # Re-import with the original mock
             importlib.reload(gpio_output)
 
@@ -213,7 +215,7 @@ class TestGPIOOutput:
         output.pulse(fade_in_time=0.5, fade_out_time=0.5, n=3, background=False)
 
         # Verify that blink was called with our parameters
-        assert hasattr(output._output_device, 'blink_called')
+        assert hasattr(output._output_device, "blink_called")
         assert output._output_device.blink_called is True
         assert output._output_device.blink_args["fade_in_time"] == 0.5
         assert output._output_device.blink_args["fade_out_time"] == 0.5

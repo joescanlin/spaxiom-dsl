@@ -16,18 +16,20 @@ class TestSimVector(unittest.TestCase):
         """Set up for each test."""
         # Clear the sensor registry before each test
         SensorRegistry().clear()
-        
+
         # Patch numpy.random.uniform to return predictable values
-        self.random_patch = patch('numpy.random.uniform')
+        self.random_patch = patch("numpy.random.uniform")
         self.mock_random = self.random_patch.start()
-        
+
         # We'll need at least 3 sets of random values for our tests
         # Each sensor needs 4 values: frequency, amplitude, phase, offset
         # For n=5 sensors, we need 20 values
         random_values = []
         for i in range(30):  # More than enough for all tests
-            random_values.extend([0.2, 1.0, 0.5, 0.0])  # frequency, amplitude, phase, offset
-            
+            random_values.extend(
+                [0.2, 1.0, 0.5, 0.0]
+            )  # frequency, amplitude, phase, offset
+
         self.mock_random.side_effect = random_values
 
     def tearDown(self):
@@ -39,11 +41,7 @@ class TestSimVector(unittest.TestCase):
         """Test initialization and basic properties."""
         # Create a SimVector
         sim_vec = SimVector(
-            n=3,
-            hz=10.0,
-            name_prefix="test",
-            base_location=(1.0, 2.0, 3.0),
-            spacing=2.0
+            n=3, hz=10.0, name_prefix="test", base_location=(1.0, 2.0, 3.0), spacing=2.0
         )
 
         # Check basic properties
@@ -63,14 +61,14 @@ class TestSimVector(unittest.TestCase):
     def test_getitem(self):
         """Test the __getitem__ method."""
         sim_vec = SimVector(n=5, hz=10.0)
-        
+
         # Access sensors by index
         sensor0 = sim_vec[0]
         sensor3 = sim_vec[3]
-        
+
         self.assertEqual("sim_0", sensor0.name)
         self.assertEqual("sim_3", sensor3.name)
-        
+
         # Test index out of range
         with self.assertRaises(IndexError):
             _ = sim_vec[10]
@@ -84,36 +82,36 @@ class TestSimVector(unittest.TestCase):
         """Test the __repr__ method."""
         sim_vec = SimVector(n=3, hz=5.0)
         repr_str = repr(sim_vec)
-        
+
         self.assertIn("SimVector", repr_str)
         self.assertIn("n=3", repr_str)
         self.assertIn("hz=5.0", repr_str)
         self.assertIn("running=False", repr_str)
 
-    @patch('threading.Thread')
-    @patch('time.time')
+    @patch("threading.Thread")
+    @patch("time.time")
     def test_start_and_stop(self, mock_time, mock_thread):
         """Test starting and stopping the simulation."""
         # Mock time.time to return a fixed value
         mock_time.return_value = 100.0
-        
+
         # Create SimVector
         sim_vec = SimVector(n=2, hz=20.0)
-        
+
         # Start the simulation
         sim_vec.start()
-        
+
         # Verify thread was started
         self.assertTrue(sim_vec.running)
         self.assertEqual(100.0, sim_vec._start_time)
         mock_thread.assert_called_once()
         mock_thread.return_value.start.assert_called_once()
-        
+
         # Call start again - should do nothing since already running
         sim_vec.start()
         # Thread should still only be created once
         mock_thread.assert_called_once()
-        
+
         # Now stop
         sim_vec.stop()
         self.assertFalse(sim_vec.running)
@@ -140,9 +138,9 @@ class TestSimSensor(unittest.TestCase):
             amplitude=2.0,
             phase=1.0,
             offset=0.5,
-            privacy="private"
+            privacy="private",
         )
-        
+
         # Check attributes
         self.assertEqual("test_sensor", sensor.name)
         self.assertEqual((1.0, 2.0, 3.0), sensor.location)
@@ -157,12 +155,9 @@ class TestSimSensor(unittest.TestCase):
     def test_read_raw(self):
         """Test the _read_raw method."""
         sensor = SimSensor(
-            name="read_test",
-            location=(0, 0, 0),
-            frequency=1.0,
-            amplitude=1.0
+            name="read_test", location=(0, 0, 0), frequency=1.0, amplitude=1.0
         )
-        
+
         # Set a value and read it
         sensor.current_value = 0.75
         self.assertEqual(0.75, sensor._read_raw())
@@ -174,31 +169,28 @@ class TestSimSensor(unittest.TestCase):
             location=(0, 0, 0),
             frequency=1.0,  # 1 Hz
             amplitude=2.0,
-            phase=0.0,      # No phase shift
-            offset=1.0
+            phase=0.0,  # No phase shift
+            offset=1.0,
         )
-        
+
         # At t=0, sin(0) = 0, so value should be offset
         self.assertEqual(1.0, sensor.calculate_value(0.0))
-        
+
         # At t=0.25s with 1Hz, sin(π/2) = 1, so value should be offset + amplitude
         self.assertAlmostEqual(3.0, sensor.calculate_value(0.25), places=6)
-        
+
         # At t=0.5s with 1Hz, sin(π) = 0, so value should be offset
         self.assertAlmostEqual(1.0, sensor.calculate_value(0.5), places=6)
-        
+
         # At t=0.75s with 1Hz, sin(3π/2) = -1, so value should be offset - amplitude
         self.assertAlmostEqual(-1.0, sensor.calculate_value(0.75), places=6)
 
     def test_repr(self):
         """Test the __repr__ method."""
         sensor = SimSensor(
-            name="repr_test",
-            location=(5, 6, 7),
-            frequency=2.5,
-            amplitude=1.5
+            name="repr_test", location=(5, 6, 7), frequency=2.5, amplitude=1.5
         )
-        
+
         repr_str = repr(sensor)
         self.assertIn("SimSensor", repr_str)
         self.assertIn("name='repr_test'", repr_str)

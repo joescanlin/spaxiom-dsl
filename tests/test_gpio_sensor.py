@@ -38,24 +38,25 @@ class TestGPIODigitalSensor:
     def setup_method(self):
         """Set up mocks before each test."""
         # Mock platform check to make the tests think we're on Linux
-        self.platform_patch = patch('sys.platform', 'linux')
+        self.platform_patch = patch("sys.platform", "linux")
         self.platform_patch.start()
-        
+
         # Create a mock for gpiozero
         self.mock_gpiozero = MockGPIOZero()
-        
+
         # Mock gpiozero import - this needs to be set up BEFORE importing the module
-        sys.modules['gpiozero'] = self.mock_gpiozero
-        
+        sys.modules["gpiozero"] = self.mock_gpiozero
+
         # Now we need to reload the gpio_sensor module to pick up our mocks
         # First, if it's already imported, store any existing import
-        self.old_gpio_sensor = sys.modules.get('spaxiom.adaptors.gpio_sensor')
-        
+        self.old_gpio_sensor = sys.modules.get("spaxiom.adaptors.gpio_sensor")
+
         # Import and patch the module
         import importlib
         from spaxiom.adaptors import gpio_sensor
+
         importlib.reload(gpio_sensor)
-        
+
         # Now we need to patch the gpiozero reference inside the module
         gpio_sensor.gpiozero = self.mock_gpiozero
         gpio_sensor.GPIOZERO_AVAILABLE = True
@@ -63,14 +64,14 @@ class TestGPIODigitalSensor:
     def teardown_method(self):
         """Clean up after each test."""
         self.platform_patch.stop()
-        
+
         # Remove our mock from sys.modules
-        if 'gpiozero' in sys.modules:
-            del sys.modules['gpiozero']
-        
+        if "gpiozero" in sys.modules:
+            del sys.modules["gpiozero"]
+
         # Restore original module if it existed
-        if hasattr(self, 'old_gpio_sensor') and self.old_gpio_sensor:
-            sys.modules['spaxiom.adaptors.gpio_sensor'] = self.old_gpio_sensor
+        if hasattr(self, "old_gpio_sensor") and self.old_gpio_sensor:
+            sys.modules["spaxiom.adaptors.gpio_sensor"] = self.old_gpio_sensor
 
     def test_initialization(self):
         """Test GPIODigitalSensor initialization."""
@@ -108,22 +109,23 @@ class TestGPIODigitalSensor:
         """Test that GPIODigitalSensor raises ImportError when gpiozero is not available."""
         # First, restore real platform
         self.platform_patch.stop()
-        
+
         # Now patch to use a non-Linux platform
-        with patch('sys.platform', 'darwin'):
+        with patch("sys.platform", "darwin"):
             # Re-import to update GPIOZERO_AVAILABLE under the patched environment
             import importlib
             from spaxiom.adaptors import gpio_sensor
+
             importlib.reload(gpio_sensor)
             gpio_sensor.GPIOZERO_AVAILABLE = False
-            
+
             with pytest.raises(ImportError):
                 gpio_sensor.GPIODigitalSensor(name="unavailable", pin=17)
-        
+
         # Restore Linux platform for other tests
-        self.platform_patch = patch('sys.platform', 'linux')
+        self.platform_patch = patch("sys.platform", "linux")
         self.platform_patch.start()
-        
+
         # Re-import with Linux platform
         importlib.reload(gpio_sensor)
         gpio_sensor.gpiozero = self.mock_gpiozero
@@ -133,22 +135,24 @@ class TestGPIODigitalSensor:
         """Test error handling during initialization."""
         # Create a new module-level gpiozero mock with DigitalInputDevice that raises exception
         error_mock_gpiozero = MagicMock()
-        error_mock_gpiozero.DigitalInputDevice = MagicMock(side_effect=RuntimeError("GPIO error"))
-        
+        error_mock_gpiozero.DigitalInputDevice = MagicMock(
+            side_effect=RuntimeError("GPIO error")
+        )
+
         # Import the module
         from spaxiom.adaptors import gpio_sensor
-        
+
         # Save the original mock
         original_gpiozero = gpio_sensor.gpiozero
-        
+
         try:
             # Replace with our error mock
             gpio_sensor.gpiozero = error_mock_gpiozero
-            
+
             # Try to create a sensor
             with pytest.raises(RuntimeError) as exc_info:
                 gpio_sensor.GPIODigitalSensor(name="error_sensor", pin=17)
-            
+
             assert "Failed to initialize GPIO pin" in str(exc_info.value)
         finally:
             # Restore the original mock
@@ -160,16 +164,16 @@ class TestGPIODigitalSensor:
 
         # Create a sensor
         sensor = GPIODigitalSensor(name="read_test", pin=17)
-        
+
         # Initial state should be inactive (0)
         assert sensor._read_raw() is False
         assert sensor.is_active() is False
-        
+
         # Change the state to active (1)
         sensor._input_device.value = 1
         assert sensor._read_raw() is True
         assert sensor.is_active() is True
-        
+
         # Change back to inactive
         sensor._input_device.value = 0
         assert sensor._read_raw() is False
@@ -192,7 +196,9 @@ class TestGPIODigitalSensor:
         """Test the string representation of GPIODigitalSensor."""
         from spaxiom.adaptors.gpio_sensor import GPIODigitalSensor
 
-        sensor = GPIODigitalSensor(name="repr_sensor", pin=17, pull_up=True, active_state=False)
+        sensor = GPIODigitalSensor(
+            name="repr_sensor", pin=17, pull_up=True, active_state=False
+        )
 
         # Get the string representation
         repr_str = repr(sensor)

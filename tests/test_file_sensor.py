@@ -163,7 +163,7 @@ class TestFileSensor(unittest.TestCase):
             column_name="5",  # This index is out of range
             skip_header=False,
         )
-        
+
         # When we try to read, we should get None (no valid data)
         self.assertIsNone(sensor.read())
 
@@ -183,7 +183,7 @@ class TestFileSensor(unittest.TestCase):
             column_name="1",  # Use index 1 instead of name
             skip_header=False,  # We're treating the header as data
         )
-        
+
         # First row containing "temperature" is skipped due to conversion error
         # Second row should work
         self.assertEqual(sensor.read(), 22.5)
@@ -202,7 +202,7 @@ class TestFileSensor(unittest.TestCase):
             file_path=empty_path,
             column_name="temperature",
         )
-        
+
         # Should return None as there's no data
         self.assertIsNone(sensor.read())
 
@@ -213,7 +213,7 @@ class TestFileSensor(unittest.TestCase):
             file_path=self.csv_path,
             column_name="temperature",
         )
-        
+
         # Test the repr method
         repr_str = repr(sensor)
         self.assertIn("FileSensor", repr_str)
