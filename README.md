@@ -8,7 +8,9 @@
 
 # Spaxiom-DSL
 
-[![Status: Beta](https://img.shields.io/badge/Status-Beta-blue.svg)](https://github.com/joescanlin/spaxiom-dsl)
+[![PyPI version](https://badge.fury.io/py/spaxiom.svg)](https://pypi.org/project/spaxiom/)
+[![Spaxiom CI](https://github.com/joescanlin/spaxiom-dsl/actions/workflows/ci.yml/badge.svg)](https://github.com/joescanlin/spaxiom-dsl/actions/workflows/ci.yml)
+[![Project Status: Beta](https://img.shields.io/badge/Project%20Status-Beta-orange.svg)](https://github.com/joescanlin/spaxiom-dsl)
 
 An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
 
