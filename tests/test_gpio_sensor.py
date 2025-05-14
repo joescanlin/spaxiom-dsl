@@ -136,7 +136,6 @@ class TestGPIODigitalSensor:
         error_mock_gpiozero.DigitalInputDevice = MagicMock(side_effect=RuntimeError("GPIO error"))
         
         # Import the module
-        import importlib
         from spaxiom.adaptors import gpio_sensor
         
         # Save the original mock

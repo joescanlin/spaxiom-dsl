@@ -3,7 +3,7 @@ Tests for the plugins module.
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 from spaxiom.plugins import (
     register_plugin,
