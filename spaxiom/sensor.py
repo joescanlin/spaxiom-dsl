@@ -12,20 +12,28 @@ from spaxiom.core import Sensor
 class RandomSensor(Sensor):
     """
     A sensor that returns random values when read.
+
+    Attributes:
+        hz: Frequency in Hz at which the sensor should be polled (sets sample_period_s)
     """
 
     def __init__(
         self,
         name: str,
         location: Tuple[float, float, float],
+        hz: float = 1.0,
         privacy: str = "public",
         metadata: Optional[Dict[str, Any]] = None,
     ):
+        # Calculate sample period from frequency
+        sample_period = 1.0 / hz if hz > 0 else 0.0
+
         super().__init__(
             name=name,
             sensor_type="random",
             location=location,
             privacy=privacy,
+            sample_period_s=sample_period,
             metadata=metadata,
         )
 
@@ -45,6 +53,11 @@ class RandomSensor(Sensor):
 class TogglingSensor(Sensor):
     """
     A sensor that toggles between high and low states at regular intervals.
+
+    Attributes:
+        toggle_interval: Time in seconds between toggles
+        high_value: The "high" value
+        low_value: The "low" value
     """
 
     def __init__(
@@ -54,6 +67,7 @@ class TogglingSensor(Sensor):
         toggle_interval: float = 2.0,
         high_value: float = 1.0,
         low_value: float = 0.0,
+        hz: float = 10.0,
         privacy: str = "public",
         metadata: Optional[Dict[str, Any]] = None,
     ):
@@ -66,14 +80,20 @@ class TogglingSensor(Sensor):
             toggle_interval: Time in seconds between toggles
             high_value: The "high" value
             low_value: The "low" value
+            hz: Frequency in Hz at which the sensor should be polled
             privacy: Privacy level ('public' or 'private')
             metadata: Optional metadata dictionary
         """
+        # Calculate sample period from frequency - should be faster than toggle interval
+        # to properly capture the transitions
+        sample_period = 1.0 / hz if hz > 0 else 0.0
+
         super().__init__(
             name=name,
             sensor_type="toggle",
             location=location,
             privacy=privacy,
+            sample_period_s=sample_period,
             metadata=metadata,
         )
         self.toggle_interval = toggle_interval
