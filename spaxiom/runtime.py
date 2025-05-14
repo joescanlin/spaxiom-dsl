@@ -5,11 +5,11 @@ Runtime module for Spaxiom DSL that handles the event loop and sensor polling.
 import asyncio
 import logging
 import time
-from typing import Dict, Callable, Deque, Tuple
+from typing import Dict, Callable, Deque, Tuple, Set
 from collections import deque
 
 from spaxiom.events import EVENT_HANDLERS
-from spaxiom.registry import SensorRegistry
+from spaxiom.core import SensorRegistry, Sensor
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +18,34 @@ MAX_HISTORY_LENGTH = 1000
 
 # Global history deque with (timestamp, condition_id, value) entries
 GLOBAL_HISTORY: Deque[Tuple[float, int, bool]] = deque(maxlen=MAX_HISTORY_LENGTH)
+
+# Set to track private sensors that have been logged about
+PRIVATE_SENSORS_WARNED: Set[str] = set()
+
+
+def format_sensor_value(sensor: Sensor, value) -> str:
+    """
+    Format a sensor value respecting privacy settings.
+
+    Args:
+        sensor: The sensor whose value is being formatted
+        value: The value to format
+
+    Returns:
+        The formatted value as a string, or "***" if the sensor is private
+    """
+    if sensor.privacy == "private":
+        # Check if we've warned about this sensor already
+        if sensor.name not in PRIVATE_SENSORS_WARNED:
+            logger.warning(
+                f"Sensor '{sensor.name}' is marked as private. Its values will be redacted."
+            )
+            PRIVATE_SENSORS_WARNED.add(sensor.name)
+
+        return "***"  # Redact private values
+
+    # For public sensors, format as normal
+    return str(value)
 
 
 async def start_runtime(
@@ -36,6 +64,7 @@ async def start_runtime(
     3. Fires callbacks only on rising edges (when a condition changes from False to True)
     4. Logs when callbacks are triggered
     5. Maintains global history of condition values for temporal conditions
+    6. Respects sensor privacy settings when logging/printing values
 
     Terminate with KeyboardInterrupt (Ctrl+C).
     """
@@ -46,6 +75,10 @@ async def start_runtime(
     # Set the global history deque max length
     global GLOBAL_HISTORY
     GLOBAL_HISTORY = deque(maxlen=history_length)
+
+    # Clear the warned sensors set at the beginning of each run
+    global PRIVATE_SENSORS_WARNED
+    PRIVATE_SENSORS_WARNED.clear()
 
     # Create a mapping of conditions to their unique IDs for history tracking
     condition_ids: Dict[Callable[[], bool], int] = {}
@@ -66,9 +99,22 @@ async def start_runtime(
             registry = SensorRegistry()
             for sensor in registry.list_all().values():
                 try:
+                    # We still read private sensors, but don't log their values
                     sensor.read()
                 except Exception as e:
-                    logger.error(f"Error reading sensor {sensor.name}: {str(e)}")
+                    # Redact error messages for private sensors
+                    error_msg = str(e)
+                    if sensor.privacy == "private":
+                        error_msg = "*** (Error in private sensor)"
+
+                        # Emit warning if this is the first time
+                        if sensor.name not in PRIVATE_SENSORS_WARNED:
+                            logger.warning(
+                                f"Sensor '{sensor.name}' is marked as private. Errors will be redacted."
+                            )
+                            PRIVATE_SENSORS_WARNED.add(sensor.name)
+
+                    logger.error(f"Error reading sensor {sensor.name}: {error_msg}")
 
             # Check all event handlers for rising edges
             for condition, callback in EVENT_HANDLERS:
@@ -104,6 +150,7 @@ async def start_runtime(
 
                     # Check for rising edge (false -> true)
                     if current_state and not previous_states[condition]:
+                        # We don't redact callback names as they don't contain sensor values
                         print(f"[Spaxiom] Fired {callback.__name__}")
                         await asyncio.create_task(asyncio.to_thread(callback))
 
