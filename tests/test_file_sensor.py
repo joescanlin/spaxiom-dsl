@@ -147,6 +147,80 @@ class TestFileSensor(unittest.TestCase):
                 column_name="temperature",
             )
 
+    def test_invalid_column_index(self):
+        """Test behavior with an invalid column index."""
+        # Create a CSV file without a header
+        noheader_path = os.path.join(self.test_dir.name, "noheader.csv")
+        with open(noheader_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["2023-01-01 00:00:00", "22.5", "45.0"])
+
+        # Instead of raising an exception immediately, the implementation
+        # prints a warning and skips the row when reading
+        sensor = FileSensor(
+            name="invalid_index_sensor",
+            file_path=noheader_path,
+            column_name="5",  # This index is out of range
+            skip_header=False,
+        )
+        
+        # When we try to read, we should get None (no valid data)
+        self.assertIsNone(sensor.read())
+
+    def test_string_column_in_noheader_mode(self):
+        """Test using a string column name in no-header mode."""
+        # Create a CSV file without a header but with string values in first row
+        noheader_path = os.path.join(self.test_dir.name, "string_columns.csv")
+        with open(noheader_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(["timestamp", "temperature", "humidity"])
+            writer.writerow(["2023-01-01 00:00:00", "22.5", "45.0"])
+
+        # Create the sensor using the column index instead
+        sensor = FileSensor(
+            name="string_column_sensor",
+            file_path=noheader_path,
+            column_name="1",  # Use index 1 instead of name
+            skip_header=False,  # We're treating the header as data
+        )
+        
+        # First row containing "temperature" is skipped due to conversion error
+        # Second row should work
+        self.assertEqual(sensor.read(), 22.5)
+
+    def test_no_data_in_file(self):
+        """Test behavior with an empty CSV file."""
+        # Create an empty CSV file
+        empty_path = os.path.join(self.test_dir.name, "empty.csv")
+        with open(empty_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            # Just write the header
+            writer.writerow(["timestamp", "temperature", "humidity"])
+
+        sensor = FileSensor(
+            name="empty_file_sensor",
+            file_path=empty_path,
+            column_name="temperature",
+        )
+        
+        # Should return None as there's no data
+        self.assertIsNone(sensor.read())
+
+    def test_repr_method(self):
+        """Test the string representation of FileSensor."""
+        sensor = FileSensor(
+            name="repr_test_sensor",
+            file_path=self.csv_path,
+            column_name="temperature",
+        )
+        
+        # Test the repr method
+        repr_str = repr(sensor)
+        self.assertIn("FileSensor", repr_str)
+        self.assertIn("name='repr_test_sensor'", repr_str)
+        self.assertIn("file='test_data.csv'", repr_str)
+        self.assertIn("column='temperature'", repr_str)
+
 
 if __name__ == "__main__":
     unittest.main()
