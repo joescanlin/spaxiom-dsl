@@ -1,0 +1,110 @@
+---
+name: Spaxiom Performance Benchmark
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    name: Run Performance Benchmark
+    runs-on: ubuntu-latest
+    # This job continues even if there are benchmark errors
+    continue-on-error: true
+    
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+          # Installing matplotlib for visualization if needed
+          pip install matplotlib
+
+      - name: Create result directories
+        run: |
+          mkdir -p benchmark_results
+
+      - name: Run benchmark with JSON output
+        run: |
+          # Run benchmark with JSON output
+          python bench/benchmark_vec.py \
+            --sensors 1000 \
+            --duration 10.0 \
+            --threads $(nproc) \
+            --json \
+            --output benchmark_results/results.json 2>&1 | tee benchmark_results/benchmark_output.txt
+
+      - name: Generate benchmark reports
+        run: |
+          # Create a human-readable summary
+          echo "# Benchmark Results - $(date)" > benchmark_results/summary.md
+          echo "## System Information" >> benchmark_results/summary.md
+          echo "- OS: $(uname -s) $(uname -r)" >> benchmark_results/summary.md
+          echo "- CPU: $(cat /proc/cpuinfo | grep "model name" | head -n 1 | cut -d ":" -f 2 | xargs)" >> benchmark_results/summary.md
+          echo "- Memory: $(free -h | grep Mem | awk '{print $2}')" >> benchmark_results/summary.md
+          echo "- Cores: $(nproc)" >> benchmark_results/summary.md
+          echo "" >> benchmark_results/summary.md
+          
+          echo "## Benchmark Output" >> benchmark_results/summary.md
+          echo '```' >> benchmark_results/summary.md
+          cat benchmark_results/benchmark_output.txt >> benchmark_results/summary.md
+          echo '```' >> benchmark_results/summary.md
+          
+          # Create a CSV for historical comparisons
+          echo "timestamp,sensors,threads,single_thread_throughput,multi_thread_throughput,per_sensor_updates" > benchmark_results/results.csv
+          
+          # Extract values from the JSON file
+          timestamp=$(jq -r '.results.timestamp_formatted' benchmark_results/results.json)
+          sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
+          threads=$(jq -r '.config.num_threads' benchmark_results/results.json)
+          single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
+          multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
+          per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
+          
+          echo "$timestamp,$sensors,$threads,$single,$multi,$per_sensor" >> benchmark_results/results.csv
+
+      - name: Upload benchmark results
+        uses: actions/upload-artifact@v3
+        with:
+          name: benchmark-results
+          path: benchmark_results/
+          retention-days: 90
+
+      - name: Summarize benchmark results
+        run: |
+          echo "## Performance Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### System Information" >> $GITHUB_STEP_SUMMARY
+          echo "- OS: $(uname -s) $(uname -r)" >> $GITHUB_STEP_SUMMARY
+          echo "- CPU Cores: $(nproc)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "### Results" >> $GITHUB_STEP_SUMMARY
+          single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
+          multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
+          per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
+          sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
+          
+          echo "- Number of sensors: $sensors" >> $GITHUB_STEP_SUMMARY
+          echo "- Single-threaded throughput: $single sensor reads/second" >> $GITHUB_STEP_SUMMARY
+          echo "- Multi-threaded throughput: $multi sensor reads/second" >> $GITHUB_STEP_SUMMARY
+          echo "- Per-sensor updates: $per_sensor updates/sensor/second" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          echo "For full details, download the benchmark-results artifact." >> $GITHUB_STEP_SUMMARY 

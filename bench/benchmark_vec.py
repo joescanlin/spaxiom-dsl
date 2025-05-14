@@ -7,6 +7,10 @@ with 1,000 sensors running for 10 seconds.
 """
 
 import time
+import json
+import platform
+import argparse
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 from spaxiom import SimVector
@@ -117,7 +121,24 @@ def benchmark_multi_thread(
     return throughput
 
 
-def run_benchmark(num_sensors: int = 1000, duration: float = 10.0, hz: float = 30.0):
+def get_system_info():
+    """Get basic system information for context."""
+    return {
+        "platform": platform.platform(),
+        "processor": platform.processor(),
+        "python_version": platform.python_version(),
+        "cpu_count": os.cpu_count(),
+    }
+
+
+def run_benchmark(
+    num_sensors: int = 1000,
+    duration: float = 10.0,
+    hz: float = 30.0,
+    output_json: bool = False,
+    json_file: str = None,
+    num_threads: int = 4,
+):
     """
     Run the SimVector benchmark.
 
@@ -125,13 +146,25 @@ def run_benchmark(num_sensors: int = 1000, duration: float = 10.0, hz: float = 3
         num_sensors: Number of sensors to include in the benchmark
         duration: Duration of the benchmark in seconds
         hz: Update frequency for the SimVector
+        output_json: Whether to output results as JSON
+        json_file: Path to save JSON results (if None, prints to stdout)
+        num_threads: Number of threads to use for multi-threaded benchmark
     """
     print("\nSimVector Benchmark")
     print("==================\n")
     print("Configuration:")
     print(f"  - Number of sensors: {num_sensors}")
     print(f"  - Duration: {duration} seconds")
-    print(f"  - Update frequency: {hz} Hz\n")
+    print(f"  - Update frequency: {hz} Hz")
+    print(f"  - Threads: {num_threads}\n")
+
+    # Store benchmark configuration
+    benchmark_config = {
+        "num_sensors": num_sensors,
+        "duration_seconds": duration,
+        "update_frequency_hz": hz,
+        "num_threads": num_threads,
+    }
 
     # Create the SimVector with specified number of sensors
     print(f"Creating SimVector with {num_sensors} sensors...")
@@ -149,6 +182,9 @@ def run_benchmark(num_sensors: int = 1000, duration: float = 10.0, hz: float = 3
     sim.start()
     print("Simulation started.")
 
+    # Store the results
+    benchmark_results = {}
+
     try:
         # Give the simulation a moment to initialize
         time.sleep(0.5)
@@ -157,7 +193,21 @@ def run_benchmark(num_sensors: int = 1000, duration: float = 10.0, hz: float = 3
         throughput_single = benchmark_single_thread(sim, duration)
 
         # Run multi-threaded benchmark
-        throughput_multi = benchmark_multi_thread(sim, duration)
+        throughput_multi = benchmark_multi_thread(sim, duration, num_threads)
+
+        # Store results
+        benchmark_results = {
+            "system_info": get_system_info(),
+            "config": benchmark_config,
+            "results": {
+                "single_thread_throughput": throughput_single,
+                "multi_thread_throughput": throughput_multi,
+                "overall_events_per_second": throughput_multi,
+                "updates_per_sensor_per_second": throughput_multi / num_sensors,
+                "timestamp": time.time(),
+                "timestamp_formatted": time.strftime("%Y-%m-%d %H:%M:%S"),
+            },
+        }
 
         # Print results
         print("\nResults:")
@@ -172,11 +222,62 @@ def run_benchmark(num_sensors: int = 1000, duration: float = 10.0, hz: float = 3
             f"  - Per-sensor updates: {throughput_multi/num_sensors:.2f} updates/sensor/second"
         )
 
+        # Output JSON if requested
+        if output_json:
+            if json_file:
+                with open(json_file, "w") as f:
+                    json.dump(benchmark_results, f, indent=2)
+                print(f"\nResults saved to {json_file}")
+            else:
+                print("\nJSON Output:")
+                print(json.dumps(benchmark_results, indent=2))
+
     finally:
         # Stop the simulation
         sim.stop()
         print("\nSimulation stopped.")
 
+    return benchmark_results
+
+
+def parse_args():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(description="SimVector performance benchmark")
+    parser.add_argument(
+        "--sensors", type=int, default=1000, help="Number of sensors (default: 1000)"
+    )
+    parser.add_argument(
+        "--duration",
+        type=float,
+        default=10.0,
+        help="Benchmark duration in seconds (default: 10.0)",
+    )
+    parser.add_argument(
+        "--hz",
+        type=float,
+        default=30.0,
+        help="SimVector update frequency (default: 30.0)",
+    )
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=4,
+        help="Number of threads for multi-threaded benchmark (default: 4)",
+    )
+    parser.add_argument("--json", action="store_true", help="Output results as JSON")
+    parser.add_argument(
+        "--output", type=str, default=None, help="Output file for JSON results"
+    )
+    return parser.parse_args()
+
 
 if __name__ == "__main__":
-    run_benchmark(num_sensors=1000, duration=10.0, hz=30.0)
+    args = parse_args()
+    run_benchmark(
+        num_sensors=args.sensors,
+        duration=args.duration,
+        hz=args.hz,
+        output_json=args.json,
+        json_file=args.output,
+        num_threads=args.threads,
+    )
