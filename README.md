@@ -8,7 +8,7 @@
 
 # Spaxiom-DSL
 
-![Status: Beta](https://img.shields.io/badge/Status-Beta-blue)
+[![Status: Beta](https://img.shields.io/badge/Status-Beta-blue.svg)](https://github.com/joescanlin/spaxiom-dsl)
 
 An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
 
