@@ -16,10 +16,11 @@ paho-mqtt = ">=2.0"
 click = ">=8.0"
 onnxruntime = ">=1.18"
 pyyaml = ">=6.0"
+gpiozero = {version = ">=2.0", optional = true}
 
-[project.optional-dependencies]
-mqtt = ["paho-mqtt>=2.0"]
-gpio = ["gpiozero>=2.0"]
+[tool.poetry.extras]
+mqtt = ["paho-mqtt"]
+gpio = ["gpiozero"]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3.1"
