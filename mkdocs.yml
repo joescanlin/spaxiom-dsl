@@ -5,6 +5,7 @@ repo_url: https://github.com/joescanlin/spaxiom-dsl
 
 theme:
   name: material
+  logo: images/intent-logo.svg
   palette:
     primary: indigo
     accent: blue
@@ -26,6 +27,7 @@ nav:
   - Home: index.md
   - What's New in 0.1.0: whats_new.md
   - Quick-Start: quickstart.md
+  - INTENT: intent.md
   - Architecture: architecture.md
   - API:
     - Overview: api/overview.md
@@ -38,4 +40,7 @@ nav:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/joescanlin/spaxiom-dsl 
+      link: https://github.com/joescanlin/spaxiom-dsl
+
+extra_css:
+  - css/intent.css 

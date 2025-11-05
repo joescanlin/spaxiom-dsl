@@ -16,11 +16,13 @@ from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
 from .fusion import weighted_average, WeightedFusion
 from .adaptors.file_sensor import FileSensor
-from .adaptors.mqtt_sensor import MQTTSensor
+# Conditional import for MQTT
+# from .adaptors.mqtt_sensor import MQTTSensor
 from .summarize import RollingSummary
 from .config import load_yaml, create_sensor_from_cfg, load_sensors_from_yaml
 from .plugins import register_plugin
 from .sim.vec_sim import SimVector
+from .intent import OccupancyField, QueueFlow, ADLTracker, FmSteward
 
 __all__ = [
     "Sensor",
@@ -46,14 +48,29 @@ __all__ = [
     "weighted_average",
     "WeightedFusion",
     "FileSensor",
-    "MQTTSensor",
+    # "MQTTSensor", # Will be conditionally added
     "RollingSummary",
     "load_yaml",
     "create_sensor_from_cfg",
     "load_sensors_from_yaml",
     "register_plugin",
     "SimVector",
+    "OccupancyField",
+    "QueueFlow",
+    "ADLTracker",
+    "FmSteward",
 ]
+
+# Check if paho-mqtt is available
+mqtt_spec = importlib.util.find_spec("paho.mqtt")
+if mqtt_spec is not None:
+    # Import the MQTT sensor class
+    from .adaptors.mqtt_sensor import MQTTSensor as _MQTTSensor
+
+    # Add it to the module namespace
+    MQTTSensor = _MQTTSensor
+    # Add it to __all__
+    __all__.append("MQTTSensor")
 
 # Import GPIO sensor if on Linux with gpiozero available
 if sys.platform.startswith("linux"):
