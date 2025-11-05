@@ -1,0 +1,19 @@
+<svg width="120" height="120" viewBox="0 0 120 120"
+     xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="54" fill="#050917" stroke="#4C6FFF" stroke-width="4"/>
+
+  <!-- Sensor strip (bottom) -->
+  <rect x="26" y="78" width="68" height="10" rx="5" fill="#1E293B"/>
+  <rect x="30" y="80" width="8"  height="6" rx="2" fill="#4C6FFF"/>
+  <rect x="42" y="80" width="8"  height="6" rx="2" fill="#6366F1"/>
+  <rect x="54" y="80" width="8"  height="6" rx="2" fill="#A855F7"/>
+  <rect x="66" y="80" width="8"  height="6" rx="2" fill="#22C55E"/>
+  <rect x="78" y="80" width="8"  height="6" rx="2" fill="#FACC15"/>
+
+  <!-- Intent pillar (vertical I) -->
+  <rect x="56" y="40" width="8" height="34" rx="4" fill="#E5E7EB"/>
+
+  <!-- Intent dot / arrow -->
+  <path d="M60 28 L54 36 L66 36 Z" fill="#4C6FFF"/>
+</svg>
