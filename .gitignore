@@ -31,3 +31,27 @@ build/
 coverage.xml
 coverage_html_report/
 htmlcov/ 
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Cursor
+.cursor/
+
+# Coverage
+.coverage
+.coverage.*
+htmlcov/
+.coveragerc
+
+# Build output
+site/
+
+# Backups
+*.bak
+
+# Local scratch scripts
+debug_*.py
+simple_test.py
+sequence_test_direct.py
+update_sensor.py
