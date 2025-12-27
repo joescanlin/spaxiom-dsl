@@ -2,8 +2,22 @@
 Tests for the MQTTSensor class, focusing on full coverage with mocking.
 """
 
+import importlib.util
 import unittest
 from unittest.mock import patch, MagicMock
+
+import pytest
+
+# Check if paho-mqtt is available - skip entire module if not
+try:
+    _paho_spec = importlib.util.find_spec("paho.mqtt")
+except ModuleNotFoundError:
+    _paho_spec = None
+
+if _paho_spec is None:
+    pytest.skip(
+        "paho-mqtt is not installed (optional dependency)", allow_module_level=True
+    )
 
 from spaxiom.adaptors.mqtt_sensor import MQTTSensor, SensorUnavailable
 from spaxiom.core import SensorRegistry

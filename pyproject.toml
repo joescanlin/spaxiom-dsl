@@ -58,6 +58,10 @@ fail_under = 74.0
 [tool.coverage.html]
 directory = "coverage_html_report"
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api" 
