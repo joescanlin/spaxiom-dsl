@@ -17,7 +17,6 @@ It exists to prove the examples/paper/ folder is importable and runnable.
 
 import sys
 import time
-import asyncio
 
 # Import from spaxiom
 from spaxiom import RandomSensor, Condition, on, SensorRegistry
@@ -55,7 +54,7 @@ def main():
         callback_count[0] += 1
         print(f"  -> Callback triggered! (count: {callback_count[0]})")
 
-    print(f"Registered callback: on_high_value")
+    print("Registered callback: on_high_value")
     print()
 
     # Read sensor a few times to show it works
@@ -68,9 +67,9 @@ def main():
 
     print()
     print("SUCCESS: Sanity check passed!")
-    print(f"  - Sensor created and readable")
-    print(f"  - Condition created and evaluable")
-    print(f"  - Callback registered (would fire in runtime loop)")
+    print("  - Sensor created and readable")
+    print("  - Condition created and evaluable")
+    print("  - Callback registered (would fire in runtime loop)")
     print()
     print("The paper parity harness is correctly wired.")
 

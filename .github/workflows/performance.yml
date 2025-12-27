@@ -60,24 +60,28 @@ jobs:
           echo "- Memory: $(free -h | grep Mem | awk '{print $2}')" >> benchmark_results/summary.md
           echo "- Cores: $(nproc)" >> benchmark_results/summary.md
           echo "" >> benchmark_results/summary.md
-          
+
           echo "## Benchmark Output" >> benchmark_results/summary.md
           echo '```' >> benchmark_results/summary.md
-          cat benchmark_results/benchmark_output.txt >> benchmark_results/summary.md
+          cat benchmark_results/benchmark_output.txt >> benchmark_results/summary.md || echo "No benchmark output available" >> benchmark_results/summary.md
           echo '```' >> benchmark_results/summary.md
-          
+
           # Create a CSV for historical comparisons
           echo "timestamp,sensors,threads,single_thread_throughput,multi_thread_throughput,per_sensor_updates" > benchmark_results/results.csv
-          
-          # Extract values from the JSON file
-          timestamp=$(jq -r '.results.timestamp_formatted' benchmark_results/results.json)
-          sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
-          threads=$(jq -r '.config.num_threads' benchmark_results/results.json)
-          single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
-          multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
-          per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
-          
-          echo "$timestamp,$sensors,$threads,$single,$multi,$per_sensor" >> benchmark_results/results.csv
+
+          # Extract values from the JSON file (only if it exists)
+          if [ -f benchmark_results/results.json ]; then
+            timestamp=$(jq -r '.results.timestamp_formatted' benchmark_results/results.json)
+            sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
+            threads=$(jq -r '.config.num_threads' benchmark_results/results.json)
+            single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
+            multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
+            per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
+
+            echo "$timestamp,$sensors,$threads,$single,$multi,$per_sensor" >> benchmark_results/results.csv
+          else
+            echo "results.json not found, skipping CSV generation"
+          fi
 
       - name: Upload benchmark results
         uses: actions/upload-artifact@v4
@@ -94,17 +98,21 @@ jobs:
           echo "- OS: $(uname -s) $(uname -r)" >> $GITHUB_STEP_SUMMARY
           echo "- CPU Cores: $(nproc)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           echo "### Results" >> $GITHUB_STEP_SUMMARY
-          single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
-          multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
-          per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
-          sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
-          
-          echo "- Number of sensors: $sensors" >> $GITHUB_STEP_SUMMARY
-          echo "- Single-threaded throughput: $single sensor reads/second" >> $GITHUB_STEP_SUMMARY
-          echo "- Multi-threaded throughput: $multi sensor reads/second" >> $GITHUB_STEP_SUMMARY
-          echo "- Per-sensor updates: $per_sensor updates/sensor/second" >> $GITHUB_STEP_SUMMARY
+          if [ -f benchmark_results/results.json ]; then
+            single=$(jq -r '.results.single_thread_throughput' benchmark_results/results.json)
+            multi=$(jq -r '.results.multi_thread_throughput' benchmark_results/results.json)
+            per_sensor=$(jq -r '.results.updates_per_sensor_per_second' benchmark_results/results.json)
+            sensors=$(jq -r '.config.num_sensors' benchmark_results/results.json)
+
+            echo "- Number of sensors: $sensors" >> $GITHUB_STEP_SUMMARY
+            echo "- Single-threaded throughput: $single sensor reads/second" >> $GITHUB_STEP_SUMMARY
+            echo "- Multi-threaded throughput: $multi sensor reads/second" >> $GITHUB_STEP_SUMMARY
+            echo "- Per-sensor updates: $per_sensor updates/sensor/second" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Benchmark results not available (results.json not found)" >> $GITHUB_STEP_SUMMARY
+          fi
           echo "" >> $GITHUB_STEP_SUMMARY
-          
-          echo "For full details, download the benchmark-results artifact." >> $GITHUB_STEP_SUMMARY 
+
+          echo "For full details, download the benchmark-results artifact." >> $GITHUB_STEP_SUMMARY

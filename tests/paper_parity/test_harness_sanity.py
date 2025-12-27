@@ -90,31 +90,27 @@ class TestHarnessSanity:
 
     def test_condition_operators(self):
         """Verify condition operators work."""
-        sensor = RandomSensor(
-            name="op_sensor",
-            location=(0, 0, 0),
-        )
         cond_a = Condition(lambda: True)
         cond_b = Condition(lambda: False)
 
         # AND
         cond_and = cond_a & cond_b
-        assert cond_and() == False
+        assert not cond_and()
 
         # OR
         cond_or = cond_a | cond_b
-        assert cond_or() == True
+        assert cond_or()
 
         # NOT
         cond_not = ~cond_b
-        assert cond_not() == True
+        assert cond_not()
 
     def test_zone_creation(self):
         """Verify zone can be created."""
         zone = Zone(0, 0, 10, 10)
         assert zone is not None
-        assert zone.contains((5, 5)) == True
-        assert zone.contains((15, 15)) == False
+        assert zone.contains((5, 5))
+        assert not zone.contains((15, 15))
 
     def test_on_decorator_registers_handler(self):
         """Verify @on decorator registers event handler."""
@@ -174,7 +170,7 @@ class TestExistsOperator:
 
         # exists with predicate
         cond = exists(entities, lambda e: e.attrs.get("value", 0) > 15)
-        assert cond() == True  # e2 has value 20
+        assert cond()  # e2 has value 20
 
         cond2 = exists(entities, lambda e: e.attrs.get("value", 0) > 100)
-        assert cond2() == False  # No entity with value > 100
+        assert not cond2()  # No entity with value > 100
