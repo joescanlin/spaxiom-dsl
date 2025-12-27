@@ -24,6 +24,7 @@ from .config import load_yaml, create_sensor_from_cfg, load_sensors_from_yaml
 from .plugins import register_plugin
 from .sim.vec_sim import SimVector
 from .intent import OccupancyField, QueueFlow, ADLTracker, FmSteward
+from .tick import PhasedTickRunner, TickStats, TickProfiler, enable_profiling
 
 __all__ = [
     "Sensor",
@@ -60,6 +61,10 @@ __all__ = [
     "QueueFlow",
     "ADLTracker",
     "FmSteward",
+    "PhasedTickRunner",
+    "TickStats",
+    "TickProfiler",
+    "enable_profiling",
 ]
 
 # Check if paho-mqtt is available
