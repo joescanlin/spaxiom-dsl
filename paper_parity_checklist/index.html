@@ -644,6 +644,13 @@
 <p>This checklist tracks implementation parity between the Spaxiom codebase and the paper specification.</p>
 <hr />
 <h2 id="1-runtime">1. Runtime<a class="headerlink" href="#1-runtime" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p><strong>Runtime Architecture Note:</strong></p>
+<p>There are currently two runtime implementations:
+- <strong>Primary entrypoints (legacy):</strong> <code>spaxiom/runtime.py</code> provides <code>start_runtime()</code> and <code>start_blocking()</code>. These are used by the CLI and existing examples.
+- <strong>New phased tick runner:</strong> <code>spaxiom/tick.py</code> provides <code>PhasedTickRunner</code> with deterministic 4-phase execution per the paper specification.</p>
+<p><strong>Planned delegation:</strong> After Step 3 (conditions) and Step 4 (patterns), <code>start_runtime()</code> and <code>start_blocking()</code> will delegate to <code>PhasedTickRunner.run()</code> internally, preserving backwards compatibility while using the new phased tick loop.</p>
+</blockquote>
 <h3 id="11-phased-tick-execution">1.1 Phased Tick Execution<a class="headerlink" href="#11-phased-tick-execution" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
@@ -657,49 +664,49 @@
 <tbody>
 <tr>
 <td>Fixed tick rate (configurable Hz)</td>
-<td>PARTIAL</td>
-<td><code>spaxiom/runtime.py:233</code> <code>poll_ms</code> parameter</td>
-<td>Uses polling interval, not explicit tick rate</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:157</code> <code>PhasedTickRunner(tick_rate_hz=)</code></td>
+<td>Configurable Hz with tick_period_s property</td>
 </tr>
 <tr>
 <td>Phase 1: Concurrent sensor reads</td>
-<td>PARTIAL</td>
-<td><code>spaxiom/runtime.py:65</code> <code>_poll_sensor()</code></td>
-<td>Each sensor has independent async task, not batched per tick</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:213</code> <code>_phase1_sensor_reads()</code></td>
+<td>Uses <code>asyncio.gather()</code> for concurrency</td>
 </tr>
 <tr>
 <td>Phase 2: Pattern updates (dependency-ordered)</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No pattern update phase; patterns are passive wrappers</td>
+<td>PARTIAL</td>
+<td><code>spaxiom/tick.py:234</code> <code>_phase2_pattern_updates()</code></td>
+<td>Updates in registration order; dependency sorting not yet implemented</td>
 </tr>
 <tr>
 <td>Phase 3: Condition evaluation</td>
 <td>IMPLEMENTED</td>
-<td><code>spaxiom/runtime.py:102</code> <code>_evaluate_conditions()</code></td>
-<td>Evaluates all conditions each iteration</td>
+<td><code>spaxiom/tick.py:252</code> <code>_phase3_condition_eval()</code></td>
+<td>Polling mode, evaluates all conditions</td>
 </tr>
 <tr>
 <td>Phase 4: Callback dispatch (concurrent, isolated)</td>
-<td>PARTIAL</td>
-<td><code>spaxiom/runtime.py:162</code></td>
-<td>Dispatches via <code>asyncio.to_thread()</code> but inline, not batched</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:296</code> <code>_phase4_callback_dispatch()</code></td>
+<td>Isolated execution, failures logged but don't propagate</td>
 </tr>
 <tr>
 <td>Deterministic ordering guarantee</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Independent async tasks lack deterministic ordering</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:318</code> <code>run_single_tick()</code></td>
+<td>4 phases always execute in same order</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] Single tick loop with 4 explicit phases
-- [ ] Sensor reads batched with <code>asyncio.gather()</code>
+- [x] Single tick loop with 4 explicit phases
+- [x] Sensor reads batched with <code>asyncio.gather()</code>
 - [ ] Patterns updated in topological order based on <code>depends_on()</code>
-- [ ] Conditions evaluated after pattern updates complete
-- [ ] Callbacks dispatched after all conditions evaluated</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_tick_ordering.py</code>
+- [x] Conditions evaluated after pattern updates complete
+- [x] Callbacks dispatched after all conditions evaluated</p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_tick_ordering.py</code> (5 passing, 3 skipped)
 <strong>Proving Example:</strong> <code>examples/paper/runtime_tick_phases.py</code></p>
 <hr />
 <h3 id="12-async-and-blocking-entrypoints">1.2 Async and Blocking Entrypoints<a class="headerlink" href="#12-async-and-blocking-entrypoints" title="Permanent link">&para;</a></h3>
@@ -753,41 +760,42 @@
 <tbody>
 <tr>
 <td><code>enable_profiling(runtime)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>No profiler module</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:385</code> <code>enable_profiling()</code></td>
+<td>Enables profiler on PhasedTickRunner</td>
 </tr>
 <tr>
 <td>Phase timing per tick</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No instrumentation</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:27</code> <code>TickStats</code> dataclass</td>
+<td>Records ms for each phase</td>
 </tr>
 <tr>
 <td>Sensor read latency stats</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No stats collection</td>
+<td>PARTIAL</td>
+<td><code>spaxiom/tick.py:56</code> <code>TickProfiler.get_stats()</code></td>
+<td>Averages collected, percentiles not yet</td>
 </tr>
 <tr>
 <td>Callback failure counts</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Errors logged but not counted</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:56</code> <code>TickProfiler</code></td>
+<td>Tracks <code>callback_failures</code> total</td>
 </tr>
 <tr>
 <td><code>runtime.profiler.get_stats()</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>No profiler API</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:74</code> <code>TickProfiler.get_stats()</code></td>
+<td>Returns dict with all stats</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>enable_profiling()</code> function exists
-- [ ] <code>get_stats()</code> returns dict with <code>avg_tick_ms</code>, <code>sensor_read_p99_ms</code>, <code>callback_failures</code>
-- [ ] Profiling overhead &lt; 1%</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_instrumentation.py</code>
+- [x] <code>enable_profiling()</code> function exists
+- [x] <code>get_stats()</code> returns dict with <code>avg_tick_ms</code>, <code>callback_failures</code>
+- [ ] <code>get_stats()</code> returns <code>sensor_read_p99_ms</code> (percentiles not yet implemented)
+- [ ] Profiling overhead &lt; 1% (not yet measured)</p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_instrumentation.py</code> (4 passing, 3 skipped)
 <strong>Proving Example:</strong> <code>examples/paper/runtime_profiling.py</code></p>
 <hr />
 <h2 id="2-conditions">2. Conditions<a class="headerlink" href="#2-conditions" title="Permanent link">&para;</a></h2>
