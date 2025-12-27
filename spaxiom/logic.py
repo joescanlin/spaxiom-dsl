@@ -1,15 +1,81 @@
 """
 Logic module with timestamped Conditions for Spaxiom DSL.
+
+Implements condition dependency tracking and evaluation modes per Paper Section 2.5:
+- Polling mode (default): condition evaluated every tick
+- Event-driven mode: condition evaluated only when dependencies change
+- Auto mode: runtime selects based on whether dependencies are trackable
 """
 
 import time
-from typing import Callable, Optional, TypeVar
+from typing import Callable, Optional, TypeVar, Set, Any, Iterable, Literal
 
 from spaxiom.entities import EntitySet, Entity
 from spaxiom.summarize import RollingSummary
 
 # Type variable for entity filtering
 T = TypeVar("T", bound=Entity)
+
+# Evaluation mode type
+EvaluationMode = Literal["polling", "event-driven", "auto"]
+
+
+class _IdentitySet:
+    """A set-like class that uses object identity for comparison.
+
+    This is needed because dependency objects (Sensors, Patterns, temporal windows,
+    derived signals, etc.) may not be hashable, but we still need set-like operations
+    for tracking condition dependencies. Uses id() for all comparisons, so works
+    with any Python object regardless of hashability.
+    """
+
+    def __init__(self, items: Iterable[Any]):
+        # Store items as id -> item mapping
+        self._items: dict = {id(item): item for item in items}
+
+    def __contains__(self, item: Any) -> bool:
+        return id(item) in self._items
+
+    def __iter__(self):
+        return iter(self._items.values())
+
+    def __len__(self) -> int:
+        return len(self._items)
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, _IdentitySet):
+            return self._items.keys() == other._items.keys()
+        if isinstance(other, set):
+            # Compare by identity with set items
+            other_ids = {id(item) for item in other}
+            return self._items.keys() == other_ids
+        return False
+
+    def __and__(self, other: Any) -> "_IdentitySet":
+        """Intersection with another IdentitySet or iterable."""
+        if isinstance(other, _IdentitySet):
+            common = {k: v for k, v in self._items.items() if k in other._items}
+            result = _IdentitySet([])
+            result._items = common
+            return result
+        # For regular iterable, compare by identity
+        other_ids = {id(item) for item in other}
+        common = {k: v for k, v in self._items.items() if k in other_ids}
+        result = _IdentitySet([])
+        result._items = common
+        return result
+
+    def __or__(self, other: "_IdentitySet") -> "_IdentitySet":
+        """Union with another IdentitySet."""
+        result = _IdentitySet([])
+        result._items = {**self._items, **other._items}
+        return result
+
+    def __bool__(self) -> bool:
+        return len(self._items) > 0
+
+    def __repr__(self) -> str:
+        return f"_IdentitySet({list(self._items.values())})"
 
 
 class Condition:
@@ -25,21 +91,68 @@ class Condition:
     combined = in_zone & is_active  # logical AND
     alternative = in_zone | is_active  # logical OR
     negated = ~in_zone  # logical NOT
+
+    Supports evaluation modes:
+    - "polling" (default): evaluated every tick
+    - "event-driven": only evaluated when dependencies change
+    - "auto": runtime selects based on dependency trackability
     """
 
-    def __init__(self, fn: Callable[..., bool]):
+    def __init__(
+        self,
+        fn: Callable[..., bool],
+        mode: EvaluationMode = "polling",
+        depends_on: Optional[Iterable[Any]] = None,
+    ):
         """
         Initialize with a function that returns a boolean.
 
         Args:
             fn: A callable that returns a boolean. May accept optional arguments
                 such as 'now' and 'history' for temporal conditions.
+            mode: Evaluation mode - "polling", "event-driven", or "auto"
+            depends_on: Optional iterable of dependencies (sensors, patterns).
+                       Required for event-driven mode to work correctly.
         """
         self.fn = fn
+        self.mode = mode
+        # Store dependencies as a list (sensors/patterns may not be hashable)
+        self._depends_on: list = list(depends_on) if depends_on else []
         self.last_value = False
         self.last_changed = time.time()  # Initialize with current time
         # Track whether the condition just transitioned to true
         self._last_transition_to_true = None
+        # Track evaluation count for testing event-driven mode
+        self._eval_count = 0
+
+    @property
+    def dependencies(self) -> Set[Any]:
+        """
+        Return the set of dependencies (sensors, patterns) this condition depends on.
+
+        Note: Uses object identity for comparison since sensors may not be hashable.
+
+        Returns:
+            Set of dependency objects declared via depends_on parameter.
+        """
+        # Return a set-like wrapper that uses identity comparison
+        return _IdentitySet(self._depends_on)
+
+    @property
+    def _effective_mode(self) -> str:
+        """
+        Return the effective evaluation mode.
+
+        For "auto" mode, returns "event-driven" if dependencies are declared,
+        otherwise returns "polling".
+        """
+        if self.mode == "auto":
+            # If we have trackable dependencies, use event-driven
+            if self._depends_on:
+                return "event-driven"
+            # Otherwise fall back to polling
+            return "polling"
+        return self.mode
 
     def evaluate(self, now: Optional[float] = None, **kwargs) -> bool:
         """
@@ -52,6 +165,9 @@ class Condition:
         Returns:
             The boolean result of the wrapped function
         """
+        # Increment evaluation count for testing
+        self._eval_count += 1
+
         # Get current time if not provided
         if now is None:
             now = time.time()
@@ -162,7 +278,8 @@ class Condition:
             other: Another Condition object
 
         Returns:
-            A new Condition that is true only when both conditions are true
+            A new Condition that is true only when both conditions are true.
+            The new condition inherits dependencies from both operands.
         """
 
         def combined_condition(**kwargs):
@@ -171,7 +288,15 @@ class Condition:
                 return False
             return other(**kwargs)
 
-        return Condition(combined_condition)
+        # Combine dependencies from both conditions (dedupe by identity)
+        combined_deps = self.dependencies | other.dependencies
+        # If either is polling, result is polling; otherwise event-driven
+        mode = (
+            "polling"
+            if self.mode == "polling" or other.mode == "polling"
+            else self.mode
+        )
+        return Condition(combined_condition, mode=mode, depends_on=list(combined_deps))
 
     def __or__(self, other: "Condition") -> "Condition":
         """
@@ -181,7 +306,8 @@ class Condition:
             other: Another Condition object
 
         Returns:
-            A new Condition that is true when either condition is true
+            A new Condition that is true when either condition is true.
+            The new condition inherits dependencies from both operands.
         """
 
         def combined_condition(**kwargs):
@@ -190,20 +316,31 @@ class Condition:
                 return True
             return other(**kwargs)
 
-        return Condition(combined_condition)
+        # Combine dependencies from both conditions (dedupe by identity)
+        combined_deps = self.dependencies | other.dependencies
+        # If either is polling, result is polling; otherwise event-driven
+        mode = (
+            "polling"
+            if self.mode == "polling" or other.mode == "polling"
+            else self.mode
+        )
+        return Condition(combined_condition, mode=mode, depends_on=list(combined_deps))
 
     def __invert__(self) -> "Condition":
         """
         Implement the ~ operator (logical NOT).
 
         Returns:
-            A new Condition that is true when this condition is false
+            A new Condition that is true when this condition is false.
+            The new condition inherits dependencies from the original.
         """
 
         def inverted_condition(**kwargs):
             return not self(**kwargs)
 
-        return Condition(inverted_condition)
+        return Condition(
+            inverted_condition, mode=self.mode, depends_on=self._depends_on
+        )
 
     def __repr__(self) -> str:
         """Return a string representation of the condition"""

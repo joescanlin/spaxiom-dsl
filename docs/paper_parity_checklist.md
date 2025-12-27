@@ -106,15 +106,15 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| Polling mode (default) | IMPLEMENTED | `spaxiom/runtime.py:102` | All conditions evaluated every tick |
-| Event-driven mode | MISSING | - | No `mode="event-driven"` parameter |
-| Auto mode selection | MISSING | - | No automatic mode switching |
-| `Condition(..., mode="event-driven")` | MISSING | - | Not supported |
+| Polling mode (default) | IMPLEMENTED | `spaxiom/logic.py:30` `Condition.__init__(mode=)` | Default mode, all conditions evaluated every tick |
+| Event-driven mode | IMPLEMENTED | `spaxiom/logic.py:30` `mode="event-driven"` | Only evaluates when dependencies change |
+| Auto mode selection | IMPLEMENTED | `spaxiom/logic.py:72` `_effective_mode` | Selects event-driven if dependencies trackable, else polling |
+| `Condition(..., mode="event-driven")` | IMPLEMENTED | `spaxiom/logic.py:30` | Supported via `mode` parameter |
 
 **Acceptance Criteria:**
-- [ ] `Condition` accepts `mode` parameter
-- [ ] Event-driven mode only evaluates on dependency changes
-- [ ] Auto mode selects based on dependency complexity
+- [x] `Condition` accepts `mode` parameter
+- [x] Event-driven mode only evaluates on dependency changes
+- [x] Auto mode selects based on dependency complexity
 
 **Proving Test:** `tests/paper_parity/test_event_driven_condition_selection.py`
 **Proving Example:** `examples/paper/conditions_event_driven.py`
@@ -125,15 +125,15 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| Conditions track sensor dependencies | MISSING | - | No dependency graph |
-| Conditions track pattern dependencies | MISSING | - | No pattern integration |
+| Conditions track sensor dependencies | IMPLEMENTED | `spaxiom/logic.py:56` `Condition.dependencies` | Manual via `depends_on` parameter |
+| Conditions track pattern dependencies | IMPLEMENTED | `spaxiom/logic.py:56` `Condition.dependencies` | Manual via `depends_on` parameter |
 | Conditions track temporal buffer dependencies | PARTIAL | `spaxiom/temporal.py` | Internal to temporal operators |
-| Runtime invalidates affected conditions | MISSING | - | All conditions evaluated always |
+| Runtime invalidates affected conditions | IMPLEMENTED | `spaxiom/tick.py:280` `_phase3_condition_eval()` | Tracks updated sensors, skips unaffected conditions |
 
 **Acceptance Criteria:**
-- [ ] `Condition.dependencies` returns set of sensors/patterns
-- [ ] Runtime only evaluates conditions when dependencies change
-- [ ] Unrelated conditions not evaluated (testable)
+- [x] `Condition.dependencies` returns set of sensors/patterns
+- [x] Runtime only evaluates conditions when dependencies change (event-driven mode)
+- [x] Unrelated conditions not evaluated (testable)
 
 **Proving Test:** `tests/paper_parity/test_condition_dependency_tracking.py`
 **Proving Example:** `examples/paper/conditions_dependencies.py`
@@ -395,12 +395,12 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 | Category | IMPLEMENTED | PARTIAL | MISSING | Total |
 |----------|-------------|---------|---------|-------|
 | Runtime | 3 | 4 | 4 | 11 |
-| Conditions | 8 | 1 | 5 | 14 |
+| Conditions | 13 | 1 | 0 | 14 |
 | INTENT Patterns | 0 | 4 | 6 | 10 |
 | Safety Verification | 0 | 0 | 11 | 11 |
 | Governance | 0 | 0 | 12 | 12 |
 | Tooling | 8 | 2 | 0 | 10 |
-| **Total** | **19** | **11** | **38** | **68** |
+| **Total** | **24** | **11** | **33** | **68** |
 
 ---
 
@@ -408,10 +408,10 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 Based on dependencies and paper structure:
 
-1. **Runtime phased tick** - Foundation for everything else
+1. ~~**Runtime phased tick**~~ - DONE (Step 2)
 2. **Pattern base class** - Required for INTENT integration
-3. **Condition dependency tracking** - Required for event-driven mode
-4. **Event-driven evaluation mode** - Performance optimization
+3. ~~**Condition dependency tracking**~~ - DONE (Step 3)
+4. ~~**Event-driven evaluation mode**~~ - DONE (Step 3)
 5. **SafetyMonitor** - Safety-critical capability
 6. **UPPAAL export** - Formal verification
 7. **Governance primitives** - Compliance requirements

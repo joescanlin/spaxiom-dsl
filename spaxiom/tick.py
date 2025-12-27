@@ -227,24 +227,35 @@ class PhasedTickRunner:
         """Clear all registered patterns."""
         self._patterns.clear()
 
-    async def _phase1_sensor_reads(self, sensors: List[Sensor]) -> int:
+    async def _phase1_sensor_reads(self, sensors: List[Sensor]) -> tuple:
         """Phase 1: Read all sensors concurrently.
 
         Args:
             sensors: List of sensors to read
 
         Returns:
-            Number of sensors successfully read
+            Tuple of (number of sensors read, list of updated sensors)
         """
         if not sensors:
-            return 0
+            return 0, []
+
+        updated_sensors: list = []
 
         async def read_sensor(sensor: Sensor) -> bool:
             """Read a single sensor, return True on success."""
             try:
+                # Track previous value for change detection
+                prev_value = getattr(sensor, "last_value", None)
+
                 # Run synchronous read in executor to not block
                 loop = asyncio.get_event_loop()
                 await loop.run_in_executor(None, sensor.read)
+
+                # Check if value changed (for event-driven mode)
+                new_value = getattr(sensor, "last_value", None)
+                if prev_value != new_value:
+                    updated_sensors.append(sensor)
+
                 return True
             except Exception as e:
                 logger.error(f"Error reading sensor {sensor.name}: {e}")
@@ -254,7 +265,7 @@ class PhasedTickRunner:
         results = await asyncio.gather(
             *[read_sensor(s) for s in sensors], return_exceptions=True
         )
-        return sum(1 for r in results if r is True)
+        return sum(1 for r in results if r is True), updated_sensors
 
     def _phase2_pattern_updates(self, dt: float) -> int:
         """Phase 2: Update patterns in dependency order.
@@ -277,17 +288,51 @@ class PhasedTickRunner:
                     logger.error(f"Error updating pattern: {e}")
         return count
 
-    def _phase3_condition_eval(self) -> tuple:
-        """Phase 3: Evaluate all conditions.
+    def _phase3_condition_eval(self, updated_sensors: Optional[list] = None) -> tuple:
+        """Phase 3: Evaluate conditions based on their mode.
+
+        For polling mode: evaluate every tick
+        For event-driven mode: only evaluate if dependencies changed
+
+        Args:
+            updated_sensors: List of sensors that were updated in phase 1.
+                           Used for event-driven condition optimization.
 
         Returns:
             Tuple of (conditions_evaluated, callbacks_to_fire)
         """
         callbacks_to_fire = []
         count = 0
+        updated_sensors = updated_sensors or []
+
+        # Build id set of updated sensors for fast lookup
+        updated_sensor_ids = {id(s) for s in updated_sensors}
 
         for i, (condition, callback) in enumerate(EVENT_HANDLERS):
             try:
+                # Check if we should evaluate this condition
+                should_evaluate = True
+
+                # Get effective mode (handles 'auto' mode)
+                effective_mode = getattr(condition, "_effective_mode", "polling")
+
+                if effective_mode == "event-driven":
+                    # Only evaluate if dependencies changed
+                    deps = getattr(condition, "dependencies", None)
+                    if deps and len(deps) > 0:
+                        if updated_sensor_ids:
+                            # Check if any dependency was updated (by id)
+                            dep_ids = {id(d) for d in deps}
+                            should_evaluate = bool(dep_ids & updated_sensor_ids)
+                        else:
+                            # Has dependencies but nothing updated - skip
+                            should_evaluate = False
+                    # If no dependencies declared, fall back to polling behavior
+
+                if not should_evaluate:
+                    # Skip this condition but keep previous state
+                    continue
+
                 # Get previous state
                 prev_state = self._previous_states.get(i, False)
 
@@ -361,7 +406,8 @@ class PhasedTickRunner:
         # Phase 1: Sensor reads
         stats.phase_order.append("sensor_read")
         phase1_start = time.perf_counter()
-        stats.sensors_read = await self._phase1_sensor_reads(sensors)
+        sensors_read, updated_sensors = await self._phase1_sensor_reads(sensors)
+        stats.sensors_read = sensors_read
         stats.phase1_sensor_read_ms = (time.perf_counter() - phase1_start) * 1000
 
         # Phase 2: Pattern updates
@@ -370,10 +416,12 @@ class PhasedTickRunner:
         stats.patterns_updated = self._phase2_pattern_updates(self.tick_period_s)
         stats.phase2_pattern_update_ms = (time.perf_counter() - phase2_start) * 1000
 
-        # Phase 3: Condition evaluation
+        # Phase 3: Condition evaluation (pass updated sensors for event-driven mode)
         stats.phase_order.append("condition_eval")
         phase3_start = time.perf_counter()
-        stats.conditions_evaluated, callbacks_to_fire = self._phase3_condition_eval()
+        stats.conditions_evaluated, callbacks_to_fire = self._phase3_condition_eval(
+            updated_sensors
+        )
         stats.phase3_condition_eval_ms = (time.perf_counter() - phase3_start) * 1000
 
         # Phase 4: Callback dispatch
