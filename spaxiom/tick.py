@@ -4,7 +4,7 @@ Phased tick runtime for Spaxiom DSL.
 Implements the deterministic 4-phase tick execution model:
 1. Sensor reads (concurrent)
 2. Pattern updates (dependency-ordered)
-3. Condition evaluation (polling)
+3. Condition evaluation (polling or event-driven)
 4. Callback dispatch (isolated)
 
 This module provides:
@@ -12,13 +12,14 @@ This module provides:
 - TickProfiler: collects and aggregates stats across ticks
 - PhasedTickRunner: the phased tick loop
 
-MIGRATION STATUS (as of Step 2):
+MIGRATION STATUS (as of Step 4):
 ---------------------------------
-This is the NEW runtime foundation that will become primary after Step 4.
+This is the NEW runtime foundation with full pattern integration.
 
-INTENTIONALLY INCOMPLETE:
-- Step 3 will add: condition dependency tracking, event-driven evaluation mode
-- Step 4 will add: Pattern base class integration, topological update ordering
+COMPLETED:
+- Step 2: 4-phase tick execution, profiling
+- Step 3: Condition dependency tracking, event-driven evaluation
+- Step 4: Pattern base class integration, topological update ordering
 
 After Step 4, spaxiom/runtime.py's start_runtime() and start_blocking() will
 delegate to PhasedTickRunner.run() internally.
@@ -56,12 +57,16 @@ class TickStats:
     # Counts
     sensors_read: int = 0
     patterns_updated: int = 0
+    events_emitted: int = 0
     conditions_evaluated: int = 0
     callbacks_dispatched: int = 0
     callback_failures: int = 0
 
     # Phase ordering proof
     phase_order: List[str] = field(default_factory=list)
+
+    # Events emitted this tick (for inspection)
+    pattern_events: List[Any] = field(default_factory=list)
 
 
 class TickProfiler:
@@ -172,7 +177,7 @@ class PhasedTickRunner:
 
     The tick loop executes 4 phases in deterministic order:
     1. Sensor reads - concurrent via asyncio.gather()
-    2. Pattern updates - in dependency order (no-op if no patterns)
+    2. Pattern updates - in dependency order (topological sort)
     3. Condition evaluation - polling all registered conditions
     4. Callback dispatch - isolated, exceptions don't propagate
     """
@@ -267,26 +272,84 @@ class PhasedTickRunner:
         )
         return sum(1 for r in results if r is True), updated_sensors
 
-    def _phase2_pattern_updates(self, dt: float) -> int:
-        """Phase 2: Update patterns in dependency order.
+    def _topological_sort_patterns(self) -> List[Any]:
+        """Sort patterns in topological order based on depends_on().
+
+        Returns:
+            List of patterns in dependency order (dependencies first)
+        """
+        if not self._patterns:
+            return []
+
+        # Build dependency graph using object ids (patterns may not be hashable)
+        pattern_ids = {id(p): p for p in self._patterns}
+        in_degree = {id(p): 0 for p in self._patterns}
+        dependents: Dict[int, List[int]] = {id(p): [] for p in self._patterns}
+
+        for pattern in self._patterns:
+            deps = []
+            if hasattr(pattern, "depends_on"):
+                deps = pattern.depends_on() or []
+            for dep in deps:
+                dep_id = id(dep)
+                if dep_id in pattern_ids:
+                    # dep must come before pattern
+                    dependents[dep_id].append(id(pattern))
+                    in_degree[id(pattern)] += 1
+
+        # Kahn's algorithm for topological sort
+        result = []
+        queue = [pid for pid, deg in in_degree.items() if deg == 0]
+
+        while queue:
+            pid = queue.pop(0)
+            result.append(pattern_ids[pid])
+            for dependent_id in dependents[pid]:
+                in_degree[dependent_id] -= 1
+                if in_degree[dependent_id] == 0:
+                    queue.append(dependent_id)
+
+        # If we couldn't sort all patterns, there's a cycle - just use registration order
+        if len(result) != len(self._patterns):
+            logger.warning(
+                "Cycle detected in pattern dependencies, using registration order"
+            )
+            return list(self._patterns)
+
+        return result
+
+    def _phase2_pattern_updates(self, dt: float) -> tuple:
+        """Phase 2: Update patterns in dependency order and collect events.
 
         Args:
             dt: Time delta since last tick in seconds
 
         Returns:
-            Number of patterns updated
+            Tuple of (patterns_updated, events_emitted, pattern_events_list)
         """
-        # For now, patterns are updated in registration order
-        # Full dependency ordering will be added when Pattern base class is implemented
+        # Sort patterns by dependencies
+        sorted_patterns = self._topological_sort_patterns()
+
         count = 0
-        for pattern in self._patterns:
+        all_events = []
+
+        for pattern in sorted_patterns:
             if hasattr(pattern, "update"):
                 try:
                     pattern.update(dt, {})
                     count += 1
+
+                    # Collect events if pattern has emit()
+                    if hasattr(pattern, "emit"):
+                        events = pattern.emit()
+                        if events:
+                            all_events.extend(events)
                 except Exception as e:
-                    logger.error(f"Error updating pattern: {e}")
-        return count
+                    logger.error(
+                        f"Error updating pattern {getattr(pattern, 'name', pattern)}: {e}"
+                    )
+
+        return count, len(all_events), all_events
 
     def _phase3_condition_eval(self, updated_sensors: Optional[list] = None) -> tuple:
         """Phase 3: Evaluate conditions based on their mode.
@@ -410,10 +473,15 @@ class PhasedTickRunner:
         stats.sensors_read = sensors_read
         stats.phase1_sensor_read_ms = (time.perf_counter() - phase1_start) * 1000
 
-        # Phase 2: Pattern updates
+        # Phase 2: Pattern updates (dependency-ordered with event collection)
         stats.phase_order.append("pattern_update")
         phase2_start = time.perf_counter()
-        stats.patterns_updated = self._phase2_pattern_updates(self.tick_period_s)
+        patterns_updated, events_emitted, pattern_events = self._phase2_pattern_updates(
+            self.tick_period_s
+        )
+        stats.patterns_updated = patterns_updated
+        stats.events_emitted = events_emitted
+        stats.pattern_events = pattern_events
         stats.phase2_pattern_update_ms = (time.perf_counter() - phase2_start) * 1000
 
         # Phase 3: Condition evaluation (pass updated sensors for event-driven mode)
