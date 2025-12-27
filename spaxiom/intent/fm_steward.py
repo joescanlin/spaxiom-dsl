@@ -69,8 +69,12 @@ class FmSteward:
         except AttributeError:
             spill = False
 
-        needs = (low_towels or bin_pct > self.bin_threshold_pct
-                 or gas_ppm > self.gas_threshold_ppm or spill)
+        needs = (
+            low_towels
+            or bin_pct > self.bin_threshold_pct
+            or gas_ppm > self.gas_threshold_ppm
+            or spill
+        )
         return bool(needs and entries >= self.entries_threshold)
 
     def snapshot(self) -> Dict[str, Any]:

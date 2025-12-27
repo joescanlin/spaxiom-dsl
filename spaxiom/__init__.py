@@ -16,6 +16,7 @@ from .units import Quantity, ureg, QuantityType
 from .geo import intersection, union
 from .fusion import weighted_average, WeightedFusion
 from .adaptors.file_sensor import FileSensor
+
 # Conditional import for MQTT
 # from .adaptors.mqtt_sensor import MQTTSensor
 from .summarize import RollingSummary

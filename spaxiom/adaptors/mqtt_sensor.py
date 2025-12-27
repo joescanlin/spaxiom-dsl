@@ -10,16 +10,21 @@ from typing import Optional, Dict, Any, Tuple
 # Try to import paho.mqtt, but don't fail if it's not available
 try:
     import paho.mqtt.client as mqtt
+
     MQTT_AVAILABLE = True
 except ImportError:
     MQTT_AVAILABLE = False
+
     # Create a dummy class to avoid errors in type annotations
     class mqtt:
         class Client:
             pass
+
         class MQTTMessage:
             pass
+
         MQTTv311 = None
+
 
 from spaxiom.sensor import Sensor
 
@@ -32,6 +37,7 @@ class SensorUnavailable(Exception):
 
 # Check if MQTT is available before defining the class
 if MQTT_AVAILABLE:
+
     class MQTTSensor(Sensor):
         """
         A sensor that subscribes to an MQTT topic and returns the latest numeric value.
@@ -119,7 +125,9 @@ if MQTT_AVAILABLE:
             """
             try:
                 # Create a new client instance
-                self.client = mqtt.Client(client_id=self.client_id, protocol=mqtt.MQTTv311)
+                self.client = mqtt.Client(
+                    client_id=self.client_id, protocol=mqtt.MQTTv311
+                )
 
                 # Set up callbacks
                 self.client.on_connect = self._on_connect
@@ -276,7 +284,9 @@ if MQTT_AVAILABLE:
                     self.client.loop_stop()
                     self.client.disconnect()
                 except Exception as e:
-                    self.logger.warning(f"Error disconnecting from MQTT broker: {str(e)}")
+                    self.logger.warning(
+                        f"Error disconnecting from MQTT broker: {str(e)}"
+                    )
                 finally:
                     self.connected = False
                     self.client = None
@@ -290,6 +300,7 @@ if MQTT_AVAILABLE:
                 f"topic='{self.topic}', "
                 f"status='{status}')"
             )
+
 else:
     # Define a stub class that raises an error when instantiated
     class MQTTSensor:

@@ -133,6 +133,7 @@ class TestHarnessSanity:
     def test_paper_parity_directory_accessible(self):
         """Verify tests/paper_parity/ is a valid test directory."""
         import os
+
         test_dir = os.path.dirname(__file__)
         assert os.path.basename(test_dir) == "paper_parity"
         assert os.path.isfile(os.path.join(test_dir, "__init__.py"))

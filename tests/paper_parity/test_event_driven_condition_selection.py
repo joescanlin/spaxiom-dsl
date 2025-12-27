@@ -25,7 +25,9 @@ class TestEventDrivenMode:
         # assert cond.mode == "event-driven"
         pass
 
-    @pytest.mark.skip(reason="MISSING: Event-driven mode only evaluates on dependency changes")
+    @pytest.mark.skip(
+        reason="MISSING: Event-driven mode only evaluates on dependency changes"
+    )
     def test_event_driven_evaluates_on_dependency_change(self):
         """Event-driven condition must only evaluate when its dependencies change."""
         # When implemented:
@@ -36,7 +38,9 @@ class TestEventDrivenMode:
         # 5. Assert evaluation count == 1
         pass
 
-    @pytest.mark.skip(reason="MISSING: Unrelated conditions not evaluated in event-driven mode")
+    @pytest.mark.skip(
+        reason="MISSING: Unrelated conditions not evaluated in event-driven mode"
+    )
     def test_unrelated_conditions_not_evaluated(self):
         """Conditions unrelated to changed dependency must NOT be evaluated."""
         # When implemented:
@@ -52,7 +56,9 @@ class TestEventDrivenMode:
 class TestAutoModeSelection:
     """Tests for automatic mode selection."""
 
-    @pytest.mark.skip(reason="MISSING: Auto mode selection based on dependency complexity")
+    @pytest.mark.skip(
+        reason="MISSING: Auto mode selection based on dependency complexity"
+    )
     def test_auto_mode_selects_event_driven_for_simple(self):
         """Auto mode should select event-driven for simple dependency graphs."""
         # When implemented:
