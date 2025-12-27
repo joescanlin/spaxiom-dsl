@@ -66,15 +66,59 @@ class TestPhasedTickExecution:
         # Assert all 3 sensors were read
         assert stats.sensors_read == 3
 
-    @pytest.mark.skip(reason="MISSING: Phase 2 pattern updates in dependency order")
     def test_phase2_patterns_dependency_ordered(self):
         """Phase 2 must update patterns in topological order based on depends_on()."""
-        # When implemented:
-        # 1. Create patterns A, B, C where C depends on B, B depends on A
-        # 2. Instrument update() calls
-        # 3. Run one tick
-        # 4. Assert update order: A, B, C
-        pass
+        from spaxiom.intent import Pattern
+
+        # Track update order
+        update_order = []
+
+        class PatternA(Pattern):
+            def update(self, dt, context):
+                update_order.append("A")
+
+            def depends_on(self):
+                return []  # No dependencies
+
+        class PatternB(Pattern):
+            def __init__(self, dep_a):
+                super().__init__(name="B")
+                self._dep_a = dep_a
+
+            def update(self, dt, context):
+                update_order.append("B")
+
+            def depends_on(self):
+                return [self._dep_a]  # Depends on A
+
+        class PatternC(Pattern):
+            def __init__(self, dep_b):
+                super().__init__(name="C")
+                self._dep_b = dep_b
+
+            def update(self, dt, context):
+                update_order.append("C")
+
+            def depends_on(self):
+                return [self._dep_b]  # Depends on B
+
+        # Create patterns
+        pattern_a = PatternA(name="A")
+        pattern_b = PatternB(pattern_a)
+        pattern_c = PatternC(pattern_b)
+
+        runner = PhasedTickRunner(tick_rate_hz=10.0)
+
+        # Register in reverse order to test ordering
+        runner.register_pattern(pattern_c)
+        runner.register_pattern(pattern_a)
+        runner.register_pattern(pattern_b)
+
+        # Run one tick
+        asyncio.run(runner.run_single_tick())
+
+        # Assert update order: A, B, C (topological order)
+        assert update_order == ["A", "B", "C"]
 
     def test_phase3_conditions_after_patterns(self):
         """Phase 3 must evaluate conditions only after all pattern updates complete."""

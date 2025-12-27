@@ -9,14 +9,17 @@ if TYPE_CHECKING:
 
 from spaxiom.logic import Condition
 from spaxiom.geo import Zone
+from spaxiom.intent.pattern import Pattern, OccupancyChanged, CrowdingDetected
 
 
-class OccupancyField:
+class OccupancyField(Pattern):
     """
     High-level wrapper for a 2-D boolean floor grid sensor.
 
     Provides simple helpers to compute occupancy percentages and rough hotspots
     that can be fed into agent logic or LLM prompts.
+
+    Inherits from Pattern to support update/emit/depends_on interface.
     """
 
     def __init__(
@@ -24,10 +27,14 @@ class OccupancyField:
         sensor: FloorGridSensor,
         name: str = "field",
         zone: Optional[Zone] = None,
+        crowding_threshold: float = 80.0,
     ) -> None:
+        super().__init__(name=name)
         self.sensor = sensor
-        self.name = name
         self.zone = zone
+        self._crowding_threshold = crowding_threshold
+        self._previous_percent: float = 0.0
+        self._change_threshold: float = 5.0  # Emit event if change exceeds this
 
     def _frame(self) -> np.ndarray:
         frame = self.sensor.frame()
@@ -82,3 +89,50 @@ class OccupancyField:
         for x, y, w in zip(xs, ys, weights):
             hotspots.append({"x": int(x), "y": int(y), "weight": float(w)})
         return hotspots
+
+    # Pattern interface methods
+
+    def update(self, dt: float, context: Dict[str, Any]) -> None:
+        """Update pattern state and emit events if occupancy changed significantly.
+
+        Args:
+            dt: Time delta since last tick in seconds
+            context: Tick context (sensor values, other pattern states)
+        """
+        current_percent = self.percent()
+        zone_name = self.zone.name if self.zone else self._name
+
+        # Check for significant change
+        change = abs(current_percent - self._previous_percent)
+        if change >= self._change_threshold:
+            self._emit_event(
+                OccupancyChanged(
+                    zone=zone_name,
+                    percent=current_percent,
+                    previous_percent=self._previous_percent,
+                    hotspots=self.hotspots(),
+                )
+            )
+
+        # Check for crowding
+        if (
+            current_percent >= self._crowding_threshold
+            and self._previous_percent < self._crowding_threshold
+        ):
+            self._emit_event(
+                CrowdingDetected(
+                    zone=zone_name,
+                    percent=current_percent,
+                    threshold=self._crowding_threshold,
+                )
+            )
+
+        self._previous_percent = current_percent
+
+    def depends_on(self) -> List[Any]:
+        """Return list of dependencies for ordering.
+
+        Returns:
+            List containing the sensor this pattern depends on.
+        """
+        return [self.sensor]
