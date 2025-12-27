@@ -56,18 +56,18 @@ def main():
     print("Combining conditions with & and |:")
 
     occupied_and_hot = motion_detected & temp_high
-    print(f"  motion_detected & temp_high:")
+    print("  motion_detected & temp_high:")
     print(f"    depends on: {[s.name for s in occupied_and_hot.dependencies]}")
 
     any_trigger = temp_high | motion_detected | light_low
-    print(f"  temp_high | motion_detected | light_low:")
+    print("  temp_high | motion_detected | light_low:")
     print(f"    depends on: {[s.name for s in any_trigger.dependencies]}")
     print()
 
     # Demonstrate inversion preserves dependencies
     temp_normal = ~temp_high
     print("Inverting conditions preserves dependencies:")
-    print(f"  ~temp_high:")
+    print("  ~temp_high:")
     print(f"    depends on: {[s.name for s in temp_normal.dependencies]}")
     print()
 
