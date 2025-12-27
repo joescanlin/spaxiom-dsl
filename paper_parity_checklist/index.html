@@ -874,33 +874,33 @@
 <tr>
 <td>Polling mode (default)</td>
 <td>IMPLEMENTED</td>
-<td><code>spaxiom/runtime.py:102</code></td>
-<td>All conditions evaluated every tick</td>
+<td><code>spaxiom/logic.py:30</code> <code>Condition.__init__(mode=)</code></td>
+<td>Default mode, all conditions evaluated every tick</td>
 </tr>
 <tr>
 <td>Event-driven mode</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No <code>mode="event-driven"</code> parameter</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/logic.py:30</code> <code>mode="event-driven"</code></td>
+<td>Only evaluates when dependencies change</td>
 </tr>
 <tr>
 <td>Auto mode selection</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No automatic mode switching</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/logic.py:72</code> <code>_effective_mode</code></td>
+<td>Selects event-driven if dependencies trackable, else polling</td>
 </tr>
 <tr>
 <td><code>Condition(..., mode="event-driven")</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not supported</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/logic.py:30</code></td>
+<td>Supported via <code>mode</code> parameter</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>Condition</code> accepts <code>mode</code> parameter
-- [ ] Event-driven mode only evaluates on dependency changes
-- [ ] Auto mode selects based on dependency complexity</p>
+- [x] <code>Condition</code> accepts <code>mode</code> parameter
+- [x] Event-driven mode only evaluates on dependency changes
+- [x] Auto mode selects based on dependency complexity</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_event_driven_condition_selection.py</code>
 <strong>Proving Example:</strong> <code>examples/paper/conditions_event_driven.py</code></p>
 <hr />
@@ -917,15 +917,15 @@
 <tbody>
 <tr>
 <td>Conditions track sensor dependencies</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No dependency graph</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/logic.py:56</code> <code>Condition.dependencies</code></td>
+<td>Manual via <code>depends_on</code> parameter</td>
 </tr>
 <tr>
 <td>Conditions track pattern dependencies</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No pattern integration</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/logic.py:56</code> <code>Condition.dependencies</code></td>
+<td>Manual via <code>depends_on</code> parameter</td>
 </tr>
 <tr>
 <td>Conditions track temporal buffer dependencies</td>
@@ -935,16 +935,16 @@
 </tr>
 <tr>
 <td>Runtime invalidates affected conditions</td>
-<td>MISSING</td>
-<td>-</td>
-<td>All conditions evaluated always</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:280</code> <code>_phase3_condition_eval()</code></td>
+<td>Tracks updated sensors, skips unaffected conditions</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>Condition.dependencies</code> returns set of sensors/patterns
-- [ ] Runtime only evaluates conditions when dependencies change
-- [ ] Unrelated conditions not evaluated (testable)</p>
+- [x] <code>Condition.dependencies</code> returns set of sensors/patterns
+- [x] Runtime only evaluates conditions when dependencies change (event-driven mode)
+- [x] Unrelated conditions not evaluated (testable)</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_condition_dependency_tracking.py</code>
 <strong>Proving Example:</strong> <code>examples/paper/conditions_dependencies.py</code></p>
 <hr />
@@ -1565,9 +1565,9 @@
 </tr>
 <tr>
 <td>Conditions</td>
-<td>8</td>
+<td>13</td>
 <td>1</td>
-<td>5</td>
+<td>0</td>
 <td>14</td>
 </tr>
 <tr>
@@ -1600,9 +1600,9 @@
 </tr>
 <tr>
 <td><strong>Total</strong></td>
-<td><strong>19</strong></td>
+<td><strong>24</strong></td>
 <td><strong>11</strong></td>
-<td><strong>38</strong></td>
+<td><strong>33</strong></td>
 <td><strong>68</strong></td>
 </tr>
 </tbody>
@@ -1611,10 +1611,10 @@
 <h2 id="priority-order-for-implementation">Priority Order for Implementation<a class="headerlink" href="#priority-order-for-implementation" title="Permanent link">&para;</a></h2>
 <p>Based on dependencies and paper structure:</p>
 <ol>
-<li><strong>Runtime phased tick</strong> - Foundation for everything else</li>
+<li>~~<strong>Runtime phased tick</strong>~~ - DONE (Step 2)</li>
 <li><strong>Pattern base class</strong> - Required for INTENT integration</li>
-<li><strong>Condition dependency tracking</strong> - Required for event-driven mode</li>
-<li><strong>Event-driven evaluation mode</strong> - Performance optimization</li>
+<li>~~<strong>Condition dependency tracking</strong>~~ - DONE (Step 3)</li>
+<li>~~<strong>Event-driven evaluation mode</strong>~~ - DONE (Step 3)</li>
 <li><strong>SafetyMonitor</strong> - Safety-critical capability</li>
 <li><strong>UPPAAL export</strong> - Formal verification</li>
 <li><strong>Governance primitives</strong> - Compliance requirements</li>
