@@ -1,0 +1,446 @@
+"""
+Phased tick runtime for Spaxiom DSL.
+
+Implements the deterministic 4-phase tick execution model:
+1. Sensor reads (concurrent)
+2. Pattern updates (dependency-ordered)
+3. Condition evaluation (polling)
+4. Callback dispatch (isolated)
+
+This module provides:
+- TickStats: per-tick instrumentation data
+- TickProfiler: collects and aggregates stats across ticks
+- PhasedTickRunner: the phased tick loop
+
+MIGRATION STATUS (as of Step 2):
+---------------------------------
+This is the NEW runtime foundation that will become primary after Step 4.
+
+INTENTIONALLY INCOMPLETE:
+- Step 3 will add: condition dependency tracking, event-driven evaluation mode
+- Step 4 will add: Pattern base class integration, topological update ordering
+
+After Step 4, spaxiom/runtime.py's start_runtime() and start_blocking() will
+delegate to PhasedTickRunner.run() internally.
+
+See also: spaxiom/runtime.py (legacy runtime with signal handling and CLI integration)
+"""
+
+import asyncio
+import logging
+import time
+from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional, Callable
+from collections import deque
+
+from spaxiom.core import SensorRegistry, Sensor
+from spaxiom.events import EVENT_HANDLERS
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class TickStats:
+    """Per-tick instrumentation data."""
+
+    tick_number: int
+    tick_start_time: float
+    tick_duration_ms: float = 0.0
+
+    # Phase timings in milliseconds
+    phase1_sensor_read_ms: float = 0.0
+    phase2_pattern_update_ms: float = 0.0
+    phase3_condition_eval_ms: float = 0.0
+    phase4_callback_dispatch_ms: float = 0.0
+
+    # Counts
+    sensors_read: int = 0
+    patterns_updated: int = 0
+    conditions_evaluated: int = 0
+    callbacks_dispatched: int = 0
+    callback_failures: int = 0
+
+    # Phase ordering proof
+    phase_order: List[str] = field(default_factory=list)
+
+
+class TickProfiler:
+    """Collects and aggregates tick statistics."""
+
+    def __init__(self, max_history: int = 1000):
+        self._history: deque = deque(maxlen=max_history)
+        self._total_ticks: int = 0
+        self._total_callback_failures: int = 0
+        self._enabled: bool = False
+
+    def enable(self) -> None:
+        """Enable profiling."""
+        self._enabled = True
+
+    def disable(self) -> None:
+        """Disable profiling."""
+        self._enabled = False
+
+    @property
+    def enabled(self) -> bool:
+        """Check if profiling is enabled."""
+        return self._enabled
+
+    def record_tick(self, stats: TickStats) -> None:
+        """Record stats for a completed tick."""
+        if not self._enabled:
+            return
+        self._history.append(stats)
+        self._total_ticks += 1
+        self._total_callback_failures += stats.callback_failures
+
+    def get_stats(self) -> Dict[str, Any]:
+        """Get aggregated statistics.
+
+        Returns:
+            Dict with keys:
+            - tick_count: total ticks recorded
+            - avg_tick_ms: average tick duration
+            - phase1_sensor_read_avg_ms: average sensor read phase time
+            - phase2_pattern_update_avg_ms: average pattern update phase time
+            - phase3_condition_eval_avg_ms: average condition eval phase time
+            - phase4_callback_dispatch_avg_ms: average callback dispatch phase time
+            - callback_failures: total callback failures
+            - sensors_read_total: total sensor reads
+            - conditions_evaluated_total: total condition evaluations
+            - callbacks_dispatched_total: total callbacks dispatched
+        """
+        if not self._history:
+            return {
+                "tick_count": 0,
+                "avg_tick_ms": 0.0,
+                "phase1_sensor_read_avg_ms": 0.0,
+                "phase2_pattern_update_avg_ms": 0.0,
+                "phase3_condition_eval_avg_ms": 0.0,
+                "phase4_callback_dispatch_avg_ms": 0.0,
+                "callback_failures": 0,
+                "sensors_read_total": 0,
+                "conditions_evaluated_total": 0,
+                "callbacks_dispatched_total": 0,
+            }
+
+        count = len(self._history)
+        return {
+            "tick_count": self._total_ticks,
+            "avg_tick_ms": sum(s.tick_duration_ms for s in self._history) / count,
+            "phase1_sensor_read_avg_ms": sum(
+                s.phase1_sensor_read_ms for s in self._history
+            )
+            / count,
+            "phase2_pattern_update_avg_ms": sum(
+                s.phase2_pattern_update_ms for s in self._history
+            )
+            / count,
+            "phase3_condition_eval_avg_ms": sum(
+                s.phase3_condition_eval_ms for s in self._history
+            )
+            / count,
+            "phase4_callback_dispatch_avg_ms": sum(
+                s.phase4_callback_dispatch_ms for s in self._history
+            )
+            / count,
+            "callback_failures": self._total_callback_failures,
+            "sensors_read_total": sum(s.sensors_read for s in self._history),
+            "conditions_evaluated_total": sum(
+                s.conditions_evaluated for s in self._history
+            ),
+            "callbacks_dispatched_total": sum(
+                s.callbacks_dispatched for s in self._history
+            ),
+        }
+
+    def get_last_tick(self) -> Optional[TickStats]:
+        """Get the most recent tick stats."""
+        if not self._history:
+            return None
+        return self._history[-1]
+
+    def clear(self) -> None:
+        """Clear all recorded stats."""
+        self._history.clear()
+        self._total_ticks = 0
+        self._total_callback_failures = 0
+
+
+class PhasedTickRunner:
+    """Runs the phased tick loop.
+
+    The tick loop executes 4 phases in deterministic order:
+    1. Sensor reads - concurrent via asyncio.gather()
+    2. Pattern updates - in dependency order (no-op if no patterns)
+    3. Condition evaluation - polling all registered conditions
+    4. Callback dispatch - isolated, exceptions don't propagate
+    """
+
+    def __init__(
+        self,
+        tick_rate_hz: float = 10.0,
+        history_length: int = 1000,
+    ):
+        """Initialize the phased tick runner.
+
+        Args:
+            tick_rate_hz: Target tick rate in Hz (default 10.0 = 100ms per tick)
+            history_length: Maximum condition history entries to keep
+        """
+        self.tick_rate_hz = tick_rate_hz
+        self.tick_period_s = 1.0 / tick_rate_hz
+        self.history_length = history_length
+
+        self.profiler = TickProfiler()
+        self._tick_count = 0
+        self._running = False
+        self._patterns: List[Any] = []  # Will hold Pattern instances when available
+
+        # Condition state tracking
+        self._previous_states: Dict[int, bool] = {}
+        self._condition_history: deque = deque(maxlen=history_length)
+
+        # Callbacks for extensibility
+        self._on_tick_start: Optional[Callable[[int], None]] = None
+        self._on_tick_end: Optional[Callable[[TickStats], None]] = None
+
+    @property
+    def tick_count(self) -> int:
+        """Get the current tick count."""
+        return self._tick_count
+
+    @property
+    def running(self) -> bool:
+        """Check if the runner is running."""
+        return self._running
+
+    def register_pattern(self, pattern: Any) -> None:
+        """Register a pattern for phase 2 updates.
+
+        Args:
+            pattern: A pattern instance (must have update() method)
+        """
+        self._patterns.append(pattern)
+
+    def clear_patterns(self) -> None:
+        """Clear all registered patterns."""
+        self._patterns.clear()
+
+    async def _phase1_sensor_reads(self, sensors: List[Sensor]) -> int:
+        """Phase 1: Read all sensors concurrently.
+
+        Args:
+            sensors: List of sensors to read
+
+        Returns:
+            Number of sensors successfully read
+        """
+        if not sensors:
+            return 0
+
+        async def read_sensor(sensor: Sensor) -> bool:
+            """Read a single sensor, return True on success."""
+            try:
+                # Run synchronous read in executor to not block
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, sensor.read)
+                return True
+            except Exception as e:
+                logger.error(f"Error reading sensor {sensor.name}: {e}")
+                return False
+
+        # Concurrent reads with asyncio.gather
+        results = await asyncio.gather(
+            *[read_sensor(s) for s in sensors], return_exceptions=True
+        )
+        return sum(1 for r in results if r is True)
+
+    def _phase2_pattern_updates(self, dt: float) -> int:
+        """Phase 2: Update patterns in dependency order.
+
+        Args:
+            dt: Time delta since last tick in seconds
+
+        Returns:
+            Number of patterns updated
+        """
+        # For now, patterns are updated in registration order
+        # Full dependency ordering will be added when Pattern base class is implemented
+        count = 0
+        for pattern in self._patterns:
+            if hasattr(pattern, "update"):
+                try:
+                    pattern.update(dt, {})
+                    count += 1
+                except Exception as e:
+                    logger.error(f"Error updating pattern: {e}")
+        return count
+
+    def _phase3_condition_eval(self) -> tuple:
+        """Phase 3: Evaluate all conditions.
+
+        Returns:
+            Tuple of (conditions_evaluated, callbacks_to_fire)
+        """
+        callbacks_to_fire = []
+        count = 0
+
+        for i, (condition, callback) in enumerate(EVENT_HANDLERS):
+            try:
+                # Get previous state
+                prev_state = self._previous_states.get(i, False)
+
+                # Evaluate current state
+                try:
+                    current_state = bool(condition())
+                except Exception as e:
+                    logger.error(f"Error evaluating condition: {e}")
+                    current_state = False
+
+                # Record in history
+                self._condition_history.append((time.monotonic(), i, current_state))
+
+                # Detect rising edge
+                if current_state and not prev_state:
+                    callbacks_to_fire.append(callback)
+
+                # Update previous state
+                self._previous_states[i] = current_state
+                count += 1
+
+            except Exception as e:
+                logger.error(f"Error in condition evaluation: {e}")
+
+        return count, callbacks_to_fire
+
+    async def _phase4_callback_dispatch(self, callbacks: List[Callable]) -> tuple:
+        """Phase 4: Dispatch callbacks with isolation.
+
+        Args:
+            callbacks: List of callbacks to dispatch
+
+        Returns:
+            Tuple of (dispatched_count, failure_count)
+        """
+        if not callbacks:
+            return 0, 0
+
+        dispatched = 0
+        failures = 0
+
+        for callback in callbacks:
+            try:
+                # Run callback in executor to avoid blocking
+                loop = asyncio.get_event_loop()
+                await loop.run_in_executor(None, callback)
+                dispatched += 1
+                logger.debug(f"Callback {callback.__name__} executed")
+            except Exception as e:
+                failures += 1
+                logger.error(f"Callback {callback.__name__} failed: {e}")
+
+        return dispatched, failures
+
+    async def run_single_tick(self) -> TickStats:
+        """Execute a single tick with all 4 phases.
+
+        Returns:
+            TickStats for the completed tick
+        """
+        tick_start = time.perf_counter()
+        stats = TickStats(
+            tick_number=self._tick_count,
+            tick_start_time=time.monotonic(),
+        )
+
+        # Get sensors
+        registry = SensorRegistry()
+        sensors = list(registry.list_all().values())
+
+        # Phase 1: Sensor reads
+        stats.phase_order.append("sensor_read")
+        phase1_start = time.perf_counter()
+        stats.sensors_read = await self._phase1_sensor_reads(sensors)
+        stats.phase1_sensor_read_ms = (time.perf_counter() - phase1_start) * 1000
+
+        # Phase 2: Pattern updates
+        stats.phase_order.append("pattern_update")
+        phase2_start = time.perf_counter()
+        stats.patterns_updated = self._phase2_pattern_updates(self.tick_period_s)
+        stats.phase2_pattern_update_ms = (time.perf_counter() - phase2_start) * 1000
+
+        # Phase 3: Condition evaluation
+        stats.phase_order.append("condition_eval")
+        phase3_start = time.perf_counter()
+        stats.conditions_evaluated, callbacks_to_fire = self._phase3_condition_eval()
+        stats.phase3_condition_eval_ms = (time.perf_counter() - phase3_start) * 1000
+
+        # Phase 4: Callback dispatch
+        stats.phase_order.append("callback_dispatch")
+        phase4_start = time.perf_counter()
+        dispatched, failures = await self._phase4_callback_dispatch(callbacks_to_fire)
+        stats.callbacks_dispatched = dispatched
+        stats.callback_failures = failures
+        stats.phase4_callback_dispatch_ms = (time.perf_counter() - phase4_start) * 1000
+
+        # Total tick duration
+        stats.tick_duration_ms = (time.perf_counter() - tick_start) * 1000
+
+        # Record in profiler
+        self.profiler.record_tick(stats)
+
+        self._tick_count += 1
+
+        # Call hook if registered
+        if self._on_tick_end:
+            self._on_tick_end(stats)
+
+        return stats
+
+    async def run(self, max_ticks: Optional[int] = None) -> None:
+        """Run the tick loop.
+
+        Args:
+            max_ticks: Maximum number of ticks to run (None = infinite)
+        """
+        self._running = True
+        self._tick_count = 0
+
+        try:
+            while self._running:
+                if max_ticks is not None and self._tick_count >= max_ticks:
+                    break
+
+                tick_start = time.perf_counter()
+
+                # Call hook if registered
+                if self._on_tick_start:
+                    self._on_tick_start(self._tick_count)
+
+                # Execute the tick
+                await self.run_single_tick()
+
+                # Sleep to maintain tick rate
+                elapsed = time.perf_counter() - tick_start
+                sleep_time = self.tick_period_s - elapsed
+                if sleep_time > 0:
+                    await asyncio.sleep(sleep_time)
+
+        except asyncio.CancelledError:
+            logger.debug("Tick runner cancelled")
+        finally:
+            self._running = False
+
+    def stop(self) -> None:
+        """Signal the runner to stop."""
+        self._running = False
+
+
+def enable_profiling(runner: PhasedTickRunner) -> None:
+    """Enable profiling on a PhasedTickRunner.
+
+    Args:
+        runner: The runner to enable profiling on
+    """
+    runner.profiler.enable()

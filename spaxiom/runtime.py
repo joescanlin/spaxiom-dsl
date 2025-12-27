@@ -1,5 +1,26 @@
 """
 Runtime module for Spaxiom DSL that handles the event loop and sensor polling.
+
+MIGRATION NOTE (as of Step 2):
+------------------------------
+This is the LEGACY async task-based runtime. It provides:
+- start_runtime(): async entrypoint with independent sensor polling tasks
+- start_blocking(): blocking wrapper for CLI usage
+- shutdown(): graceful shutdown with signal handling
+
+The NEW runtime foundation is PhasedTickRunner in spaxiom/tick.py, which
+implements deterministic 4-phase tick execution per the paper specification.
+
+PLANNED MIGRATION:
+- Step 3: Add condition dependency tracking to PhasedTickRunner
+- Step 4: Add Pattern integration to PhasedTickRunner
+- After Step 4: start_runtime() and start_blocking() will delegate to
+  PhasedTickRunner.run(), preserving backwards compatibility while using
+  the new phased tick loop internally.
+
+Until delegation is complete, both runtimes coexist:
+- Use start_blocking() / start_runtime() for existing scripts and CLI
+- Use PhasedTickRunner directly for new code requiring phased execution
 """
 
 import asyncio

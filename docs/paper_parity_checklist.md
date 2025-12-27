@@ -9,25 +9,33 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 ## 1. Runtime
 
+> **Runtime Architecture Note:**
+>
+> There are currently two runtime implementations:
+> - **Primary entrypoints (legacy):** `spaxiom/runtime.py` provides `start_runtime()` and `start_blocking()`. These are used by the CLI and existing examples.
+> - **New phased tick runner:** `spaxiom/tick.py` provides `PhasedTickRunner` with deterministic 4-phase execution per the paper specification.
+>
+> **Planned delegation:** After Step 3 (conditions) and Step 4 (patterns), `start_runtime()` and `start_blocking()` will delegate to `PhasedTickRunner.run()` internally, preserving backwards compatibility while using the new phased tick loop.
+
 ### 1.1 Phased Tick Execution
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| Fixed tick rate (configurable Hz) | PARTIAL | `spaxiom/runtime.py:233` `poll_ms` parameter | Uses polling interval, not explicit tick rate |
-| Phase 1: Concurrent sensor reads | PARTIAL | `spaxiom/runtime.py:65` `_poll_sensor()` | Each sensor has independent async task, not batched per tick |
-| Phase 2: Pattern updates (dependency-ordered) | MISSING | - | No pattern update phase; patterns are passive wrappers |
-| Phase 3: Condition evaluation | IMPLEMENTED | `spaxiom/runtime.py:102` `_evaluate_conditions()` | Evaluates all conditions each iteration |
-| Phase 4: Callback dispatch (concurrent, isolated) | PARTIAL | `spaxiom/runtime.py:162` | Dispatches via `asyncio.to_thread()` but inline, not batched |
-| Deterministic ordering guarantee | MISSING | - | Independent async tasks lack deterministic ordering |
+| Fixed tick rate (configurable Hz) | IMPLEMENTED | `spaxiom/tick.py:157` `PhasedTickRunner(tick_rate_hz=)` | Configurable Hz with tick_period_s property |
+| Phase 1: Concurrent sensor reads | IMPLEMENTED | `spaxiom/tick.py:213` `_phase1_sensor_reads()` | Uses `asyncio.gather()` for concurrency |
+| Phase 2: Pattern updates (dependency-ordered) | PARTIAL | `spaxiom/tick.py:234` `_phase2_pattern_updates()` | Updates in registration order; dependency sorting not yet implemented |
+| Phase 3: Condition evaluation | IMPLEMENTED | `spaxiom/tick.py:252` `_phase3_condition_eval()` | Polling mode, evaluates all conditions |
+| Phase 4: Callback dispatch (concurrent, isolated) | IMPLEMENTED | `spaxiom/tick.py:296` `_phase4_callback_dispatch()` | Isolated execution, failures logged but don't propagate |
+| Deterministic ordering guarantee | IMPLEMENTED | `spaxiom/tick.py:318` `run_single_tick()` | 4 phases always execute in same order |
 
 **Acceptance Criteria:**
-- [ ] Single tick loop with 4 explicit phases
-- [ ] Sensor reads batched with `asyncio.gather()`
+- [x] Single tick loop with 4 explicit phases
+- [x] Sensor reads batched with `asyncio.gather()`
 - [ ] Patterns updated in topological order based on `depends_on()`
-- [ ] Conditions evaluated after pattern updates complete
-- [ ] Callbacks dispatched after all conditions evaluated
+- [x] Conditions evaluated after pattern updates complete
+- [x] Callbacks dispatched after all conditions evaluated
 
-**Proving Test:** `tests/paper_parity/test_runtime_tick_ordering.py`
+**Proving Test:** `tests/paper_parity/test_runtime_tick_ordering.py` (5 passing, 3 skipped)
 **Proving Example:** `examples/paper/runtime_tick_phases.py`
 
 ---
@@ -54,18 +62,19 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `enable_profiling(runtime)` | MISSING | - | No profiler module |
-| Phase timing per tick | MISSING | - | No instrumentation |
-| Sensor read latency stats | MISSING | - | No stats collection |
-| Callback failure counts | MISSING | - | Errors logged but not counted |
-| `runtime.profiler.get_stats()` | MISSING | - | No profiler API |
+| `enable_profiling(runtime)` | IMPLEMENTED | `spaxiom/tick.py:385` `enable_profiling()` | Enables profiler on PhasedTickRunner |
+| Phase timing per tick | IMPLEMENTED | `spaxiom/tick.py:27` `TickStats` dataclass | Records ms for each phase |
+| Sensor read latency stats | PARTIAL | `spaxiom/tick.py:56` `TickProfiler.get_stats()` | Averages collected, percentiles not yet |
+| Callback failure counts | IMPLEMENTED | `spaxiom/tick.py:56` `TickProfiler` | Tracks `callback_failures` total |
+| `runtime.profiler.get_stats()` | IMPLEMENTED | `spaxiom/tick.py:74` `TickProfiler.get_stats()` | Returns dict with all stats |
 
 **Acceptance Criteria:**
-- [ ] `enable_profiling()` function exists
-- [ ] `get_stats()` returns dict with `avg_tick_ms`, `sensor_read_p99_ms`, `callback_failures`
-- [ ] Profiling overhead < 1%
+- [x] `enable_profiling()` function exists
+- [x] `get_stats()` returns dict with `avg_tick_ms`, `callback_failures`
+- [ ] `get_stats()` returns `sensor_read_p99_ms` (percentiles not yet implemented)
+- [ ] Profiling overhead < 1% (not yet measured)
 
-**Proving Test:** `tests/paper_parity/test_runtime_instrumentation.py`
+**Proving Test:** `tests/paper_parity/test_runtime_instrumentation.py` (4 passing, 3 skipped)
 **Proving Example:** `examples/paper/runtime_profiling.py`
 
 ---
