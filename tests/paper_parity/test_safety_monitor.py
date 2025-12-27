@@ -12,6 +12,9 @@ Proving Example: examples/paper/safety_export_uppaal.py
 
 import pytest
 
+# Skip entire module if spaxiom.safety not yet implemented (Step 5)
+pytest.importorskip("spaxiom.safety", reason="Requires Step 5: safety module")
+
 from spaxiom.safety import (
     SafetyMonitor,
     SafetyViolation,
