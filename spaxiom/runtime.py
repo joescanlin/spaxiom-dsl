@@ -3,6 +3,7 @@ Runtime module for Spaxiom DSL that handles the event loop and sensor polling.
 """
 
 import asyncio
+import inspect
 import logging
 import time
 import signal
@@ -198,13 +199,34 @@ async def shutdown():
     print("\n[Spaxiom] Shutdown initiated, cancelling tasks...")
 
     # Cancel all running tasks
+    # Handle both real asyncio.Task objects and mock objects from tests
+    awaitables = []
     for task in ACTIVE_TASKS:
-        if not task.done():
+        # Check if task is done (handle mocks that may not have proper done())
+        try:
+            is_done = task.done() if hasattr(task, "done") else True
+            # In Python 3.13+, AsyncMock.done() returns a coroutine, not a bool
+            # If we got a coroutine, treat as not done and don't await it
+            if asyncio.iscoroutine(is_done):
+                is_done = False
+        except Exception:
+            is_done = True
+
+        if not is_done and hasattr(task, "cancel"):
             task.cancel()
 
-    # Wait for all tasks to complete cancellation
-    if ACTIVE_TASKS:
-        await asyncio.gather(*ACTIVE_TASKS, return_exceptions=True)
+        # Only gather real awaitables (Task, Future, coroutine)
+        if (
+            asyncio.isfuture(task)
+            or isinstance(task, asyncio.Task)
+            or asyncio.iscoroutine(task)
+            or inspect.isawaitable(task)
+        ):
+            awaitables.append(task)
+
+    # Wait for all real awaitables to complete cancellation
+    if awaitables:
+        await asyncio.gather(*awaitables, return_exceptions=True)
 
     # Cancel the main runtime task if it exists and is running
     if RUNTIME_TASK is not None and not RUNTIME_TASK.done():

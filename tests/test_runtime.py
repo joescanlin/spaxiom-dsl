@@ -367,8 +367,8 @@ async def test_shutdown_function(reset_runtime_state):
 @pytest.mark.asyncio
 async def test_shutdown_already_initiated(reset_runtime_state):
     """Test that shutdown is only processed once."""
-    # Set the shutdown flag
-    globals()["SHUTDOWN_INITIATED"] = True
+    # Set the shutdown flag in the runtime module
+    runtime_module.SHUTDOWN_INITIATED = True
 
     mock_task = AsyncMock()
     ACTIVE_TASKS.append(mock_task)

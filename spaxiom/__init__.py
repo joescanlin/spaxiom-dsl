@@ -63,7 +63,10 @@ __all__ = [
 ]
 
 # Check if paho-mqtt is available
-mqtt_spec = importlib.util.find_spec("paho.mqtt")
+try:
+    mqtt_spec = importlib.util.find_spec("paho.mqtt")
+except ModuleNotFoundError:
+    mqtt_spec = None
 if mqtt_spec is not None:
     # Import the MQTT sensor class
     from .adaptors.mqtt_sensor import MQTTSensor as _MQTTSensor
