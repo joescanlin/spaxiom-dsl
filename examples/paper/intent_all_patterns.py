@@ -158,7 +158,9 @@ def main():
 
     # QueueFlow
     queue_sensor = MockGridSensor(5, 20)
-    queue_flow = QueueFlow(queue_sensor, name="checkout_queue", length_change_threshold=0.5)
+    queue_flow = QueueFlow(
+        queue_sensor, name="checkout_queue", length_change_threshold=0.5
+    )
     print(f"   Created QueueFlow: {queue_flow.name}")
 
     # ADLTracker
