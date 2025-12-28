@@ -154,14 +154,13 @@ class TestPhasedTickExecution:
             "pattern_update"
         )
 
-    @pytest.mark.skip(
-        reason="DEFERRED: Callbacks run sequentially with isolation; concurrent dispatch requires asyncio.gather for callbacks"
-    )
+    @pytest.mark.skip(reason="MISSING: Phase 4 batched concurrent callback dispatch")
     def test_phase4_callbacks_concurrent_isolated(self):
         """Phase 4 must dispatch callbacks concurrently with exception isolation."""
-        # Currently: Callbacks run sequentially with exception isolation (implemented)
-        # Missing: Concurrent dispatch using asyncio.gather for multiple callbacks
-        # To implement: Change _phase4_callback_dispatch to use gather() instead of sequential loop
+        # When implemented:
+        # 1. Create condition with 3 callbacks, one throws exception
+        # 2. Run tick where condition becomes true
+        # 3. Assert all 3 callbacks attempted, exception logged but not propagated
         pass
 
     def test_deterministic_ordering_across_ticks(self):
@@ -206,12 +205,11 @@ class TestTickRate:
         assert runner2.tick_rate_hz == 20.0
         assert runner2.tick_period_s == 0.05
 
-    @pytest.mark.skip(
-        reason="DEFERRED: Tick timing enforcement requires async sleep in run() loop; run_single_tick() is instantaneous"
-    )
+    @pytest.mark.skip(reason="MISSING: Tick timing enforcement")
     def test_tick_timing_enforced(self):
         """Ticks must occur at configured rate +/- tolerance."""
-        # Currently: run_single_tick() executes instantly, run() has basic sleep
-        # Missing: Precise timing with drift compensation in run() loop
-        # To implement: Add timing enforcement in run() with measured tick duration subtracted from sleep
+        # When implemented:
+        # 1. Create runtime with tick_rate=10.0
+        # 2. Record tick timestamps
+        # 3. Assert intervals are 100ms +/- 10ms
         pass

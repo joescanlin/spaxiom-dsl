@@ -19,56 +19,55 @@
 
 An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection.
 
-## What is Spaxiom/INTENT?
+<div align="center">
+    <pre>
+     ╔═══════════╗                   ╔═══════════╗
+     ║ SENSORS   ║                   ║ DETECTION ║
+     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
+     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
+     ╚═══════════╝                   ╚═══════════╝
+           │                               ▲
+           ▼                               │
+     ╔═══════════╗     ╔═══════════╗     ╔═══════════╗
+     ║           ║     ║           ║     ║           ║
+     ║  SPATIAL  ║════>║ TEMPORAL  ║════>║   EVENTS  ║
+     ║           ║     ║           ║     ║           ║
+     ╚═══════════╝     ╚═══════════╝     ╚═══════════╝
+    </pre>
+</div>
 
-Spaxiom is a Domain-Specific Language (DSL) for building intelligent spatial-temporal systems. It provides:
+## What is Spaxiom?
+
+Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intelligent systems that work with:
 
 - **Spatial Data**: Zones, sensors, and physical spaces
 - **Temporal Logic**: Time-based conditions and historical analysis
 - **Event Processing**: Triggering actions based on complex conditions
-- **INTENT Patterns**: High-level behavioral patterns (OccupancyField, QueueFlow, ADLTracker, FmSteward)
-- **Safety Verification**: Verifiable subset with UPPAAL export for formal verification
-- **Governance**: Retention policies, consent management, authorization, and audit logging
+- **Entity Management**: Tracking and querying objects in your system
+- **Physical Units**: Working with measurements in a type-safe manner
 
-### Implementation Status
+With Spaxiom, you can easily define complex conditions that span across space and time, and connect them to real-world events.
 
-This implementation aims for parity with the INTENT/Spaxiom paper specification. Current status:
+## Key Features
 
-| Category | Status | Notes |
-|----------|--------|-------|
-| Runtime (Phased Tick) | Implemented | 4-phase deterministic execution |
-| Conditions (Dependency Tracking) | Implemented | Polling, event-driven, auto modes |
-| INTENT Patterns | Implemented | OccupancyField, QueueFlow, ADLTracker, FmSteward |
-| Safety Verification | Implemented | SafetyMonitor, UPPAAL XML export |
-| Governance | Implemented | Retention, consent, RBAC/ABAC, audit |
-
-For detailed status, see [docs/paper_parity_checklist.md](docs/paper_parity_checklist.md).
+- 🏠 **Spatial Zones**: Define and work with 2D spatial regions
+- ⚡ **Sensors**: Interface with various sensor types and data streams
+- ⏱️ **Temporal Logic**: Create conditions that must be true for specific durations
+- 🔄 **Event Callbacks**: Register event handlers triggered by complex conditions
+- 👥 **Entity Tracking**: Maintain collections of entities with flexible attributes
+- 📏 **Physical Units**: Work with measurements and conversions seamlessly
+- 🧩 **Logical Operators**: Combine conditions using intuitive &, |, and ~ operators
+- 📄 **YAML Configuration**: Define sensors and system setup through YAML files
 
 ## Installation
 
 ```bash
-# Clone and install in development mode
-git clone https://github.com/joescanlin/spaxiom-dsl.git
-cd spaxiom-dsl
 pip install -e .
-
-# Or install from PyPI
-pip install spaxiom
 ```
 
-### Optional Dependencies
+## Quick Examples
 
-```bash
-# For MQTT sensor support
-pip install paho-mqtt>=2.0
-
-# For GPIO sensor support (Raspberry Pi)
-pip install gpiozero>=2.0
-```
-
-## Quick Start
-
-### Basic Spatial & Temporal Logic
+### Spatial & Temporal Logic
 
 ```python
 from spaxiom import Sensor, Zone, Condition, on, within
@@ -89,153 +88,113 @@ def alert_sustained_motion():
     print("Motion has been detected for 5 seconds!")
 ```
 
-### Running Examples
+### Entity Management
 
-```bash
-# Run a minimal runtime example
-python examples/paper/runtime_minimal.py
+```python
+from spaxiom import EntitySet, Entity, exists, on, Condition
 
-# Run the phased tick demo
-python examples/paper/runtime_tick_phases.py
+# Create a collection of entities
+persons = EntitySet("Persons")
 
-# Run INTENT pattern example
-python examples/paper/intent_occupancyfield.py
+# Add entities with attributes
+persons.add(Entity(attrs={"type": "person", "confidence": 0.9}))
 
-# Run safety verification example
-python examples/paper/safety_export_uppaal.py
+# Create condition based on entity existence
+person_detected = exists(persons, lambda p: p.attrs.get("confidence", 0) > 0.8)
 
-# Run governance demo
-python examples/paper/governance_demo.py
+# Register an event handler
+@on(person_detected)
+def alert_person():
+    print("Person detected with high confidence!")
 ```
 
-## Developer Commands
+### Physical Units
 
-### Formatting & Linting
+```python
+from spaxiom import Quantity
 
-```bash
-# Check formatting (runs in CI)
-black --check .
+# Create measurements with units
+distance = Quantity(10, "m")
+time = Quantity(2, "s")
 
-# Auto-format code
-black .
+# Automatic unit conversion
+speed = distance / time  # 5 m/s
 
-# Lint with ruff (runs in CI)
-ruff check .
-
-# Auto-fix lint issues
-ruff check --fix .
+# Convert to different units
+speed_kph = speed.to("km/hour")  # 18 km/h
 ```
 
-### Running Tests
+### YAML Configuration
 
-```bash
-# Run full test suite (runs in CI)
-pytest
+```python
+from spaxiom import load_sensors_from_yaml, on, Condition, within
 
-# Run with verbose output
-pytest -v
+# Load sensors from YAML configuration file
+sensors = load_sensors_from_yaml("sensors_config.yaml")
 
-# Run paper parity tests only
-pytest tests/paper_parity/ -v
+# Access sensors by name from the registry
+from spaxiom import SensorRegistry
+registry = SensorRegistry()
+motion_sensor = registry.get("motion_sensor1")
 
-# Run specific test file
-pytest tests/paper_parity/test_governance_audit.py -v
+# Create condition based on sensor from config
+motion_detected = Condition(lambda: motion_sensor.read() > 0.5)
+
+# Register event handler
+@on(motion_detected)
+def alert_motion():
+    print("Motion detected!")
 ```
 
-### Coverage
+Example YAML configuration:
 
-```bash
-# Run tests with coverage (runs in CI)
-coverage run -m pytest
-
-# Generate coverage report
-coverage report -m
-
-# Generate HTML coverage report
-coverage html
-# Open coverage_html_report/index.html
-
-# CI enforces minimum 74% coverage (configured in pyproject.toml)
+```yaml
+sensors:
+  - name: motion_sensor1
+    type: gpio_digital
+    pin: 17
+    location: [0, 0, 0]
+    pull_up: true
+    
+  - name: temperature_sensor1
+    type: random
+    location: [1, 2, 0]
+    hz: 5.0
 ```
-
-### CI Expectations
-
-The CI pipeline runs on Python 3.10 and executes:
-1. `ruff check .` - Linting
-2. `black --check .` - Format checking
-3. `coverage run -m pytest` - Tests with coverage
-4. Coverage threshold check (74% minimum)
-
-Optional dependencies (`paho-mqtt`) are installed in CI. Tests that require hardware (GPIO) are skipped gracefully.
-
-## Key Examples
-
-| Example | Description |
-|---------|-------------|
-| `examples/paper/runtime_tick_phases.py` | Demonstrates 4-phase tick execution |
-| `examples/paper/conditions_event_driven.py` | Event-driven vs polling conditions |
-| `examples/paper/intent_occupancyfield.py` | OccupancyField pattern usage |
-| `examples/paper/intent_all_patterns.py` | All INTENT patterns together |
-| `examples/paper/safety_export_uppaal.py` | SafetyMonitor and UPPAAL export |
-| `examples/paper/governance_demo.py` | Retention, consent, auth, audit |
 
 ## Documentation
 
 ### Online Documentation
 
-Full documentation: https://joescanlin.github.io/spaxiom-dsl/
+The full documentation is available online at: 
+https://joescanlin.github.io/spaxiom-dsl/
 
 ### Local Documentation
 
+For local development, you can build and view the documentation using MkDocs:
+
 ```bash
-# Install MkDocs
+# Install MkDocs and required extensions
 pip install mkdocs-material pymdown-extensions
 
-# Serve locally
+# Serve the documentation locally
 mkdocs serve
 
-# Build static site
+# Build the documentation
 mkdocs build
 ```
 
-Key documentation files:
-- [Paper Parity Checklist](docs/paper_parity_checklist.md) - Implementation status vs paper
+The documentation source files are located in the `docs/` directory. Some key sections:
+
 - [Temporal and Entity Operations](docs/temporal_and_entities.md)
 - [Quick Start Guide](docs/quickstart.md)
 - [CLI Usage](docs/cli_usage.md)
 
-## Architecture
+### Documentation Updates
 
-### Runtime (Phased Tick)
-
-The runtime executes a deterministic 4-phase tick loop:
-
-1. **Phase 1 - Sensor Reads**: Concurrent sensor polling via `asyncio.gather()`
-2. **Phase 2 - Pattern Updates**: Dependency-ordered INTENT pattern updates
-3. **Phase 3 - Condition Evaluation**: Evaluate conditions (polling or event-driven)
-4. **Phase 4 - Callback Dispatch**: Isolated callback execution with exception handling
-
-### INTENT Patterns
-
-High-level behavioral abstractions:
-- `OccupancyField`: Zone occupancy tracking
-- `QueueFlow`: Queue/flow monitoring
-- `ADLTracker`: Activity of Daily Living tracking
-- `FmSteward`: Facilities management patterns
-
-### Safety Verification
-
-- `VerifiableCondition`: Restricted condition subset for formal verification
-- `SafetyMonitor`: Runtime monitoring with failsafe callbacks
-- UPPAAL XML export for model checking
-
-### Governance
-
-- `RetentionPolicy`: Bounded storage with TTL-based cleanup
-- `ConsentManager`: Zone/entity opt-out management
-- `Authorizer`: Combined RBAC + ABAC access control
-- `AuditLogger`: Tamper-evident append-only logging with HMAC signing
+The documentation is automatically deployed to GitHub Pages when changes are pushed to the main branch.
+Changes to files in the `docs/` directory or to `mkdocs.yml` will trigger a new build and deployment.
 
 ## License
 
-MIT
+MIT 

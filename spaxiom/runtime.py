@@ -1,71 +1,41 @@
 """
 Runtime module for Spaxiom DSL that handles the event loop and sensor polling.
 
-RUNTIME SELECTION (as of Step 8):
----------------------------------
-This module provides two runtime implementations:
+MIGRATION NOTE (as of Step 2):
+------------------------------
+This is the LEGACY async task-based runtime. It provides:
+- start_runtime(): async entrypoint with independent sensor polling tasks
+- start_blocking(): blocking wrapper for CLI usage
+- shutdown(): graceful shutdown with signal handling
 
-1. PHASED (default): Uses PhasedTickRunner with deterministic 4-phase tick execution:
-   - Phase 1: Concurrent sensor reads
-   - Phase 2: Dependency-ordered pattern updates
-   - Phase 3: Condition evaluation (polling or event-driven)
-   - Phase 4: Isolated callback dispatch
+The NEW runtime foundation is PhasedTickRunner in spaxiom/tick.py, which
+implements deterministic 4-phase tick execution per the paper specification.
 
-2. LEGACY: Uses the original async task-based runtime with independent sensor
-   polling tasks. Kept for backwards compatibility.
+PLANNED MIGRATION:
+- Step 3: Add condition dependency tracking to PhasedTickRunner
+- Step 4: Add Pattern integration to PhasedTickRunner
+- After Step 4: start_runtime() and start_blocking() will delegate to
+  PhasedTickRunner.run(), preserving backwards compatibility while using
+  the new phased tick loop internally.
 
-RUNTIME SELECTION:
-- Environment variable: SPAXIOM_RUNTIME=phased|legacy (default: phased)
-- CLI flag: --runtime phased|legacy
-
-The phased runtime is recommended for new code. Legacy runtime is available
-for backwards compatibility with existing scripts that depend on the old
-behavior.
+Until delegation is complete, both runtimes coexist:
+- Use start_blocking() / start_runtime() for existing scripts and CLI
+- Use PhasedTickRunner directly for new code requiring phased execution
 """
 
 import asyncio
 import inspect
 import logging
-import os
 import time
 import signal
 import sys
-from typing import Dict, Callable, Deque, Tuple, Set, List, Optional
+from typing import Dict, Callable, Deque, Tuple, Set, List
 from collections import deque
 
 from spaxiom.events import EVENT_HANDLERS
 from spaxiom.core import SensorRegistry, Sensor
 
 logger = logging.getLogger(__name__)
-
-# Runtime selection: "phased" (default) or "legacy"
-RUNTIME_MODE = os.environ.get("SPAXIOM_RUNTIME", "phased").lower()
-
-
-def get_runtime_mode() -> str:
-    """Get the current runtime mode.
-
-    Returns:
-        "phased" or "legacy"
-    """
-    return RUNTIME_MODE
-
-
-def set_runtime_mode(mode: str) -> None:
-    """Set the runtime mode programmatically.
-
-    Args:
-        mode: "phased" or "legacy"
-
-    Raises:
-        ValueError: If mode is not "phased" or "legacy"
-    """
-    global RUNTIME_MODE
-    mode = mode.lower()
-    if mode not in ("phased", "legacy"):
-        raise ValueError(f"Invalid runtime mode: {mode}. Must be 'phased' or 'legacy'.")
-    RUNTIME_MODE = mode
-
 
 # Maximum number of history entries to keep in global history
 MAX_HISTORY_LENGTH = 1000
@@ -87,9 +57,6 @@ RUNTIME_TASK = None
 
 # Flag to track if plugins have been initialized
 PLUGINS_INITIALIZED = False
-
-# Reference to the PhasedTickRunner when using phased mode
-PHASED_RUNNER: Optional["PhasedTickRunner"] = None  # noqa: F821
 
 
 def format_sensor_value(sensor: Sensor, value) -> str:
@@ -305,82 +272,27 @@ async def shutdown():
         sys.exit(0)
 
 
-async def _start_runtime_phased(poll_ms: int, history_length: int) -> None:
-    """Start the phased tick runtime (new default).
-
-    This uses PhasedTickRunner for deterministic 4-phase execution.
+async def start_runtime(
+    poll_ms: int = 100, history_length: int = MAX_HISTORY_LENGTH
+) -> None:
     """
-    global SHUTDOWN_INITIATED, PLUGINS_INITIALIZED, PHASED_RUNNER
+    Start the Spaxiom runtime that reads sensors and processes events asynchronously.
 
-    # Reset shutdown flag
-    SHUTDOWN_INITIATED = False
+    Args:
+        poll_ms: The polling interval in milliseconds (for backward compatibility, only used for sensors with sample_period_s=0)
+        history_length: Maximum number of history entries to keep per condition
 
-    # Initialize plugins if not already done
-    if not PLUGINS_INITIALIZED:
-        try:
-            from spaxiom.plugins import discover_and_load_plugins, initialize_plugins
+    This function:
+    1. Loads and initializes plugins
+    2. Spawns tasks to poll sensors at their individual rates
+    3. For sensors with sample_period_s=0, uses the global poll rate
+    4. Evaluates all conditions using sensors' cached values
+    5. Fires callbacks only on rising edges (when a condition changes from False to True)
+    6. Maintains global history of condition values for temporal conditions
+    7. Respects sensor privacy settings when logging/printing values
+    8. Registers signal handlers for graceful shutdown on Ctrl+C or termination signals
 
-            print("[Spaxiom] Discovering and loading plugins...")
-            discover_and_load_plugins()
-            initialize_plugins()
-            PLUGINS_INITIALIZED = True
-        except ImportError:
-            logger.debug("Plugins module not available, skipping plugin initialization")
-        except Exception as e:
-            logger.error(f"Error initializing plugins: {str(e)}")
-            import traceback
-
-            logger.debug(traceback.format_exc())
-
-    # Import PhasedTickRunner here to avoid circular imports
-    from spaxiom.tick import PhasedTickRunner
-
-    # Convert poll_ms to tick rate in Hz
-    tick_rate_hz = 1000.0 / poll_ms if poll_ms > 0 else 10.0
-
-    # Create the runner
-    runner = PhasedTickRunner(tick_rate_hz=tick_rate_hz)
-    PHASED_RUNNER = runner
-
-    # Setup signal handlers for graceful shutdown
-    loop = asyncio.get_running_loop()
-
-    def signal_handler():
-        global SHUTDOWN_INITIATED
-        if not SHUTDOWN_INITIATED:
-            SHUTDOWN_INITIATED = True
-            print("\n[Spaxiom] Shutdown initiated...")
-            runner.stop()
-
-    # Register the signal handlers
-    for sig in (signal.SIGINT, signal.SIGTERM):
-        loop.add_signal_handler(sig, signal_handler)
-
-    try:
-        registry = SensorRegistry()
-        sensor_count = len(registry.list_all())
-
-        print(f"[Spaxiom] Phased runtime started (tick_rate={tick_rate_hz:.1f} Hz)")
-        print(f"[Spaxiom] {sensor_count} sensors registered")
-        print("[Spaxiom] Press Ctrl+C to stop")
-
-        # Run the phased tick loop
-        await runner.run()
-
-    except asyncio.CancelledError:
-        runner.stop()
-    except Exception as e:
-        logger.error(f"Runtime error: {str(e)}")
-        runner.stop()
-    finally:
-        PHASED_RUNNER = None
-        print("[Spaxiom] Shutdown complete.")
-
-
-async def _start_runtime_legacy(poll_ms: int, history_length: int) -> None:
-    """Start the legacy task-based runtime.
-
-    This is the original implementation kept for backwards compatibility.
+    Terminate with KeyboardInterrupt (Ctrl+C).
     """
     global GLOBAL_HISTORY, PRIVATE_SENSORS_WARNED, ACTIVE_TASKS, SHUTDOWN_INITIATED, RUNTIME_TASK, PLUGINS_INITIALIZED
 
@@ -412,6 +324,7 @@ async def _start_runtime_legacy(poll_ms: int, history_length: int) -> None:
             initialize_plugins()
             PLUGINS_INITIALIZED = True
         except ImportError:
+            # The plugins module might not be available in older versions
             logger.debug("Plugins module not available, skipping plugin initialization")
         except Exception as e:
             logger.error(f"Error initializing plugins: {str(e)}")
@@ -454,7 +367,7 @@ async def _start_runtime_legacy(poll_ms: int, history_length: int) -> None:
                 ACTIVE_TASKS.append(task)
 
         print(
-            f"[Spaxiom] Legacy runtime started with {len(ACTIVE_TASKS)} sensor polling tasks"
+            f"[Spaxiom] Runtime started with {len(ACTIVE_TASKS)} sensor polling tasks"
         )
         print("[Spaxiom] Press Ctrl+C to stop")
 
@@ -471,28 +384,6 @@ async def _start_runtime_legacy(poll_ms: int, history_length: int) -> None:
     except Exception as e:
         logger.error(f"Runtime error: {str(e)}")
         await shutdown()
-
-
-async def start_runtime(
-    poll_ms: int = 100, history_length: int = MAX_HISTORY_LENGTH
-) -> None:
-    """
-    Start the Spaxiom runtime that reads sensors and processes events asynchronously.
-
-    Args:
-        poll_ms: The polling interval in milliseconds (converted to tick_rate_hz for phased mode)
-        history_length: Maximum number of history entries to keep per condition (legacy mode only)
-
-    Runtime Mode Selection:
-        - Set SPAXIOM_RUNTIME=phased (default) for deterministic 4-phase execution
-        - Set SPAXIOM_RUNTIME=legacy for backwards-compatible task-based execution
-
-    Terminate with KeyboardInterrupt (Ctrl+C).
-    """
-    if RUNTIME_MODE == "phased":
-        await _start_runtime_phased(poll_ms, history_length)
-    else:
-        await _start_runtime_legacy(poll_ms, history_length)
 
 
 def start_blocking(

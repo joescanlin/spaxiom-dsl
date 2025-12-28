@@ -9,20 +9,13 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 ## 1. Runtime
 
-> **Runtime Architecture (as of Step 8):**
+> **Runtime Architecture Note:**
 >
-> The runtime now supports two modes via `SPAXIOM_RUNTIME` environment variable or `--runtime` CLI flag:
+> There are currently two runtime implementations:
+> - **Primary entrypoints (legacy):** `spaxiom/runtime.py` provides `start_runtime()` and `start_blocking()`. These are used by the CLI and existing examples.
+> - **New phased tick runner:** `spaxiom/tick.py` provides `PhasedTickRunner` with deterministic 4-phase execution per the paper specification.
 >
-> - **PHASED (default):** `start_runtime()` and `start_blocking()` delegate to `PhasedTickRunner.run()` for deterministic 4-phase tick execution per the paper specification.
-> - **LEGACY:** Set `SPAXIOM_RUNTIME=legacy` or use `--runtime legacy` to use the original async task-based runtime for backwards compatibility.
->
-> **Implementation:**
-> - `spaxiom/runtime.py:475` `start_runtime()` - Delegates based on `RUNTIME_MODE`
-> - `spaxiom/runtime.py:307` `_start_runtime_phased()` - Phased mode implementation
-> - `spaxiom/runtime.py:379` `_start_runtime_legacy()` - Legacy mode implementation
-> - `spaxiom/runtime.py:45` `get_runtime_mode()` / `set_runtime_mode()` - Mode selection API
->
-> **Proving Test:** `tests/paper_parity/test_runtime_delegation.py` (11 passing)
+> **Planned delegation:** After Step 3 (conditions) and Step 4 (patterns), `start_runtime()` and `start_blocking()` will delegate to `PhasedTickRunner.run()` internally, preserving backwards compatibility while using the new phased tick loop.
 
 ### 1.1 Phased Tick Execution
 

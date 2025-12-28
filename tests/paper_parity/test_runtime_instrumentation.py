@@ -102,14 +102,13 @@ class TestPhaseTimings:
         assert stats["phase3_condition_eval_avg_ms"] >= 0
         assert stats["phase4_callback_dispatch_avg_ms"] >= 0
 
-    @pytest.mark.skip(
-        reason="DEFERRED: Percentile stats require histogram tracking; currently only averages are collected"
-    )
+    @pytest.mark.skip(reason="MISSING: Sensor read latency histograms")
     def test_sensor_read_latency_percentiles(self):
         """Profiler must provide sensor read latency percentiles."""
-        # Currently: TickProfiler collects averages only
-        # Missing: Histogram/reservoir sampling for p50/p99 percentiles
-        # To implement: Add per-sensor latency tracking with percentile calculation
+        # When implemented:
+        # stats = runtime.profiler.get_stats()
+        # assert 'sensor_read_p50_ms' in stats
+        # assert 'sensor_read_p99_ms' in stats
         pass
 
 
@@ -146,26 +145,23 @@ class TestCallbackTracking:
         # Subsequent ticks don't trigger callback (already True)
         assert stats["callback_failures"] >= 1
 
-    @pytest.mark.skip(
-        reason="DEFERRED: Condition tracing requires per-condition instrumentation; not yet implemented"
-    )
+    @pytest.mark.skip(reason="MISSING: Condition tracing")
     def test_trace_condition(self):
         """Profiler must support tracing specific conditions."""
-        # Currently: No per-condition tracing
-        # Missing: trace_condition() API with detailed logs
-        # To implement: Add TickProfiler.trace_condition() that logs eval results, timing, deps
+        # When implemented:
+        # runtime.profiler.trace_condition("my_condition")
+        # # Logs: evaluation results, timing, sensor reads, callback dispatch
         pass
 
 
 class TestProfilingOverhead:
     """Tests for profiling overhead."""
 
-    @pytest.mark.skip(
-        reason="DEFERRED: Overhead measurement is flaky in CI; requires dedicated benchmark environment"
-    )
+    @pytest.mark.skip(reason="MISSING: Profiling overhead measurement")
     def test_profiling_overhead_below_threshold(self):
         """Profiling overhead must be <1%."""
-        # This test is skipped because timing-based tests are unreliable in CI
-        # Manual verification shows overhead is minimal (<1ms per tick)
-        # To implement: Run in isolated benchmark environment with controlled CPU
+        # When implemented:
+        # 1. Run 1000 ticks without profiling, measure time
+        # 2. Run 1000 ticks with profiling, measure time
+        # 3. Assert overhead < 1%
         pass

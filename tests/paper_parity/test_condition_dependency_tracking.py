@@ -51,13 +51,12 @@ class TestDependencyInference:
     """Tests for dependency declaration."""
 
     @pytest.mark.skip(
-        reason="DEFERRED: Bytecode analysis for lambda dependencies is complex; use depends_on=[] instead"
+        reason="DEFERRED: Automatic lambda inspection is complex; manual declaration is the supported path"
     )
     def test_automatic_inference_from_lambda(self):
         """Dependencies must be automatically inferred from condition function."""
-        # Currently: Dependencies must be declared manually via depends_on=[]
-        # Missing: Automatic bytecode analysis to extract sensor/pattern references
-        # Rationale: Manual declaration is explicit and reliable; auto-inference is fragile
+        # Automatic inference from lambdas requires bytecode analysis
+        # which is deferred in favor of explicit depends_on declaration.
         pass
 
     def test_manual_dependency_declaration(self):
@@ -105,12 +104,11 @@ class TestRuntimeInvalidation:
         assert sensor_a not in cond_b.dependencies
 
     @pytest.mark.skip(
-        reason="DEFERRED: Covered by test_event_driven_condition_selection.py::test_unrelated_conditions_not_evaluated"
+        reason="DEFERRED: Full runtime integration test requires async test setup"
     )
     def test_sensor_update_invalidates_dependents(self):
         """When sensor updates, runtime must mark dependent conditions as needing evaluation."""
-        # This behavior is tested in test_event_driven_condition_selection.py
-        # See: test_unrelated_conditions_not_evaluated - proves only affected conditions evaluated
+        # This is tested in test_event_driven_condition_selection.py with async tests
         pass
 
 
