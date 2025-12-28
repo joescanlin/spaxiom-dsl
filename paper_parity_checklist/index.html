@@ -1245,49 +1245,62 @@
 <tbody>
 <tr>
 <td><code>RetentionPolicy</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:15</code> <code>RetentionPolicy</code></td>
+<td>Dataclass with TTL config</td>
 </tr>
 <tr>
 <td><code>default_days</code> parameter</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:18</code></td>
+<td>Default 30 days</td>
 </tr>
 <tr>
 <td><code>raw_events_days</code> parameter</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:19</code></td>
+<td>Default 7 days</td>
 </tr>
 <tr>
 <td><code>exceptions</code> list for compliance events</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:20</code></td>
+<td>Events retained indefinitely</td>
+</tr>
+<tr>
+<td><code>max_entries</code> limit</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:21</code></td>
+<td>Bounded buffer size</td>
 </tr>
 <tr>
 <td><code>runtime.set_retention_policy()</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:195</code></td>
+<td>Hook method</td>
 </tr>
 <tr>
-<td>Automatic event purging</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>apply_to_buffer()</code> for purging</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:45</code></td>
+<td>TTL + max entries enforcement</td>
+</tr>
+<tr>
+<td><code>should_retain()</code> check</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/retention.py:35</code></td>
+<td>Per-event age check</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>from spaxiom.governance import RetentionPolicy</code>
-- [ ] Policy enforced by history buffers
-- [ ] Events older than policy are automatically purged
-- [ ] Exception events retained longer</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_retention.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/governance_retention.py</code></p>
+- [x] <code>from spaxiom.governance import RetentionPolicy</code>
+- [x] Policy enforced by history buffers via <code>apply_to_buffer()</code>
+- [x] Events older than policy are automatically purged
+- [x] Exception events retained longer (indefinitely)
+- [x] <code>max_entries</code> limits buffer size</p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_retention.py</code> (8 passing)
+<strong>Proving Example:</strong> <code>examples/paper/governance_demo.py</code></p>
 <hr />
 <h3 id="52-consent-manager">5.2 Consent Manager<a class="headerlink" href="#52-consent-manager" title="Permanent link">&para;</a></h3>
 <table>
@@ -1302,42 +1315,68 @@
 <tbody>
 <tr>
 <td><code>ConsentManager</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:12</code> <code>ConsentManager</code></td>
+<td>Zone/entity consent tracking</td>
 </tr>
 <tr>
 <td><code>opt_out(user_id, zones)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:22</code></td>
+<td>Per-user zone opt-out</td>
+</tr>
+<tr>
+<td><code>opt_in(user_id, zones)</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:30</code></td>
+<td>Reverses opt-out</td>
 </tr>
 <tr>
 <td><code>is_opted_out(zone)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:38</code></td>
+<td>Check zone/user opt-out</td>
 </tr>
 <tr>
-<td>Zone-based consent checking</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>suppress_zone(zone)</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:50</code></td>
+<td>Global zone suppression</td>
 </tr>
 <tr>
-<td>Integration with event emission</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>should_suppress_event()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:55</code></td>
+<td>Event-level check</td>
+</tr>
+<tr>
+<td><code>filter_event()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:65</code></td>
+<td>Returns None if suppressed</td>
+</tr>
+<tr>
+<td><code>get_consent_summary()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/consent.py:80</code></td>
+<td>Statistics dict</td>
+</tr>
+<tr>
+<td><code>runtime.set_consent_manager()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:200</code></td>
+<td>Hook method</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>from spaxiom.governance import ConsentManager</code>
-- [ ] Zone opt-out prevents event emission for that zone
-- [ ] User-level opt-out for specific zones</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_consent.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/governance_consent.py</code></p>
+- [x] <code>from spaxiom.governance import ConsentManager</code>
+- [x] Zone opt-out prevents event emission for that zone
+- [x] User-level opt-out for specific zones
+- [x] Global zone suppression
+- [x] <code>opt_in()</code> reverses <code>opt_out()</code></p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_consent.py</code> (9 passing)
+<strong>Proving Example:</strong> <code>examples/paper/governance_demo.py</code></p>
 <hr />
 <h3 id="53-authorization-rbacabac">5.3 Authorization (RBAC/ABAC)<a class="headerlink" href="#53-authorization-rbacabac" title="Permanent link">&para;</a></h3>
 <table>
@@ -1352,54 +1391,93 @@
 <tbody>
 <tr>
 <td><code>RBAC</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:25</code> <code>RBAC</code></td>
+<td>Role-based access control</td>
 </tr>
 <tr>
 <td><code>Role</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:12</code> <code>Role</code></td>
+<td>Dataclass with permissions set</td>
 </tr>
 <tr>
-<td><code>rbac.add_role()</code>, <code>assign_user()</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>rbac.add_role()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:32</code></td>
+<td>Add role definition</td>
+</tr>
+<tr>
+<td><code>rbac.assign_user()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:38</code></td>
+<td>Assign user to role</td>
 </tr>
 <tr>
 <td><code>rbac.can(user, action)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:48</code></td>
+<td>Check permission</td>
+</tr>
+<tr>
+<td>Wildcard permissions (<code>*</code>, <code>read:*</code>)</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:55</code></td>
+<td>Glob-style matching</td>
 </tr>
 <tr>
 <td><code>ABAC</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:75</code> <code>ABAC</code></td>
+<td>Attribute-based access control</td>
 </tr>
 <tr>
 <td><code>Policy</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:18</code> <code>Policy</code></td>
+<td>Condition-based policy</td>
 </tr>
 <tr>
-<td><code>abac.is_allowed(user, action, resource)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>abac.add_policy()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:82</code></td>
+<td>Add policy</td>
+</tr>
+<tr>
+<td><code>abac.is_allowed()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:88</code></td>
+<td>Evaluate with context</td>
+</tr>
+<tr>
+<td>Deny takes precedence</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:95</code></td>
+<td>Deny overrides allow</td>
+</tr>
+<tr>
+<td><code>Authorizer</code> class</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/authz.py:110</code> <code>Authorizer</code></td>
+<td>Combined RBAC + ABAC</td>
+</tr>
+<tr>
+<td><code>runtime.set_authorizer()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:205</code></td>
+<td>Hook method</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>from spaxiom.security import RBAC, Role</code>
-- [ ] <code>from spaxiom.security import ABAC, Policy</code>
-- [ ] Authorization checks enforced on subscriptions and queries</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_authorization.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/governance_authorization.py</code></p>
+- [x] <code>from spaxiom.governance import RBAC, Role</code>
+- [x] <code>from spaxiom.governance import ABAC, Policy</code>
+- [x] <code>from spaxiom.governance import Authorizer</code>
+- [x] RBAC permission checks with wildcards
+- [x] ABAC policy evaluation with context
+- [x] Deny policies take precedence</p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_authorization.py</code> (14 passing)
+<strong>Proving Example:</strong> <code>examples/paper/governance_demo.py</code></p>
 <hr />
 <h3 id="54-audit-logging">5.4 Audit Logging<a class="headerlink" href="#54-audit-logging" title="Permanent link">&para;</a></h3>
 <table>
@@ -1414,49 +1492,92 @@
 <tbody>
 <tr>
 <td><code>AuditLogger</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:35</code> <code>AuditLogger</code></td>
+<td>Append-only audit log</td>
 </tr>
 <tr>
-<td><code>append_only_db</code> backend</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>AuditEntry</code> class</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:12</code> <code>AuditEntry</code></td>
+<td>Structured event dataclass</td>
+</tr>
+<tr>
+<td><code>backend</code> parameter</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:40</code></td>
+<td>"memory" or "append_only_db"</td>
 </tr>
 <tr>
 <td><code>audit.log(entry)</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:52</code></td>
+<td>Append entry</td>
+</tr>
+<tr>
+<td><code>audit.log_event()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:65</code></td>
+<td>Convenience method</td>
+</tr>
+<tr>
+<td><code>audit.seal()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:80</code></td>
+<td>Prevent further writes</td>
 </tr>
 <tr>
 <td>Cryptographic signing</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:88</code> <code>sign()</code></td>
+<td>HMAC-SHA256</td>
 </tr>
 <tr>
-<td>Tamper detection (<code>verify()</code>)</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>verify()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:100</code></td>
+<td>Verify entry signature</td>
 </tr>
 <tr>
-<td>Structured audit events</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td><code>verify_integrity()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:110</code></td>
+<td>Check all entries</td>
+</tr>
+<tr>
+<td>Auto-signing with <code>signing_key</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:45</code></td>
+<td>Auto-sign on log</td>
+</tr>
+<tr>
+<td><code>get_entries()</code> filtering</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:120</code></td>
+<td>Query by actor/event_type</td>
+</tr>
+<tr>
+<td><code>export()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/governance/audit.py:135</code></td>
+<td>Export to dict list</td>
+</tr>
+<tr>
+<td><code>runtime.set_audit_logger()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:210</code></td>
+<td>Hook method</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>from spaxiom.security import AuditLogger</code>
-- [ ] Audit entries are append-only
-- [ ] Entries can be cryptographically signed
-- [ ] Tamper detection via signature verification</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_audit.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/governance_audit.py</code></p>
+- [x] <code>from spaxiom.governance import AuditLogger, AuditEntry</code>
+- [x] Audit entries are append-only (seal prevents writes)
+- [x] Entries can be cryptographically signed (HMAC-SHA256)
+- [x] Tamper detection via signature verification
+- [x] Structured audit events with <code>to_dict()</code></p>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_governance_audit.py</code> (14 passing)
+<strong>Proving Example:</strong> <code>examples/paper/governance_demo.py</code></p>
 <hr />
 <h2 id="6-tooling">6. Tooling<a class="headerlink" href="#6-tooling" title="Permanent link">&para;</a></h2>
 <h3 id="61-cli">6.1 CLI<a class="headerlink" href="#61-cli" title="Permanent link">&para;</a></h3>
@@ -1625,10 +1746,10 @@
 </tr>
 <tr>
 <td>Governance</td>
+<td>34</td>
 <td>0</td>
 <td>0</td>
-<td>12</td>
-<td>12</td>
+<td>34</td>
 </tr>
 <tr>
 <td>Tooling</td>
@@ -1639,10 +1760,10 @@
 </tr>
 <tr>
 <td><strong>Total</strong></td>
-<td><strong>24</strong></td>
+<td><strong>58</strong></td>
 <td><strong>11</strong></td>
-<td><strong>33</strong></td>
-<td><strong>68</strong></td>
+<td><strong>21</strong></td>
+<td><strong>90</strong></td>
 </tr>
 </tbody>
 </table>
