@@ -12,7 +12,7 @@ import importlib.util
 import click
 import logging
 
-from spaxiom.runtime import start_blocking
+from spaxiom.runtime import start_blocking, set_runtime_mode
 from spaxiom.config import load_sensors_from_yaml
 
 
@@ -46,12 +46,19 @@ def cli():
     is_flag=True,
     help="Enable verbose logging for detailed runtime information",
 )
+@click.option(
+    "--runtime",
+    type=click.Choice(["phased", "legacy"], case_sensitive=False),
+    default=None,
+    help="Runtime mode: phased (default, deterministic 4-phase) or legacy (task-based)",
+)
 def run_script(
     script_path: str,
     poll_ms: int,
     history_length: int,
     config: str = None,
     verbose: bool = False,
+    runtime: str = None,
 ):
     """
     Run a Spaxiom script.
@@ -80,6 +87,11 @@ def run_script(
 
     if verbose:
         click.echo("Verbose logging enabled")
+
+    # Set runtime mode if specified via CLI flag
+    if runtime:
+        set_runtime_mode(runtime)
+        click.echo(f"Using {runtime} runtime mode")
 
     script_path = os.path.abspath(script_path)
     script_dir = os.path.dirname(script_path)
