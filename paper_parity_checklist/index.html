@@ -962,42 +962,42 @@
 <tbody>
 <tr>
 <td><code>Pattern</code> base class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No base class</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:20</code> <code>Pattern</code></td>
+<td>ABC with update/emit/depends_on</td>
 </tr>
 <tr>
 <td><code>update(dt, context)</code> method</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Patterns are passive</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:45</code></td>
+<td>Called by runtime each tick</td>
 </tr>
 <tr>
 <td><code>emit()</code> method returning typed events</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No event emission</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:55</code></td>
+<td>Returns list of PatternEvent</td>
 </tr>
 <tr>
 <td><code>depends_on()</code> method</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No dependency declaration</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:65</code></td>
+<td>Returns list of dependencies</td>
 </tr>
 <tr>
 <td>Stable event serialization (<code>to_dict()</code>)</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No event objects</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:80</code> <code>PatternEvent.to_dict()</code></td>
+<td>Dataclass-based serialization</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>Pattern</code> base class with abstract methods
-- [ ] <code>update()</code> called by runtime each tick with <code>dt</code> and context
-- [ ] <code>emit()</code> returns list of typed event objects
-- [ ] <code>depends_on()</code> returns list of sensors/patterns
-- [ ] Events have <code>to_dict()</code> for JSON serialization</p>
+- [x] <code>Pattern</code> base class with abstract methods
+- [x] <code>update()</code> called by runtime each tick with <code>dt</code> and context
+- [x] <code>emit()</code> returns list of typed event objects
+- [x] <code>depends_on()</code> returns list of sensors/patterns
+- [x] Events have <code>to_dict()</code> for JSON serialization</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_intent_pattern_emits_event.py</code>
 <strong>Proving Example:</strong> <code>examples/paper/intent_occupancyfield.py</code></p>
 <hr />
@@ -1014,36 +1014,75 @@
 <tbody>
 <tr>
 <td><code>OccupancyField</code></td>
-<td>PARTIAL</td>
-<td><code>spaxiom/intent/occupancy_field.py:14</code></td>
-<td>Passive wrapper, no <code>update()/emit()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/occupancy_field.py:20</code></td>
+<td>Inherits Pattern, emits OccupancyChanged</td>
 </tr>
 <tr>
 <td><code>QueueFlow</code></td>
-<td>PARTIAL</td>
-<td><code>spaxiom/intent/queue_flow.py:11</code></td>
-<td>Passive wrapper, no <code>update()/emit()</code></td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/queue_flow.py:18</code></td>
+<td>Inherits Pattern, emits QueueLengthChanged</td>
 </tr>
 <tr>
 <td><code>ADLTracker</code></td>
-<td>PARTIAL</td>
-<td><code>spaxiom/intent/adl_tracker.py:7</code></td>
-<td>Has <code>mark_*()</code> methods, no runtime integration</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/adl_tracker.py:15</code></td>
+<td>Inherits Pattern, emits ADLEvent</td>
 </tr>
 <tr>
 <td><code>FmSteward</code></td>
-<td>PARTIAL</td>
-<td><code>spaxiom/intent/fm_steward.py:6</code></td>
-<td>Passive <code>needs_service()</code> check</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/fm_steward.py:15</code></td>
+<td>Inherits Pattern, emits ServiceNeeded</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] All patterns inherit from <code>Pattern</code> base class
-- [ ] All patterns implement <code>update(dt, context)</code>, <code>emit()</code>, <code>depends_on()</code>
-- [ ] Patterns integrated into runtime tick loop</p>
+- [x] All patterns inherit from <code>Pattern</code> base class
+- [x] All patterns implement <code>update(dt, context)</code>, <code>emit()</code>, <code>depends_on()</code>
+- [x] Patterns integrated into runtime tick loop</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_intent_patterns_interface.py</code>
 <strong>Proving Example:</strong> <code>examples/paper/intent_all_patterns.py</code></p>
+<hr />
+<h3 id="33-runtime-integration">3.3 Runtime Integration<a class="headerlink" href="#33-runtime-integration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Status</th>
+<th>Code Pointer</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pattern registration</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:218</code> <code>register_pattern()</code></td>
+<td>Patterns registered with runner</td>
+</tr>
+<tr>
+<td>Dependency-ordered updates</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:280</code> <code>_phase2_pattern_updates()</code></td>
+<td>Topological sort by depends_on</td>
+</tr>
+<tr>
+<td>Event collection</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:295</code></td>
+<td>Per-tick event stream</td>
+</tr>
+<tr>
+<td>Event subscription</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/intent/pattern.py:90</code> <code>on_pattern_event()</code></td>
+<td>Subscribe to pattern events</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_tick_ordering.py::test_phase2_patterns_dependency_ordered</code></p>
 <hr />
 <h2 id="4-safety-verification">4. Safety Verification<a class="headerlink" href="#4-safety-verification" title="Permanent link">&para;</a></h2>
 <h3 id="41-verifiable-subset">4.1 Verifiable Subset<a class="headerlink" href="#41-verifiable-subset" title="Permanent link">&para;</a></h3>
@@ -1059,36 +1098,36 @@
 <tbody>
 <tr>
 <td>Define verifiable subset of DSL</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No formal subset definition</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/ir.py:40</code> <code>VerifiableCondition</code></td>
+<td>Opt-in via explicit construction</td>
 </tr>
 <tr>
 <td>Internal IR for verifiable conditions</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No IR representation</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/ir.py:15</code> <code>IRNode</code> hierarchy</td>
+<td>AST-like representation</td>
 </tr>
 <tr>
 <td>Restricted operators (no Python lambdas)</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Arbitrary lambdas allowed</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/ir.py</code></td>
+<td>Only Boolean ops, comparisons, temporal</td>
 </tr>
 <tr>
 <td>Bounded iteration only</td>
-<td>MISSING</td>
+<td>N/A</td>
 <td>-</td>
-<td>No enforcement</td>
+<td>No iteration in condition IR</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>SafeCondition</code> class or decorator for verifiable subset
-- [ ] IR representation for conditions
-- [ ] Validation that condition is in verifiable subset</p>
+- [x] <code>VerifiableCondition</code> class for verifiable subset
+- [x] IR representation for conditions (<code>IRNode</code>, <code>IRCompare</code>, <code>IRAnd</code>, etc.)
+- [x] Validation that condition is in verifiable subset (only IR-based ops allowed)</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_verifiable_subset.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/safety_verifiable_subset.py</code></p>
+<strong>Proving Example:</strong> <code>examples/paper/safety_export_uppaal.py</code></p>
 <hr />
 <h3 id="42-uppaal-export">4.2 UPPAAL Export<a class="headerlink" href="#42-uppaal-export" title="Permanent link">&para;</a></h3>
 <table>
@@ -1103,35 +1142,35 @@
 <tbody>
 <tr>
 <td><code>verify.compile_to_uppaal()</code></td>
-<td>MISSING</td>
-<td>-</td>
-<td>No export module</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/verify.py:25</code> <code>compile_to_uppaal()</code></td>
+<td>Export function</td>
 </tr>
 <tr>
 <td>Timed automaton generation</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No automaton model</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/verify.py:50</code> <code>UppaalAutomaton</code></td>
+<td>Automaton wrapper class</td>
 </tr>
 <tr>
 <td><code>.xml</code> file output</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No XML generation</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/verify.py:85</code> <code>UppaalAutomaton.save()</code></td>
+<td>Produces valid UPPAAL XML</td>
 </tr>
 <tr>
 <td>Clock/timing modeling</td>
-<td>MISSING</td>
-<td>-</td>
-<td>No timing model</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/verify.py:70</code></td>
+<td>Clocks for temporal conditions</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>from spaxiom.safety import verify</code> works
-- [ ] <code>compile_to_uppaal(conditions, zones)</code> returns automaton object
-- [ ] <code>automaton.save("file.xml")</code> produces valid UPPAAL XML
-- [ ] XML parseable by UPPAAL tool</p>
+- [x] <code>from spaxiom.safety import verify</code> works
+- [x] <code>compile_to_uppaal(conditions, zones)</code> returns automaton object
+- [x] <code>automaton.save("file.xml")</code> produces valid UPPAAL XML
+- [ ] XML parseable by UPPAAL tool (export-only, not validated against UPPAAL)</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_safety_export_uppaal.py</code>
 <strong>Proving Example:</strong> <code>examples/paper/safety_export_uppaal.py</code></p>
 <hr />
@@ -1148,49 +1187,49 @@
 <tbody>
 <tr>
 <td><code>SafetyMonitor</code> class</td>
-<td>MISSING</td>
-<td>-</td>
-<td>Not implemented</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/monitor.py:25</code> <code>SafetyMonitor</code></td>
+<td>Runtime safety checker</td>
 </tr>
 <tr>
 <td><code>property</code> parameter (safety condition)</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/monitor.py:35</code></td>
+<td>Via constructor</td>
 </tr>
 <tr>
 <td><code>on_violation</code> callback</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/monitor.py:40</code></td>
+<td>Failsafe callback</td>
 </tr>
 <tr>
 <td><code>compile_to_uppaal()</code> method</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/monitor.py:95</code></td>
+<td>Exports monitor to UPPAAL</td>
 </tr>
 <tr>
 <td>Structured audit records</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/safety/monitor.py:15</code> <code>SafetyViolation</code></td>
+<td>Dataclass with schema</td>
 </tr>
 <tr>
 <td>Runtime monitoring loop</td>
-<td>MISSING</td>
-<td>-</td>
-<td>-</td>
+<td>IMPLEMENTED</td>
+<td><code>spaxiom/tick.py:350</code></td>
+<td>Integrated into Phase 4</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Acceptance Criteria:</strong>
-- [ ] <code>SafetyMonitor(name, property, on_violation)</code> constructor
-- [ ] Monitor integrated into runtime
-- [ ] Violation triggers callback and logs audit event
-- [ ] Audit events have structured schema</p>
+- [x] <code>SafetyMonitor(name, property, on_violation)</code> constructor
+- [x] Monitor integrated into runtime
+- [x] Violation triggers callback and emits structured <code>SafetyViolation</code> event
+- [x] Audit events have structured schema</p>
 <p><strong>Proving Test:</strong> <code>tests/paper_parity/test_safety_monitor.py</code>
-<strong>Proving Example:</strong> <code>examples/paper/safety_monitor_demo.py</code></p>
+<strong>Proving Example:</strong> <code>examples/paper/safety_export_uppaal.py</code></p>
 <hr />
 <h2 id="5-governance">5. Governance<a class="headerlink" href="#5-governance" title="Permanent link">&para;</a></h2>
 <h3 id="51-retention-policy">5.1 Retention Policy<a class="headerlink" href="#51-retention-policy" title="Permanent link">&para;</a></h3>
