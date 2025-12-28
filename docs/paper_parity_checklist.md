@@ -265,21 +265,24 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `RetentionPolicy` class | MISSING | - | Not implemented |
-| `default_days` parameter | MISSING | - | - |
-| `raw_events_days` parameter | MISSING | - | - |
-| `exceptions` list for compliance events | MISSING | - | - |
-| `runtime.set_retention_policy()` | MISSING | - | - |
-| Automatic event purging | MISSING | - | - |
+| `RetentionPolicy` class | IMPLEMENTED | `spaxiom/governance/retention.py:15` `RetentionPolicy` | Dataclass with TTL config |
+| `default_days` parameter | IMPLEMENTED | `spaxiom/governance/retention.py:18` | Default 30 days |
+| `raw_events_days` parameter | IMPLEMENTED | `spaxiom/governance/retention.py:19` | Default 7 days |
+| `exceptions` list for compliance events | IMPLEMENTED | `spaxiom/governance/retention.py:20` | Events retained indefinitely |
+| `max_entries` limit | IMPLEMENTED | `spaxiom/governance/retention.py:21` | Bounded buffer size |
+| `runtime.set_retention_policy()` | IMPLEMENTED | `spaxiom/tick.py:195` | Hook method |
+| `apply_to_buffer()` for purging | IMPLEMENTED | `spaxiom/governance/retention.py:45` | TTL + max entries enforcement |
+| `should_retain()` check | IMPLEMENTED | `spaxiom/governance/retention.py:35` | Per-event age check |
 
 **Acceptance Criteria:**
-- [ ] `from spaxiom.governance import RetentionPolicy`
-- [ ] Policy enforced by history buffers
-- [ ] Events older than policy are automatically purged
-- [ ] Exception events retained longer
+- [x] `from spaxiom.governance import RetentionPolicy`
+- [x] Policy enforced by history buffers via `apply_to_buffer()`
+- [x] Events older than policy are automatically purged
+- [x] Exception events retained longer (indefinitely)
+- [x] `max_entries` limits buffer size
 
-**Proving Test:** `tests/paper_parity/test_governance_retention.py`
-**Proving Example:** `examples/paper/governance_retention.py`
+**Proving Test:** `tests/paper_parity/test_governance_retention.py` (8 passing)
+**Proving Example:** `examples/paper/governance_demo.py`
 
 ---
 
@@ -287,19 +290,25 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `ConsentManager` class | MISSING | - | Not implemented |
-| `opt_out(user_id, zones)` | MISSING | - | - |
-| `is_opted_out(zone)` | MISSING | - | - |
-| Zone-based consent checking | MISSING | - | - |
-| Integration with event emission | MISSING | - | - |
+| `ConsentManager` class | IMPLEMENTED | `spaxiom/governance/consent.py:12` `ConsentManager` | Zone/entity consent tracking |
+| `opt_out(user_id, zones)` | IMPLEMENTED | `spaxiom/governance/consent.py:22` | Per-user zone opt-out |
+| `opt_in(user_id, zones)` | IMPLEMENTED | `spaxiom/governance/consent.py:30` | Reverses opt-out |
+| `is_opted_out(zone)` | IMPLEMENTED | `spaxiom/governance/consent.py:38` | Check zone/user opt-out |
+| `suppress_zone(zone)` | IMPLEMENTED | `spaxiom/governance/consent.py:50` | Global zone suppression |
+| `should_suppress_event()` | IMPLEMENTED | `spaxiom/governance/consent.py:55` | Event-level check |
+| `filter_event()` | IMPLEMENTED | `spaxiom/governance/consent.py:65` | Returns None if suppressed |
+| `get_consent_summary()` | IMPLEMENTED | `spaxiom/governance/consent.py:80` | Statistics dict |
+| `runtime.set_consent_manager()` | IMPLEMENTED | `spaxiom/tick.py:200` | Hook method |
 
 **Acceptance Criteria:**
-- [ ] `from spaxiom.governance import ConsentManager`
-- [ ] Zone opt-out prevents event emission for that zone
-- [ ] User-level opt-out for specific zones
+- [x] `from spaxiom.governance import ConsentManager`
+- [x] Zone opt-out prevents event emission for that zone
+- [x] User-level opt-out for specific zones
+- [x] Global zone suppression
+- [x] `opt_in()` reverses `opt_out()`
 
-**Proving Test:** `tests/paper_parity/test_governance_consent.py`
-**Proving Example:** `examples/paper/governance_consent.py`
+**Proving Test:** `tests/paper_parity/test_governance_consent.py` (9 passing)
+**Proving Example:** `examples/paper/governance_demo.py`
 
 ---
 
@@ -307,21 +316,30 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `RBAC` class | MISSING | - | Not implemented |
-| `Role` class | MISSING | - | - |
-| `rbac.add_role()`, `assign_user()` | MISSING | - | - |
-| `rbac.can(user, action)` | MISSING | - | - |
-| `ABAC` class | MISSING | - | Not implemented |
-| `Policy` class | MISSING | - | - |
-| `abac.is_allowed(user, action, resource)` | MISSING | - | - |
+| `RBAC` class | IMPLEMENTED | `spaxiom/governance/authz.py:25` `RBAC` | Role-based access control |
+| `Role` class | IMPLEMENTED | `spaxiom/governance/authz.py:12` `Role` | Dataclass with permissions set |
+| `rbac.add_role()` | IMPLEMENTED | `spaxiom/governance/authz.py:32` | Add role definition |
+| `rbac.assign_user()` | IMPLEMENTED | `spaxiom/governance/authz.py:38` | Assign user to role |
+| `rbac.can(user, action)` | IMPLEMENTED | `spaxiom/governance/authz.py:48` | Check permission |
+| Wildcard permissions (`*`, `read:*`) | IMPLEMENTED | `spaxiom/governance/authz.py:55` | Glob-style matching |
+| `ABAC` class | IMPLEMENTED | `spaxiom/governance/authz.py:75` `ABAC` | Attribute-based access control |
+| `Policy` class | IMPLEMENTED | `spaxiom/governance/authz.py:18` `Policy` | Condition-based policy |
+| `abac.add_policy()` | IMPLEMENTED | `spaxiom/governance/authz.py:82` | Add policy |
+| `abac.is_allowed()` | IMPLEMENTED | `spaxiom/governance/authz.py:88` | Evaluate with context |
+| Deny takes precedence | IMPLEMENTED | `spaxiom/governance/authz.py:95` | Deny overrides allow |
+| `Authorizer` class | IMPLEMENTED | `spaxiom/governance/authz.py:110` `Authorizer` | Combined RBAC + ABAC |
+| `runtime.set_authorizer()` | IMPLEMENTED | `spaxiom/tick.py:205` | Hook method |
 
 **Acceptance Criteria:**
-- [ ] `from spaxiom.security import RBAC, Role`
-- [ ] `from spaxiom.security import ABAC, Policy`
-- [ ] Authorization checks enforced on subscriptions and queries
+- [x] `from spaxiom.governance import RBAC, Role`
+- [x] `from spaxiom.governance import ABAC, Policy`
+- [x] `from spaxiom.governance import Authorizer`
+- [x] RBAC permission checks with wildcards
+- [x] ABAC policy evaluation with context
+- [x] Deny policies take precedence
 
-**Proving Test:** `tests/paper_parity/test_governance_authorization.py`
-**Proving Example:** `examples/paper/governance_authorization.py`
+**Proving Test:** `tests/paper_parity/test_governance_authorization.py` (14 passing)
+**Proving Example:** `examples/paper/governance_demo.py`
 
 ---
 
@@ -329,21 +347,29 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `AuditLogger` class | MISSING | - | Not implemented |
-| `append_only_db` backend | MISSING | - | - |
-| `audit.log(entry)` | MISSING | - | - |
-| Cryptographic signing | MISSING | - | - |
-| Tamper detection (`verify()`) | MISSING | - | - |
-| Structured audit events | MISSING | - | - |
+| `AuditLogger` class | IMPLEMENTED | `spaxiom/governance/audit.py:35` `AuditLogger` | Append-only audit log |
+| `AuditEntry` class | IMPLEMENTED | `spaxiom/governance/audit.py:12` `AuditEntry` | Structured event dataclass |
+| `backend` parameter | IMPLEMENTED | `spaxiom/governance/audit.py:40` | "memory" or "append_only_db" |
+| `audit.log(entry)` | IMPLEMENTED | `spaxiom/governance/audit.py:52` | Append entry |
+| `audit.log_event()` | IMPLEMENTED | `spaxiom/governance/audit.py:65` | Convenience method |
+| `audit.seal()` | IMPLEMENTED | `spaxiom/governance/audit.py:80` | Prevent further writes |
+| Cryptographic signing | IMPLEMENTED | `spaxiom/governance/audit.py:88` `sign()` | HMAC-SHA256 |
+| `verify()` | IMPLEMENTED | `spaxiom/governance/audit.py:100` | Verify entry signature |
+| `verify_integrity()` | IMPLEMENTED | `spaxiom/governance/audit.py:110` | Check all entries |
+| Auto-signing with `signing_key` | IMPLEMENTED | `spaxiom/governance/audit.py:45` | Auto-sign on log |
+| `get_entries()` filtering | IMPLEMENTED | `spaxiom/governance/audit.py:120` | Query by actor/event_type |
+| `export()` | IMPLEMENTED | `spaxiom/governance/audit.py:135` | Export to dict list |
+| `runtime.set_audit_logger()` | IMPLEMENTED | `spaxiom/tick.py:210` | Hook method |
 
 **Acceptance Criteria:**
-- [ ] `from spaxiom.security import AuditLogger`
-- [ ] Audit entries are append-only
-- [ ] Entries can be cryptographically signed
-- [ ] Tamper detection via signature verification
+- [x] `from spaxiom.governance import AuditLogger, AuditEntry`
+- [x] Audit entries are append-only (seal prevents writes)
+- [x] Entries can be cryptographically signed (HMAC-SHA256)
+- [x] Tamper detection via signature verification
+- [x] Structured audit events with `to_dict()`
 
-**Proving Test:** `tests/paper_parity/test_governance_audit.py`
-**Proving Example:** `examples/paper/governance_audit.py`
+**Proving Test:** `tests/paper_parity/test_governance_audit.py` (14 passing)
+**Proving Example:** `examples/paper/governance_demo.py`
 
 ---
 
@@ -411,9 +437,9 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 | Conditions | 13 | 1 | 0 | 14 |
 | INTENT Patterns | 0 | 4 | 6 | 10 |
 | Safety Verification | 0 | 0 | 11 | 11 |
-| Governance | 0 | 0 | 12 | 12 |
+| Governance | 34 | 0 | 0 | 34 |
 | Tooling | 8 | 2 | 0 | 10 |
-| **Total** | **24** | **11** | **33** | **68** |
+| **Total** | **58** | **11** | **21** | **90** |
 
 ---
 

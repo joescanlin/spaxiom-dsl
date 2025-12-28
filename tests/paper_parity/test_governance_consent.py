@@ -7,55 +7,110 @@ Tests ConsentManager for zone-based consent:
 - Event suppression
 
 Reference: Paper Section 5 "Zone-based consent management"
-Proving Example: examples/paper/governance_consent.py
+Proving Example: examples/paper/governance_demo.py
 """
 
-import pytest
+from spaxiom.governance import ConsentManager
 
 
 class TestConsentManagerClass:
     """Tests for ConsentManager class."""
 
-    @pytest.mark.skip(reason="MISSING: spaxiom.governance.ConsentManager class")
     def test_consent_manager_exists(self):
         """ConsentManager class must exist."""
-        # When implemented:
-        # from spaxiom.governance import ConsentManager
-        pass
+        assert ConsentManager is not None
 
-    @pytest.mark.skip(reason="MISSING: ConsentManager.opt_out() method")
     def test_consent_manager_has_opt_out(self):
         """ConsentManager must have opt_out(user_id, zones) method."""
-        # When implemented:
-        # consent = ConsentManager()
-        # consent.opt_out(user_id="employee_42", zones=["lounge", "restroom"])
-        pass
+        consent = ConsentManager()
+        consent.opt_out(user_id="employee_42", zones=["lounge", "restroom"])
 
-    @pytest.mark.skip(reason="MISSING: ConsentManager.is_opted_out() method")
+        # Verify opt-out was recorded
+        opted_out_zones = consent.get_opted_out_zones("employee_42")
+        assert "lounge" in opted_out_zones
+        assert "restroom" in opted_out_zones
+
     def test_consent_manager_has_is_opted_out(self):
         """ConsentManager must have is_opted_out(zone) method."""
-        # When implemented:
-        # assert consent.is_opted_out(zone="lounge") == True
-        pass
+        consent = ConsentManager()
+        consent.opt_out(user_id="employee_42", zones=["lounge"])
+
+        assert consent.is_opted_out(zone="lounge") is True
+        assert consent.is_opted_out(zone="lobby") is False
 
 
 class TestConsentEnforcement:
     """Tests for consent enforcement."""
 
-    @pytest.mark.skip(reason="MISSING: Event suppression for opted-out zones")
     def test_events_suppressed_for_opted_out_zones(self):
         """Events must be suppressed for zones where user has opted out."""
-        # When implemented:
-        # 1. Opt out user from zone "lounge"
-        # 2. Generate event in zone "lounge"
-        # 3. Assert event not emitted
-        pass
+        consent = ConsentManager()
+        consent.opt_out(user_id="employee_42", zones=["lounge"])
 
-    @pytest.mark.skip(reason="MISSING: Events allowed for non-opted-out zones")
+        # Event from opted-out zone
+        event = {"zone": "lounge", "user_id": "employee_42", "value": 1}
+
+        # Should be suppressed
+        assert consent.should_suppress_event(zone="lounge", user_id="employee_42")
+        assert consent.filter_event(event) is None
+
     def test_events_allowed_for_other_zones(self):
         """Events must still be emitted for zones not opted out."""
-        # When implemented:
-        # 1. Opt out user from zone "lounge"
-        # 2. Generate event in zone "lobby"
-        # 3. Assert event emitted
-        pass
+        consent = ConsentManager()
+        consent.opt_out(user_id="employee_42", zones=["lounge"])
+
+        # Event from allowed zone
+        event = {"zone": "lobby", "user_id": "employee_42", "value": 1}
+
+        # Should NOT be suppressed
+        assert not consent.should_suppress_event(zone="lobby", user_id="employee_42")
+        filtered = consent.filter_event(event)
+        assert filtered is not None
+        assert filtered["value"] == 1
+
+    def test_global_zone_suppression(self):
+        """Globally suppressed zones block all events."""
+        consent = ConsentManager()
+        consent.suppress_zone("private_room")
+
+        # Event from globally suppressed zone
+        event = {"zone": "private_room", "value": 1}
+
+        assert consent.is_opted_out("private_room") is True
+        assert consent.filter_event(event) is None
+
+    def test_opt_in_reverses_opt_out(self):
+        """opt_in() should reverse a previous opt_out()."""
+        consent = ConsentManager()
+        consent.opt_out(user_id="user1", zones=["zone_a", "zone_b"])
+
+        assert consent.is_opted_out("zone_a", user_id="user1") is True
+
+        consent.opt_in(user_id="user1", zones=["zone_a"])
+
+        assert consent.is_opted_out("zone_a", user_id="user1") is False
+        assert consent.is_opted_out("zone_b", user_id="user1") is True
+
+    def test_runtime_accepts_consent_manager(self):
+        """Runtime must accept consent manager via set_consent_manager()."""
+        from spaxiom.tick import PhasedTickRunner
+
+        runner = PhasedTickRunner()
+        consent = ConsentManager()
+
+        runner.set_consent_manager(consent)
+        assert runner._consent_manager is consent
+
+    def test_consent_summary(self):
+        """get_consent_summary() returns useful statistics."""
+        consent = ConsentManager()
+        consent.opt_out(user_id="user1", zones=["zone_a"])
+        consent.opt_out(user_id="user2", zones=["zone_a", "zone_b"])
+        consent.suppress_zone("zone_c")
+
+        summary = consent.get_consent_summary()
+
+        assert summary["total_users"] == 2
+        assert "zone_a" in summary["zones_with_optouts"]
+        assert "zone_c" in summary["globally_suppressed"]
+        assert summary["optouts_by_zone"]["zone_a"] == 2

@@ -216,6 +216,12 @@ class PhasedTickRunner:
         self._on_tick_start: Optional[Callable[[int], None]] = None
         self._on_tick_end: Optional[Callable[[TickStats], None]] = None
 
+        # Governance hooks (Step 6)
+        self._retention_policy: Optional[Any] = None
+        self._consent_manager: Optional[Any] = None
+        self._authorizer: Optional[Any] = None
+        self._audit_logger: Optional[Any] = None
+
     @property
     def tick_count(self) -> int:
         """Get the current tick count."""
@@ -249,6 +255,38 @@ class PhasedTickRunner:
     def clear_safety_monitors(self) -> None:
         """Clear all registered safety monitors."""
         self._safety_monitors.clear()
+
+    def set_retention_policy(self, policy: Any) -> None:
+        """Set retention policy for history buffers.
+
+        Args:
+            policy: RetentionPolicy instance
+        """
+        self._retention_policy = policy
+
+    def set_consent_manager(self, manager: Any) -> None:
+        """Set consent manager for data collection controls.
+
+        Args:
+            manager: ConsentManager instance
+        """
+        self._consent_manager = manager
+
+    def set_authorizer(self, authorizer: Any) -> None:
+        """Set authorizer for access control.
+
+        Args:
+            authorizer: Authorizer instance
+        """
+        self._authorizer = authorizer
+
+    def set_audit_logger(self, logger: Any) -> None:
+        """Set audit logger for governance events.
+
+        Args:
+            logger: AuditLogger instance
+        """
+        self._audit_logger = logger
 
     def _check_safety_monitors(self, context: Optional[Dict[str, Any]] = None) -> tuple:
         """Check all registered safety monitors.
