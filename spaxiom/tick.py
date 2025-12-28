@@ -62,6 +62,11 @@ class TickStats:
     callbacks_dispatched: int = 0
     callback_failures: int = 0
 
+    # Safety monitoring
+    safety_monitors_checked: int = 0
+    safety_violations: int = 0
+    safety_violation_events: List[Any] = field(default_factory=list)
+
     # Phase ordering proof
     phase_order: List[str] = field(default_factory=list)
 
@@ -201,6 +206,7 @@ class PhasedTickRunner:
         self._tick_count = 0
         self._running = False
         self._patterns: List[Any] = []  # Will hold Pattern instances when available
+        self._safety_monitors: List[Any] = []  # Will hold SafetyMonitor instances
 
         # Condition state tracking
         self._previous_states: Dict[int, bool] = {}
@@ -231,6 +237,49 @@ class PhasedTickRunner:
     def clear_patterns(self) -> None:
         """Clear all registered patterns."""
         self._patterns.clear()
+
+    def register_safety_monitor(self, monitor: Any) -> None:
+        """Register a safety monitor for runtime checking.
+
+        Args:
+            monitor: A SafetyMonitor instance
+        """
+        self._safety_monitors.append(monitor)
+
+    def clear_safety_monitors(self) -> None:
+        """Clear all registered safety monitors."""
+        self._safety_monitors.clear()
+
+    def _check_safety_monitors(self, context: Optional[Dict[str, Any]] = None) -> tuple:
+        """Check all registered safety monitors.
+
+        Args:
+            context: Optional context dict for VerifiableConditions
+
+        Returns:
+            Tuple of (monitors_checked, violations_count, violation_events)
+        """
+        context = context or {}
+        violations = 0
+        violation_events = []
+
+        for monitor in self._safety_monitors:
+            try:
+                initial_violation_count = len(monitor.violations)
+                is_safe = monitor.check(context)
+                if not is_safe:
+                    # Check if a new violation occurred
+                    new_violations = monitor.violations[initial_violation_count:]
+                    for v in new_violations:
+                        violations += 1
+                        violation_events.append(v)
+            except Exception as e:
+                logger.error(
+                    f"Error checking safety monitor "
+                    f"{getattr(monitor, 'name', monitor)}: {e}"
+                )
+
+        return len(self._safety_monitors), violations, violation_events
 
     async def _phase1_sensor_reads(self, sensors: List[Sensor]) -> tuple:
         """Phase 1: Read all sensors concurrently.
@@ -492,12 +541,19 @@ class PhasedTickRunner:
         )
         stats.phase3_condition_eval_ms = (time.perf_counter() - phase3_start) * 1000
 
-        # Phase 4: Callback dispatch
+        # Phase 4: Callback dispatch + safety monitoring
         stats.phase_order.append("callback_dispatch")
         phase4_start = time.perf_counter()
         dispatched, failures = await self._phase4_callback_dispatch(callbacks_to_fire)
         stats.callbacks_dispatched = dispatched
         stats.callback_failures = failures
+
+        # Check safety monitors (part of phase 4)
+        monitors_checked, violations, violation_events = self._check_safety_monitors()
+        stats.safety_monitors_checked = monitors_checked
+        stats.safety_violations = violations
+        stats.safety_violation_events = violation_events
+
         stats.phase4_callback_dispatch_ms = (time.perf_counter() - phase4_start) * 1000
 
         # Total tick duration

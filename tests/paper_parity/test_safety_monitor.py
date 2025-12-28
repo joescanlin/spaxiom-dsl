@@ -192,7 +192,6 @@ class TestAuditRecords:
 class TestSafetyMonitorRuntimeIntegration:
     """Tests for SafetyMonitor integration with runtime."""
 
-    @pytest.mark.skip(reason="Requires Step 5: safety monitor runtime integration")
     def test_runtime_accepts_safety_monitor(self):
         """Runtime must accept SafetyMonitor registration."""
         from spaxiom.tick import PhasedTickRunner
@@ -204,7 +203,6 @@ class TestSafetyMonitorRuntimeIntegration:
         runner.register_safety_monitor(monitor)
         assert monitor in runner._safety_monitors
 
-    @pytest.mark.skip(reason="Requires Step 5: safety monitor runtime integration")
     @pytest.mark.asyncio
     async def test_runtime_checks_monitors(self):
         """Runtime must check all safety monitors each tick."""
@@ -225,7 +223,6 @@ class TestSafetyMonitorRuntimeIntegration:
         await runner.run_single_tick()
         assert check_count[0] >= 1
 
-    @pytest.mark.skip(reason="Requires Step 5: safety monitor runtime integration")
     @pytest.mark.asyncio
     async def test_runtime_reports_violations(self):
         """Runtime stats include violation info."""

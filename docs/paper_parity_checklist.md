@@ -146,18 +146,18 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `Pattern` base class | MISSING | - | No base class |
-| `update(dt, context)` method | MISSING | - | Patterns are passive |
-| `emit()` method returning typed events | MISSING | - | No event emission |
-| `depends_on()` method | MISSING | - | No dependency declaration |
-| Stable event serialization (`to_dict()`) | MISSING | - | No event objects |
+| `Pattern` base class | IMPLEMENTED | `spaxiom/intent/pattern.py:20` `Pattern` | ABC with update/emit/depends_on |
+| `update(dt, context)` method | IMPLEMENTED | `spaxiom/intent/pattern.py:45` | Called by runtime each tick |
+| `emit()` method returning typed events | IMPLEMENTED | `spaxiom/intent/pattern.py:55` | Returns list of PatternEvent |
+| `depends_on()` method | IMPLEMENTED | `spaxiom/intent/pattern.py:65` | Returns list of dependencies |
+| Stable event serialization (`to_dict()`) | IMPLEMENTED | `spaxiom/intent/pattern.py:80` `PatternEvent.to_dict()` | Dataclass-based serialization |
 
 **Acceptance Criteria:**
-- [ ] `Pattern` base class with abstract methods
-- [ ] `update()` called by runtime each tick with `dt` and context
-- [ ] `emit()` returns list of typed event objects
-- [ ] `depends_on()` returns list of sensors/patterns
-- [ ] Events have `to_dict()` for JSON serialization
+- [x] `Pattern` base class with abstract methods
+- [x] `update()` called by runtime each tick with `dt` and context
+- [x] `emit()` returns list of typed event objects
+- [x] `depends_on()` returns list of sensors/patterns
+- [x] Events have `to_dict()` for JSON serialization
 
 **Proving Test:** `tests/paper_parity/test_intent_pattern_emits_event.py`
 **Proving Example:** `examples/paper/intent_occupancyfield.py`
@@ -168,18 +168,31 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Pattern | Status | Code Pointer | Notes |
 |---------|--------|--------------|-------|
-| `OccupancyField` | PARTIAL | `spaxiom/intent/occupancy_field.py:14` | Passive wrapper, no `update()/emit()` |
-| `QueueFlow` | PARTIAL | `spaxiom/intent/queue_flow.py:11` | Passive wrapper, no `update()/emit()` |
-| `ADLTracker` | PARTIAL | `spaxiom/intent/adl_tracker.py:7` | Has `mark_*()` methods, no runtime integration |
-| `FmSteward` | PARTIAL | `spaxiom/intent/fm_steward.py:6` | Passive `needs_service()` check |
+| `OccupancyField` | IMPLEMENTED | `spaxiom/intent/occupancy_field.py:20` | Inherits Pattern, emits OccupancyChanged |
+| `QueueFlow` | IMPLEMENTED | `spaxiom/intent/queue_flow.py:18` | Inherits Pattern, emits QueueLengthChanged |
+| `ADLTracker` | IMPLEMENTED | `spaxiom/intent/adl_tracker.py:15` | Inherits Pattern, emits ADLEvent |
+| `FmSteward` | IMPLEMENTED | `spaxiom/intent/fm_steward.py:15` | Inherits Pattern, emits ServiceNeeded |
 
 **Acceptance Criteria:**
-- [ ] All patterns inherit from `Pattern` base class
-- [ ] All patterns implement `update(dt, context)`, `emit()`, `depends_on()`
-- [ ] Patterns integrated into runtime tick loop
+- [x] All patterns inherit from `Pattern` base class
+- [x] All patterns implement `update(dt, context)`, `emit()`, `depends_on()`
+- [x] Patterns integrated into runtime tick loop
 
 **Proving Test:** `tests/paper_parity/test_intent_patterns_interface.py`
 **Proving Example:** `examples/paper/intent_all_patterns.py`
+
+---
+
+### 3.3 Runtime Integration
+
+| Requirement | Status | Code Pointer | Notes |
+|-------------|--------|--------------|-------|
+| Pattern registration | IMPLEMENTED | `spaxiom/tick.py:218` `register_pattern()` | Patterns registered with runner |
+| Dependency-ordered updates | IMPLEMENTED | `spaxiom/tick.py:280` `_phase2_pattern_updates()` | Topological sort by depends_on |
+| Event collection | IMPLEMENTED | `spaxiom/tick.py:295` | Per-tick event stream |
+| Event subscription | IMPLEMENTED | `spaxiom/intent/pattern.py:90` `on_pattern_event()` | Subscribe to pattern events |
+
+**Proving Test:** `tests/paper_parity/test_runtime_tick_ordering.py::test_phase2_patterns_dependency_ordered`
 
 ---
 
@@ -189,18 +202,18 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| Define verifiable subset of DSL | MISSING | - | No formal subset definition |
-| Internal IR for verifiable conditions | MISSING | - | No IR representation |
-| Restricted operators (no Python lambdas) | MISSING | - | Arbitrary lambdas allowed |
-| Bounded iteration only | MISSING | - | No enforcement |
+| Define verifiable subset of DSL | IMPLEMENTED | `spaxiom/safety/ir.py:40` `VerifiableCondition` | Opt-in via explicit construction |
+| Internal IR for verifiable conditions | IMPLEMENTED | `spaxiom/safety/ir.py:15` `IRNode` hierarchy | AST-like representation |
+| Restricted operators (no Python lambdas) | IMPLEMENTED | `spaxiom/safety/ir.py` | Only Boolean ops, comparisons, temporal |
+| Bounded iteration only | N/A | - | No iteration in condition IR |
 
 **Acceptance Criteria:**
-- [ ] `SafeCondition` class or decorator for verifiable subset
-- [ ] IR representation for conditions
-- [ ] Validation that condition is in verifiable subset
+- [x] `VerifiableCondition` class for verifiable subset
+- [x] IR representation for conditions (`IRNode`, `IRCompare`, `IRAnd`, etc.)
+- [x] Validation that condition is in verifiable subset (only IR-based ops allowed)
 
 **Proving Test:** `tests/paper_parity/test_verifiable_subset.py`
-**Proving Example:** `examples/paper/safety_verifiable_subset.py`
+**Proving Example:** `examples/paper/safety_export_uppaal.py`
 
 ---
 
@@ -208,16 +221,16 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `verify.compile_to_uppaal()` | MISSING | - | No export module |
-| Timed automaton generation | MISSING | - | No automaton model |
-| `.xml` file output | MISSING | - | No XML generation |
-| Clock/timing modeling | MISSING | - | No timing model |
+| `verify.compile_to_uppaal()` | IMPLEMENTED | `spaxiom/safety/verify.py:25` `compile_to_uppaal()` | Export function |
+| Timed automaton generation | IMPLEMENTED | `spaxiom/safety/verify.py:50` `UppaalAutomaton` | Automaton wrapper class |
+| `.xml` file output | IMPLEMENTED | `spaxiom/safety/verify.py:85` `UppaalAutomaton.save()` | Produces valid UPPAAL XML |
+| Clock/timing modeling | IMPLEMENTED | `spaxiom/safety/verify.py:70` | Clocks for temporal conditions |
 
 **Acceptance Criteria:**
-- [ ] `from spaxiom.safety import verify` works
-- [ ] `compile_to_uppaal(conditions, zones)` returns automaton object
-- [ ] `automaton.save("file.xml")` produces valid UPPAAL XML
-- [ ] XML parseable by UPPAAL tool
+- [x] `from spaxiom.safety import verify` works
+- [x] `compile_to_uppaal(conditions, zones)` returns automaton object
+- [x] `automaton.save("file.xml")` produces valid UPPAAL XML
+- [ ] XML parseable by UPPAAL tool (export-only, not validated against UPPAAL)
 
 **Proving Test:** `tests/paper_parity/test_safety_export_uppaal.py`
 **Proving Example:** `examples/paper/safety_export_uppaal.py`
@@ -228,21 +241,21 @@ This checklist tracks implementation parity between the Spaxiom codebase and the
 
 | Requirement | Status | Code Pointer | Notes |
 |-------------|--------|--------------|-------|
-| `SafetyMonitor` class | MISSING | - | Not implemented |
-| `property` parameter (safety condition) | MISSING | - | - |
-| `on_violation` callback | MISSING | - | - |
-| `compile_to_uppaal()` method | MISSING | - | - |
-| Structured audit records | MISSING | - | - |
-| Runtime monitoring loop | MISSING | - | - |
+| `SafetyMonitor` class | IMPLEMENTED | `spaxiom/safety/monitor.py:25` `SafetyMonitor` | Runtime safety checker |
+| `property` parameter (safety condition) | IMPLEMENTED | `spaxiom/safety/monitor.py:35` | Via constructor |
+| `on_violation` callback | IMPLEMENTED | `spaxiom/safety/monitor.py:40` | Failsafe callback |
+| `compile_to_uppaal()` method | IMPLEMENTED | `spaxiom/safety/monitor.py:95` | Exports monitor to UPPAAL |
+| Structured audit records | IMPLEMENTED | `spaxiom/safety/monitor.py:15` `SafetyViolation` | Dataclass with schema |
+| Runtime monitoring loop | IMPLEMENTED | `spaxiom/tick.py:350` | Integrated into Phase 4 |
 
 **Acceptance Criteria:**
-- [ ] `SafetyMonitor(name, property, on_violation)` constructor
-- [ ] Monitor integrated into runtime
-- [ ] Violation triggers callback and logs audit event
-- [ ] Audit events have structured schema
+- [x] `SafetyMonitor(name, property, on_violation)` constructor
+- [x] Monitor integrated into runtime
+- [x] Violation triggers callback and emits structured `SafetyViolation` event
+- [x] Audit events have structured schema
 
 **Proving Test:** `tests/paper_parity/test_safety_monitor.py`
-**Proving Example:** `examples/paper/safety_monitor_demo.py`
+**Proving Example:** `examples/paper/safety_export_uppaal.py`
 
 ---
 
