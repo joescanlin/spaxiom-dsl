@@ -645,18 +645,11 @@
 <hr />
 <h2 id="1-runtime">1. Runtime<a class="headerlink" href="#1-runtime" title="Permanent link">&para;</a></h2>
 <blockquote>
-<p><strong>Runtime Architecture (as of Step 8):</strong></p>
-<p>The runtime now supports two modes via <code>SPAXIOM_RUNTIME</code> environment variable or <code>--runtime</code> CLI flag:</p>
-<ul>
-<li><strong>PHASED (default):</strong> <code>start_runtime()</code> and <code>start_blocking()</code> delegate to <code>PhasedTickRunner.run()</code> for deterministic 4-phase tick execution per the paper specification.</li>
-<li><strong>LEGACY:</strong> Set <code>SPAXIOM_RUNTIME=legacy</code> or use <code>--runtime legacy</code> to use the original async task-based runtime for backwards compatibility.</li>
-</ul>
-<p><strong>Implementation:</strong>
-- <code>spaxiom/runtime.py:475</code> <code>start_runtime()</code> - Delegates based on <code>RUNTIME_MODE</code>
-- <code>spaxiom/runtime.py:307</code> <code>_start_runtime_phased()</code> - Phased mode implementation
-- <code>spaxiom/runtime.py:379</code> <code>_start_runtime_legacy()</code> - Legacy mode implementation
-- <code>spaxiom/runtime.py:45</code> <code>get_runtime_mode()</code> / <code>set_runtime_mode()</code> - Mode selection API</p>
-<p><strong>Proving Test:</strong> <code>tests/paper_parity/test_runtime_delegation.py</code> (11 passing)</p>
+<p><strong>Runtime Architecture Note:</strong></p>
+<p>There are currently two runtime implementations:
+- <strong>Primary entrypoints (legacy):</strong> <code>spaxiom/runtime.py</code> provides <code>start_runtime()</code> and <code>start_blocking()</code>. These are used by the CLI and existing examples.
+- <strong>New phased tick runner:</strong> <code>spaxiom/tick.py</code> provides <code>PhasedTickRunner</code> with deterministic 4-phase execution per the paper specification.</p>
+<p><strong>Planned delegation:</strong> After Step 3 (conditions) and Step 4 (patterns), <code>start_runtime()</code> and <code>start_blocking()</code> will delegate to <code>PhasedTickRunner.run()</code> internally, preserving backwards compatibility while using the new phased tick loop.</p>
 </blockquote>
 <h3 id="11-phased-tick-execution">1.1 Phased Tick Execution<a class="headerlink" href="#11-phased-tick-execution" title="Permanent link">&para;</a></h3>
 <table>
