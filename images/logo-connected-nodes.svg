@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 295 60" width="295" height="60">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300&amp;display=swap');
+    </style>
+  </defs>
+  
+  <!-- Connected nodes feeding into brackets -->
+  <g transform="translate(20, 8)">
+    <!-- Sensor nodes (small circles) - moved further left -->
+    <circle cx="-8" cy="6" r="3" fill="#f97316" opacity="0.6"/>
+    <circle cx="-8" cy="22" r="3" fill="#f97316" opacity="0.6"/>
+    <circle cx="-8" cy="38" r="3" fill="#f97316" opacity="0.6"/>
+    
+    <!-- Connection lines from nodes - stopping before the bracket -->
+    <line x1="-5" y1="6" x2="5" y2="14" stroke="#f97316" stroke-width="1.5" opacity="0.4"/>
+    <line x1="-5" y1="22" x2="5" y2="22" stroke="#f97316" stroke-width="1.5" opacity="0.4"/>
+    <line x1="-5" y1="38" x2="5" y2="30" stroke="#f97316" stroke-width="1.5" opacity="0.4"/>
+    
+    <!-- Left bracket < -->
+    <path d="M18 4 L8 22 L18 40" stroke="#f97316" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Slash / -->
+    <path d="M28 38 L38 6" stroke="#f97316" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    
+    <!-- Right bracket > -->
+    <path d="M48 4 L58 22 L48 40" stroke="#f97316" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Output line - stopping before the output node -->
+    <line x1="61" y1="22" x2="68" y2="22" stroke="#f97316" stroke-width="1.5" opacity="0.4"/>
+    
+    <!-- Output node (larger, represents fused data) -->
+    <circle cx="74" cy="22" r="4" fill="#f97316"/>
+  </g>
+  
+  <!-- Text: spaxiom in lowercase Inter light -->
+  <text x="108" y="40" font-family="Inter, -apple-system, sans-serif" font-size="32" font-weight="300" fill="#000000" letter-spacing="-0.5">spaxiom</text>
+</svg>
