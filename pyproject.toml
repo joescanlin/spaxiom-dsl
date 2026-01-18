@@ -31,6 +31,7 @@ pytest-asyncio = "^0.21.0"
 
 [tool.poetry.scripts]
 spax-run = "spaxiom.cli:main"
+spaxiom-edge = "spaxiom.edge.app:main"
 
 [tool.coverage.run]
 source = ["spaxiom"]

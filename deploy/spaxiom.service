@@ -1,0 +1,47 @@
+[Unit]
+Description=Spaxiom Edge AI Agent Runtime
+Documentation=https://joescanlin.github.io/spaxiom-dsl/
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=spaxiom
+Group=spaxiom
+WorkingDirectory=/opt/spaxiom
+
+# Main executable
+ExecStart=/opt/spaxiom/venv/bin/python -m spaxiom.edge --log-level INFO
+
+# Reload signal
+ExecReload=/bin/kill -HUP $MAINPID
+
+# Restart configuration
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/spaxiom /var/log/spaxiom
+PrivateTmp=true
+
+# Environment variables
+Environment=SPAXIOM_DB_PATH=/var/lib/spaxiom/spaxiom.db
+Environment=SPAXIOM_LOG_PATH=/var/log/spaxiom/spaxiom.log
+Environment=PYTHONUNBUFFERED=1
+
+# Logging (systemd journal)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=spaxiom
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target
