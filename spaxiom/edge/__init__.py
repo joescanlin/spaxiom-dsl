@@ -26,6 +26,8 @@ from spaxiom.edge.database import (
 from spaxiom.edge.sensor_registry import PersistentSensorRegistry
 from spaxiom.edge.app import SpaxiomEdge, main
 from spaxiom.edge.logging_config import setup_logging, EdgeLogger
+from spaxiom.edge.pattern_factory import PatternFactory
+from spaxiom.edge.agent_manager import AgentManager, EventBus
 
 __all__ = [
     # Database
@@ -50,4 +52,8 @@ __all__ = [
     # Logging
     "setup_logging",
     "EdgeLogger",
+    # Agent Management (Phase 4)
+    "PatternFactory",
+    "AgentManager",
+    "EventBus",
 ]

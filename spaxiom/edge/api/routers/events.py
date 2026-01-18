@@ -1,8 +1,11 @@
 """Events API endpoints."""
 
-from typing import List
+import asyncio
+import json
+from typing import Any, AsyncGenerator, List, Optional
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import StreamingResponse
 
 from spaxiom.edge.api.models.schemas import EventResponse
 from spaxiom.edge.api.dependencies import get_event_repo
@@ -71,3 +74,73 @@ async def get_event_count(
 ):
     """Get total event count."""
     return {"count": repo.count()}
+
+
+def get_agent_manager(request: Request) -> Optional[Any]:
+    """Get agent manager from app state."""
+    return getattr(request.app.state, "agent_manager", None)
+
+
+async def event_generator(
+    event_queue: asyncio.Queue,
+    agent_manager: Any,
+) -> AsyncGenerator[str, None]:
+    """Generate SSE events from the event queue.
+
+    Args:
+        event_queue: Queue to receive events from
+        agent_manager: Agent manager to unsubscribe on disconnect
+
+    Yields:
+        SSE formatted event strings
+    """
+    try:
+        while True:
+            try:
+                event = await asyncio.wait_for(event_queue.get(), timeout=30.0)
+                yield f"data: {json.dumps(event)}\n\n"
+            except asyncio.TimeoutError:
+                # Send keepalive
+                yield ": keepalive\n\n"
+    except asyncio.CancelledError:
+        pass
+    finally:
+        if agent_manager:
+            agent_manager.event_bus.unsubscribe(event_queue)
+
+
+@router.get("/stream")
+async def event_stream(request: Request):
+    """Stream events via Server-Sent Events (SSE).
+
+    Returns a continuous stream of events from running agents.
+    Connect using EventSource in JavaScript:
+
+    ```javascript
+    const eventSource = new EventSource('/api/events/stream');
+    eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+    };
+    ```
+    """
+    agent_manager = get_agent_manager(request)
+
+    if not agent_manager:
+        return StreamingResponse(
+            iter(['data: {"error": "Agent manager not available"}\n\n']),
+            media_type="text/event-stream",
+        )
+
+    # Subscribe to event bus
+    event_queue = agent_manager.event_bus.subscribe()
+
+    return StreamingResponse(
+        event_generator(event_queue, agent_manager),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

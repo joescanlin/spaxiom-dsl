@@ -117,6 +117,7 @@ def setup_app_state(
     agent_repo,
     event_repo,
     settings_repo,
+    agent_manager=None,
     log_path: str = "",
     api_port: int = 8080,
 ) -> None:
@@ -132,6 +133,7 @@ def setup_app_state(
         agent_repo: AgentRepository instance
         event_repo: EventRepository instance
         settings_repo: SettingsRepository instance
+        agent_manager: AgentManager instance (Phase 4)
         log_path: Path to log file
         api_port: API server port
     """
@@ -143,6 +145,7 @@ def setup_app_state(
     app.state.agent_repo = agent_repo
     app.state.event_repo = event_repo
     app.state.settings_repo = settings_repo
+    app.state.agent_manager = agent_manager
     app.state.log_path = log_path
     app.state.api_port = api_port
 
@@ -156,6 +159,7 @@ def setup_app_state(
         "agent_repo": agent_repo,
         "event_repo": event_repo,
         "settings_repo": settings_repo,
+        "agent_manager": agent_manager,
         "log_path": log_path,
         "api_port": api_port,
     }

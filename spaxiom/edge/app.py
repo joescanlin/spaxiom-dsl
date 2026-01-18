@@ -30,6 +30,8 @@ from spaxiom.edge.database import (
 )
 from spaxiom.edge.sensor_registry import PersistentSensorRegistry
 from spaxiom.edge.logging_config import setup_logging, get_default_log_path
+from spaxiom.edge.pattern_factory import PatternFactory
+from spaxiom.edge.agent_manager import AgentManager
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +92,10 @@ class SpaxiomEdge:
         self.events: Optional[EventRepository] = None
         self.settings: Optional[SettingsRepository] = None
 
+        # Agent management (Phase 4)
+        self.pattern_factory: Optional[PatternFactory] = None
+        self.agent_manager: Optional[AgentManager] = None
+
         # Runtime state
         self._running = False
         self._shutdown_event: Optional[asyncio.Event] = None
@@ -139,6 +145,23 @@ class SpaxiomEdge:
         sensor_count = self.sensor_registry.load()
         logger.info(f"Loaded {sensor_count} sensors")
 
+        # Initialize pattern factory and agent manager
+        logger.info("Initializing agent manager...")
+        self.pattern_factory = PatternFactory(self.db, self.sensor_registry)
+        self.agent_manager = AgentManager(
+            db=self.db,
+            pattern_factory=self.pattern_factory,
+            agent_repo=self.agents,
+            pattern_repo=self.patterns,
+            event_repo=self.events,
+        )
+        await self.agent_manager.start()
+
+        # Restore previously running agents
+        restored = await self.agent_manager.restore_agents()
+        if restored > 0:
+            logger.info(f"Restored {restored} agents from previous session")
+
         # Log startup event
         self.events.log(
             event_type="system_startup",
@@ -180,6 +203,7 @@ class SpaxiomEdge:
             agent_repo=self.agents,
             event_repo=self.events,
             settings_repo=self.settings,
+            agent_manager=self.agent_manager,
             log_path=self.log_path,
             api_port=self.api_port,
         )
@@ -189,6 +213,11 @@ class SpaxiomEdge:
     async def shutdown(self) -> None:
         """Graceful shutdown of all subsystems."""
         logger.info("Shutting down Spaxiom Edge...")
+
+        # Stop agent manager first
+        if self.agent_manager:
+            logger.info("Stopping agent manager...")
+            await self.agent_manager.stop()
 
         # Stop API server if running
         if self._api_server:
