@@ -7,7 +7,6 @@ from typing import Optional, Dict, Any, Tuple
 
 from spaxiom.sensor import Sensor
 
-
 # Check if we're on a Linux system and if gpiozero is available
 GPIOZERO_AVAILABLE = False
 if sys.platform.startswith("linux"):

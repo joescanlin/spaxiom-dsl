@@ -26,8 +26,7 @@ class TestConfig:
         """Test loading YAML configuration."""
         # Create a temporary YAML file
         with NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
-            tmp.write(
-                """
+            tmp.write("""
                 name: test
                 value: 42
                 nested:
@@ -35,8 +34,7 @@ class TestConfig:
                 list:
                   - item1
                   - item2
-                """
-            )
+                """)
             tmp_path = tmp.name
 
         try:
@@ -62,13 +60,11 @@ class TestConfig:
         """Test load_yaml with invalid YAML content."""
         # Create a temporary file with invalid YAML
         with NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
-            tmp.write(
-                """
+            tmp.write("""
                 invalid:
                   - yaml: content
                   missing: colon
-                """
-            )
+                """)
             tmp_path = tmp.name
 
         try:
@@ -188,8 +184,7 @@ class TestConfig:
         """Test creating multiple sensors from configuration."""
         # Create a temporary YAML file
         with NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
-            tmp.write(
-                """
+            tmp.write("""
                 sensors:
                   - name: sensor1
                     type: random
@@ -200,8 +195,7 @@ class TestConfig:
                     type: toggle
                     location: [4.0, 5.0, 6.0]
                     toggle_interval: 2.0
-                """
-            )
+                """)
             tmp_path = tmp.name
 
         try:
@@ -237,13 +231,11 @@ class TestConfig:
         """Test loading sensors with invalid configuration."""
         # Create a temporary YAML file with invalid configuration
         with NamedTemporaryFile(mode="w", suffix=".yaml", delete=False) as tmp:
-            tmp.write(
-                """
+            tmp.write("""
                 not_sensors:
                   - name: sensor1
                     type: random
-                """
-            )
+                """)
             tmp_path = tmp.name
 
         try:
