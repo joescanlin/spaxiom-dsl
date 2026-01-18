@@ -336,7 +336,9 @@ class TestAgentRepository:
 
         agent_repo = AgentRepository(temp_db)
         agent1 = agent_repo.create(name="agent1", pattern_id=pattern.id)
-        agent_repo.create(name="agent2", pattern_id=pattern.id)  # Second agent stays stopped
+        agent_repo.create(
+            name="agent2", pattern_id=pattern.id
+        )  # Second agent stays stopped
 
         agent_repo.update_status(agent1.id, "running", pid=111)
 
