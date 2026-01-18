@@ -444,6 +444,199 @@ body {
     margin-top: 1.5rem;
 }
 
+/* Zone Editor */
+.zone-editor-container {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.zone-editor-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e1e5eb;
+}
+
+.zone-editor-toolbar .btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 24px;
+    background: #e1e5eb;
+    margin: 0 0.5rem;
+}
+
+.zone-editor-toolbar label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.85rem;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.zone-canvas-wrapper {
+    border: 1px solid #e1e5eb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#zoneCanvas {
+    display: block;
+    cursor: crosshair;
+}
+
+.zone-info {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.zone-info h4 {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.zone-info p {
+    margin: 0.25rem 0 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+/* Pattern Type Cards */
+.pattern-types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.pattern-type-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.pattern-type-card:hover {
+    border-color: #667eea;
+    transform: translateY(-2px);
+}
+
+.pattern-type-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.pattern-type-card p {
+    margin: 0 0 0.75rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.4;
+}
+
+.pattern-type-meta {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Tags */
+.tag {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    background: #e9ecef;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Form enhancements */
+.form-help {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.multi-select {
+    min-height: 100px;
+}
+
+.config-section-title {
+    font-size: 1rem;
+    margin: 1.5rem 0 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e1e5eb;
+}
+
+.modal-lg {
+    max-width: 700px;
+}
+
+/* Test Results */
+.test-status {
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.test-pass {
+    background: #d4edda;
+    color: #155724;
+}
+
+.test-fail {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.test-section {
+    margin: 1rem 0;
+}
+
+.test-section h4 {
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+}
+
+.test-list {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.test-list li {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.error-list li {
+    color: #721c24;
+}
+
+.warning-list li {
+    color: #856404;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {
@@ -468,5 +661,9 @@ body {
     
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .pattern-types-grid {
+        grid-template-columns: 1fr;
     }
 }

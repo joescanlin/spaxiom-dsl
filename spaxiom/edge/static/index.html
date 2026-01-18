@@ -153,12 +153,36 @@
                     <button class="btn btn-primary" @click="showAddZoneModal = true">+ Add Zone</button>
                 </div>
 
-                <div class="table-container">
+                <!-- Zone Editor Canvas -->
+                <div class="zone-editor-container" x-data="zoneEditor()">
+                    <div class="zone-editor-toolbar">
+                        <button class="btn btn-sm" :class="{ active: editorTool === 'select' }" @click="editorTool = 'select'">Select</button>
+                        <button class="btn btn-sm" :class="{ active: editorTool === 'rectangle' }" @click="editorTool = 'rectangle'">Rectangle</button>
+                        <button class="btn btn-sm" :class="{ active: editorTool === 'circle' }" @click="editorTool = 'circle'">Circle</button>
+                        <span class="toolbar-separator"></span>
+                        <label><input type="checkbox" x-model="showGrid"> Grid</label>
+                        <label><input type="checkbox" x-model="showSensors"> Sensors</label>
+                    </div>
+                    <div class="zone-canvas-wrapper">
+                        <canvas id="zoneCanvas" width="600" height="400" 
+                                @mousedown="onCanvasMouseDown($event)"
+                                @mousemove="onCanvasMouseMove($event)"
+                                @mouseup="onCanvasMouseUp($event)">
+                        </canvas>
+                    </div>
+                    <div class="zone-info" x-show="selectedZone">
+                        <h4>Selected: <span x-text="selectedZone?.name"></span></h4>
+                        <p>Type: <span x-text="selectedZone?.type"></span></p>
+                    </div>
+                </div>
+
+                <div class="table-container" style="margin-top: 1.5rem;">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
+                                <th>Geometry</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -167,14 +191,16 @@
                                 <tr>
                                     <td x-text="zone.name"></td>
                                     <td x-text="zone.zone_type"></td>
+                                    <td x-text="formatGeometry(zone.geometry)"></td>
                                     <td class="actions">
+                                        <button class="btn btn-sm" @click="editZone(zone)">Edit</button>
                                         <button class="btn btn-sm btn-danger" @click="deleteZone(zone.id)">Delete</button>
                                     </td>
                                 </tr>
                             </template>
                         </tbody>
                     </table>
-                    <p x-show="zones.length === 0" class="empty-message">No zones defined.</p>
+                    <p x-show="zones.length === 0" class="empty-message">No zones defined. Use the canvas above or click "Add Zone".</p>
                 </div>
             </div>
 
@@ -185,12 +211,28 @@
                     <button class="btn btn-primary" @click="showAddPatternModal = true">+ Add Pattern</button>
                 </div>
 
-                <div class="table-container">
+                <!-- Pattern Type Cards (for new pattern selection) -->
+                <div x-show="patternTypes.length > 0 && patterns.length === 0" class="pattern-types-grid">
+                    <template x-for="ptype in patternTypes" :key="ptype.type_id">
+                        <div class="pattern-type-card" @click="selectPatternType(ptype)">
+                            <h3 x-text="ptype.name"></h3>
+                            <p x-text="ptype.description"></p>
+                            <div class="pattern-type-meta">
+                                <span x-show="ptype.requires_zones" class="tag">Zones</span>
+                                <span x-show="ptype.requires_sensors" class="tag">Sensors</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="table-container" x-show="patterns.length > 0">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>Name</th>
                                 <th>Type</th>
+                                <th>Zones</th>
+                                <th>Sensors</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -200,11 +242,15 @@
                                 <tr>
                                     <td x-text="pattern.name"></td>
                                     <td x-text="pattern.pattern_type"></td>
+                                    <td x-text="pattern.zones?.length || 0"></td>
+                                    <td x-text="pattern.sensors?.length || 0"></td>
                                     <td>
                                         <span class="status-badge" :class="pattern.enabled ? 'status-ok' : 'status-disabled'"
                                               x-text="pattern.enabled ? 'Enabled' : 'Disabled'"></span>
                                     </td>
                                     <td class="actions">
+                                        <button class="btn btn-sm" @click="configurePattern(pattern)">Configure</button>
+                                        <button class="btn btn-sm" @click="testPattern(pattern.id)">Test</button>
                                         <button class="btn btn-sm btn-success" @click="deployPattern(pattern.id)">Deploy</button>
                                         <button class="btn btn-sm btn-danger" @click="deletePattern(pattern.id)">Delete</button>
                                     </td>
@@ -212,8 +258,8 @@
                             </template>
                         </tbody>
                     </table>
-                    <p x-show="patterns.length === 0" class="empty-message">No patterns configured.</p>
                 </div>
+                <p x-show="patterns.length === 0 && patternTypes.length === 0" class="empty-message">No patterns configured. Click "Add Pattern" to get started.</p>
             </div>
 
             <!-- Agents -->
@@ -319,7 +365,7 @@
 
     <!-- Add Pattern Modal -->
     <div class="modal" x-show="showAddPatternModal" @click.self="showAddPatternModal = false">
-        <div class="modal-content">
+        <div class="modal-content modal-lg">
             <h2>Add Pattern</h2>
             <form @submit.prevent="addPattern">
                 <div class="form-group">
@@ -328,18 +374,109 @@
                 </div>
                 <div class="form-group">
                     <label>Type</label>
-                    <select x-model="newPattern.pattern_type" required>
-                        <option value="occupancy_field">Occupancy Field</option>
-                        <option value="queue_flow">Queue Flow</option>
-                        <option value="adl_tracker">ADL Tracker</option>
-                        <option value="fm_steward">FM Steward</option>
+                    <select x-model="newPattern.pattern_type" @change="onPatternTypeChange()" required>
+                        <option value="">Select a pattern type...</option>
+                        <template x-for="ptype in patternTypes" :key="ptype.type_id">
+                            <option :value="ptype.type_id" x-text="ptype.name"></option>
+                        </template>
                     </select>
+                    <p class="form-help" x-show="selectedPatternType" x-text="selectedPatternType?.description"></p>
                 </div>
+                
+                <!-- Zones Selection -->
+                <div class="form-group" x-show="selectedPatternType?.requires_zones">
+                    <label>Zones</label>
+                    <select multiple x-model="newPattern.zones" class="multi-select">
+                        <template x-for="zone in zones" :key="zone.id">
+                            <option :value="zone.id" x-text="zone.name"></option>
+                        </template>
+                    </select>
+                    <p class="form-help" x-show="zones.length === 0">No zones available. Create zones first.</p>
+                </div>
+                
+                <!-- Sensors Selection -->
+                <div class="form-group" x-show="selectedPatternType?.requires_sensors">
+                    <label>Sensors</label>
+                    <select multiple x-model="newPattern.sensors" class="multi-select">
+                        <template x-for="sensor in sensors" :key="sensor.id">
+                            <option :value="sensor.id" x-text="sensor.name"></option>
+                        </template>
+                    </select>
+                    <p class="form-help" x-show="sensors.length === 0">No sensors available. Create sensors first.</p>
+                </div>
+                
+                <!-- Dynamic Config Fields -->
+                <div x-show="selectedPatternType?.config_schema?.properties">
+                    <h3 class="config-section-title">Configuration</h3>
+                    <template x-for="(propDef, propName) in selectedPatternType?.config_schema?.properties || {}" :key="propName">
+                        <div class="form-group">
+                            <label x-text="propName.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())"></label>
+                            <input x-show="propDef.type === 'number'" 
+                                   type="number" 
+                                   step="any"
+                                   :placeholder="propDef.default"
+                                   x-model="newPattern.config[propName]">
+                            <input x-show="propDef.type === 'integer'" 
+                                   type="number" 
+                                   step="1"
+                                   :placeholder="propDef.default"
+                                   x-model="newPattern.config[propName]">
+                            <input x-show="propDef.type === 'string'" 
+                                   type="text"
+                                   :placeholder="propDef.default"
+                                   x-model="newPattern.config[propName]">
+                            <p class="form-help" x-text="propDef.description"></p>
+                        </div>
+                    </template>
+                </div>
+                
                 <div class="form-actions">
                     <button type="button" class="btn" @click="showAddPatternModal = false">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Pattern</button>
                 </div>
             </form>
+        </div>
+    </div>
+    
+    <!-- Pattern Test Result Modal -->
+    <div class="modal" x-show="showPatternTestModal" @click.self="showPatternTestModal = false">
+        <div class="modal-content">
+            <h2>Pattern Test Result</h2>
+            <div x-show="patternTestResult">
+                <div class="test-status" :class="patternTestResult?.valid ? 'test-pass' : 'test-fail'">
+                    <span x-text="patternTestResult?.valid ? 'Valid' : 'Invalid'"></span>
+                </div>
+                
+                <div x-show="patternTestResult?.errors?.length > 0" class="test-section">
+                    <h4>Errors</h4>
+                    <ul class="test-list error-list">
+                        <template x-for="error in patternTestResult?.errors || []">
+                            <li x-text="error"></li>
+                        </template>
+                    </ul>
+                </div>
+                
+                <div x-show="patternTestResult?.warnings?.length > 0" class="test-section">
+                    <h4>Warnings</h4>
+                    <ul class="test-list warning-list">
+                        <template x-for="warning in patternTestResult?.warnings || []">
+                            <li x-text="warning"></li>
+                        </template>
+                    </ul>
+                </div>
+                
+                <div x-show="patternTestResult?.events_emitted?.length > 0" class="test-section">
+                    <h4>Events Emitted</h4>
+                    <div class="tag-list">
+                        <template x-for="event in patternTestResult?.events_emitted || []">
+                            <span class="tag" x-text="event"></span>
+                        </template>
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn btn-primary" @click="showPatternTestModal = false">Close</button>
+            </div>
         </div>
     </div>
 

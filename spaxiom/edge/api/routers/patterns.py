@@ -1,6 +1,6 @@
 """Pattern API endpoints."""
 
-from typing import List
+from typing import Any, Dict, List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -8,23 +8,204 @@ from spaxiom.edge.api.models.schemas import (
     PatternCreate,
     PatternUpdate,
     PatternResponse,
+    PatternTypeInfo,
+    PatternTestResult,
 )
-from spaxiom.edge.api.dependencies import get_pattern_repo
-from spaxiom.edge.database import PatternRepository
+from spaxiom.edge.api.dependencies import (
+    get_pattern_repo,
+    get_zone_repo,
+    get_sensor_repo,
+)
+from spaxiom.edge.database import PatternRepository, ZoneRepository, SensorRepository
 
 router = APIRouter(prefix="/api/patterns", tags=["patterns"])
 
-# Pattern types available in Spaxiom
-PATTERN_TYPES = {
-    "occupancy_field": "Real-time spatial occupancy tracking",
-    "queue_flow": "Queue detection and wait time estimation",
-    "adl_tracker": "Activities of Daily Living tracking for eldercare",
-    "fm_steward": "Facilities management and space utilization",
-    "dwell_monitor": "Dwell time monitoring in zones",
-    "path_tracker": "Movement path analysis",
-    "crowd_density": "Crowd density and flow analysis",
-    "custom": "Custom user-defined pattern",
+# Pattern types with full metadata and config schemas
+PATTERN_TYPE_REGISTRY: Dict[str, Dict[str, Any]] = {
+    "occupancy_field": {
+        "name": "Occupancy Field",
+        "description": "Tracks occupancy levels across zones using sensor data",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "decay_rate": {
+                    "type": "number",
+                    "default": 0.1,
+                    "description": "Rate at which occupancy decays over time",
+                },
+                "threshold_low": {
+                    "type": "number",
+                    "default": 0.3,
+                    "description": "Low occupancy threshold",
+                },
+                "threshold_high": {
+                    "type": "number",
+                    "default": 0.7,
+                    "description": "High occupancy threshold",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": ["occupancy_changed", "zone_entered", "zone_exited"],
+    },
+    "queue_flow": {
+        "name": "Queue Flow",
+        "description": "Monitors queue formation and estimates wait times",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "max_queue_length": {
+                    "type": "integer",
+                    "default": 10,
+                    "description": "Maximum expected queue length",
+                },
+                "alert_wait_time_seconds": {
+                    "type": "number",
+                    "default": 300,
+                    "description": "Wait time threshold for alerts (seconds)",
+                },
+                "service_rate": {
+                    "type": "number",
+                    "default": 1.0,
+                    "description": "Expected service rate (customers per minute)",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": [
+            "queue_length_changed",
+            "wait_time_exceeded",
+            "queue_cleared",
+        ],
+    },
+    "adl_tracker": {
+        "name": "ADL Tracker",
+        "description": "Tracks Activities of Daily Living for eldercare applications",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "activities": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                            "zone_id": {"type": "string"},
+                            "expected_duration_minutes": {"type": "number"},
+                        },
+                    },
+                    "description": "List of activities to track",
+                },
+                "anomaly_threshold_hours": {
+                    "type": "number",
+                    "default": 4,
+                    "description": "Hours without activity before anomaly alert",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": ["activity_started", "activity_ended", "anomaly_detected"],
+    },
+    "fm_steward": {
+        "name": "Facility Management Steward",
+        "description": "Monitors facility conditions and maintenance needs",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "thresholds": {
+                    "type": "object",
+                    "description": "Sensor thresholds for alerts",
+                },
+                "check_interval_minutes": {
+                    "type": "integer",
+                    "default": 15,
+                    "description": "How often to check conditions",
+                },
+            },
+        },
+        "requires_zones": False,
+        "requires_sensors": True,
+        "events_emitted": ["threshold_exceeded", "maintenance_due", "condition_normal"],
+    },
+    "dwell_monitor": {
+        "name": "Dwell Monitor",
+        "description": "Monitors how long entities stay in zones",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "min_dwell_seconds": {
+                    "type": "number",
+                    "default": 5,
+                    "description": "Minimum time to count as dwelling",
+                },
+                "alert_dwell_seconds": {
+                    "type": "number",
+                    "default": 300,
+                    "description": "Dwell time threshold for alerts",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": ["dwell_started", "dwell_ended", "long_dwell_alert"],
+    },
+    "path_tracker": {
+        "name": "Path Tracker",
+        "description": "Analyzes movement paths through zones",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "track_history_minutes": {
+                    "type": "integer",
+                    "default": 30,
+                    "description": "How long to keep path history",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": ["path_completed", "unusual_path_detected"],
+    },
+    "crowd_density": {
+        "name": "Crowd Density",
+        "description": "Monitors crowd density and flow patterns",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "max_density": {
+                    "type": "number",
+                    "default": 1.0,
+                    "description": "Maximum safe density (people per square meter)",
+                },
+                "alert_density": {
+                    "type": "number",
+                    "default": 0.8,
+                    "description": "Density threshold for alerts",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": ["density_changed", "overcrowding_alert", "density_normal"],
+    },
+    "custom": {
+        "name": "Custom Pattern",
+        "description": "User-defined custom pattern with arbitrary configuration",
+        "config_schema": {
+            "type": "object",
+            "additionalProperties": True,
+        },
+        "requires_zones": False,
+        "requires_sensors": False,
+        "events_emitted": [],
+    },
 }
+
+# Simple mapping for backward compatibility
+PATTERN_TYPES = {k: v["description"] for k, v in PATTERN_TYPE_REGISTRY.items()}
 
 
 def _record_to_response(record) -> PatternResponse:
@@ -42,10 +223,42 @@ def _record_to_response(record) -> PatternResponse:
     )
 
 
-@router.get("/types")
+@router.get("/types", response_model=List[PatternTypeInfo])
 async def list_pattern_types():
-    """List available pattern types."""
-    return PATTERN_TYPES
+    """List available pattern types with full metadata."""
+    return [
+        PatternTypeInfo(
+            type_id=type_id,
+            name=info["name"],
+            description=info["description"],
+            config_schema=info["config_schema"],
+            requires_zones=info["requires_zones"],
+            requires_sensors=info["requires_sensors"],
+            events_emitted=info["events_emitted"],
+        )
+        for type_id, info in PATTERN_TYPE_REGISTRY.items()
+    ]
+
+
+@router.get("/types/{type_id}", response_model=PatternTypeInfo)
+async def get_pattern_type(type_id: str):
+    """Get schema and info for a specific pattern type."""
+    if type_id not in PATTERN_TYPE_REGISTRY:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Pattern type '{type_id}' not found",
+        )
+
+    info = PATTERN_TYPE_REGISTRY[type_id]
+    return PatternTypeInfo(
+        type_id=type_id,
+        name=info["name"],
+        description=info["description"],
+        config_schema=info["config_schema"],
+        requires_zones=info["requires_zones"],
+        requires_sensors=info["requires_sensors"],
+        events_emitted=info["events_emitted"],
+    )
 
 
 @router.get("", response_model=List[PatternResponse])
@@ -167,3 +380,83 @@ async def toggle_pattern(
 
     updated = repo.update(pattern_id, enabled=not record.enabled)
     return _record_to_response(updated)
+
+
+@router.post("/{pattern_id}/test", response_model=PatternTestResult)
+async def test_pattern(
+    pattern_id: str,
+    pattern_repo: PatternRepository = Depends(get_pattern_repo),
+    zone_repo: ZoneRepository = Depends(get_zone_repo),
+    sensor_repo: SensorRepository = Depends(get_sensor_repo),
+):
+    """Test a pattern configuration (dry run).
+
+    Validates that the pattern configuration is correct and all
+    referenced zones/sensors exist.
+    """
+    record = pattern_repo.get(pattern_id)
+    if not record:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Pattern '{pattern_id}' not found",
+        )
+
+    errors = []
+    warnings = []
+
+    # Get pattern type info
+    type_info = PATTERN_TYPE_REGISTRY.get(record.pattern_type)
+    if not type_info:
+        errors.append(f"Unknown pattern type: {record.pattern_type}")
+        return PatternTestResult(
+            pattern_id=pattern_id,
+            valid=False,
+            errors=errors,
+            warnings=warnings,
+        )
+
+    # Check zones if required
+    resolved_zones = []
+    if type_info["requires_zones"]:
+        if not record.zones:
+            errors.append("Pattern requires zones but none are configured")
+        else:
+            for zone_id in record.zones:
+                zone = zone_repo.get(zone_id)
+                if zone:
+                    resolved_zones.append({"id": zone.id, "name": zone.name})
+                else:
+                    errors.append(f"Zone '{zone_id}' not found")
+
+    # Check sensors if required
+    resolved_sensors = []
+    if type_info["requires_sensors"]:
+        if not record.sensors:
+            errors.append("Pattern requires sensors but none are configured")
+        else:
+            for sensor_id in record.sensors:
+                sensor = sensor_repo.get(sensor_id)
+                if sensor:
+                    resolved_sensors.append({"id": sensor.id, "name": sensor.name})
+                else:
+                    errors.append(f"Sensor '{sensor_id}' not found")
+
+    # Validate config against schema
+    config_schema = type_info.get("config_schema", {})
+    if config_schema.get("properties"):
+        for prop_name, prop_def in config_schema["properties"].items():
+            if prop_name not in record.config:
+                if prop_def.get("default") is not None:
+                    warnings.append(
+                        f"Config '{prop_name}' not set, will use default: {prop_def['default']}"
+                    )
+
+    return PatternTestResult(
+        pattern_id=pattern_id,
+        valid=len(errors) == 0,
+        errors=errors,
+        warnings=warnings,
+        resolved_zones=resolved_zones,
+        resolved_sensors=resolved_sensors,
+        events_emitted=type_info.get("events_emitted", []),
+    )

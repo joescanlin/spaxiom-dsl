@@ -93,6 +93,17 @@ class ZoneResponse(BaseModel):
     created_at: Optional[str] = None
 
 
+class ZonePreview(BaseModel):
+    """Schema for zone editor preview data."""
+
+    zones: List[Dict[str, Any]] = Field(default_factory=list)
+    sensors: List[Dict[str, Any]] = Field(default_factory=list)
+    bounds: Dict[str, float] = Field(
+        default_factory=lambda: {"min_x": 0, "min_y": 0, "max_x": 100, "max_y": 100}
+    )
+    grid_size: float = 10
+
+
 # Pattern schemas
 class PatternCreate(BaseModel):
     """Schema for creating a pattern."""
@@ -103,6 +114,30 @@ class PatternCreate(BaseModel):
     zones: Optional[List[str]] = Field(default_factory=list, description="Zone IDs")
     sensors: Optional[List[str]] = Field(default_factory=list, description="Sensor IDs")
     enabled: bool = True
+
+
+class PatternTypeInfo(BaseModel):
+    """Schema for pattern type information."""
+
+    type_id: str
+    name: str
+    description: str
+    config_schema: Dict[str, Any] = Field(default_factory=dict)
+    requires_zones: bool = False
+    requires_sensors: bool = False
+    events_emitted: List[str] = Field(default_factory=list)
+
+
+class PatternTestResult(BaseModel):
+    """Schema for pattern test (dry run) result."""
+
+    pattern_id: str
+    valid: bool
+    errors: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    resolved_zones: List[Dict[str, str]] = Field(default_factory=list)
+    resolved_sensors: List[Dict[str, str]] = Field(default_factory=list)
+    events_emitted: List[str] = Field(default_factory=list)
 
 
 class PatternUpdate(BaseModel):
