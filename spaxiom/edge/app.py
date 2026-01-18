@@ -33,6 +33,16 @@ from spaxiom.edge.logging_config import setup_logging, get_default_log_path
 
 logger = logging.getLogger(__name__)
 
+# Check if FastAPI/uvicorn are available
+try:
+    import uvicorn
+    from spaxiom.edge.api.app import create_app, setup_app_state
+
+    HAS_API = True
+except ImportError:
+    HAS_API = False
+    logger.debug("FastAPI/uvicorn not installed. API server disabled.")
+
 
 class SpaxiomEdge:
     """Main edge application controller.
@@ -84,6 +94,8 @@ class SpaxiomEdge:
         self._running = False
         self._shutdown_event: Optional[asyncio.Event] = None
         self._tasks: list = []
+        self._api_server = None
+        self._api_app = None
 
     @staticmethod
     def _get_default_db_path() -> str:
@@ -138,11 +150,49 @@ class SpaxiomEdge:
             severity="info",
         )
 
+        # Setup API server if available
+        if HAS_API:
+            self._setup_api()
+
         logger.info("Spaxiom Edge startup complete")
+
+    def _setup_api(self) -> None:
+        """Setup the FastAPI application."""
+        if not HAS_API:
+            return
+
+        # Get static files directory
+        static_dir = Path(__file__).parent / "static"
+
+        # Create FastAPI app
+        self._api_app = create_app(
+            static_dir=str(static_dir) if static_dir.exists() else None
+        )
+
+        # Setup app state with dependencies
+        setup_app_state(
+            self._api_app,
+            db=self.db,
+            sensor_registry=self.sensor_registry,
+            sensor_repo=self.sensors,
+            zone_repo=self.zones,
+            pattern_repo=self.patterns,
+            agent_repo=self.agents,
+            event_repo=self.events,
+            settings_repo=self.settings,
+            log_path=self.log_path,
+            api_port=self.api_port,
+        )
+
+        logger.info(f"API server configured on {self.api_host}:{self.api_port}")
 
     async def shutdown(self) -> None:
         """Graceful shutdown of all subsystems."""
         logger.info("Shutting down Spaxiom Edge...")
+
+        # Stop API server if running
+        if self._api_server:
+            self._api_server.should_exit = True
 
         # Cancel running tasks
         for task in self._tasks:
@@ -200,6 +250,22 @@ class SpaxiomEdge:
             except Exception as e:
                 logger.error(f"Error in event cleanup: {e}")
 
+    async def _run_api_server(self) -> None:
+        """Run the uvicorn API server."""
+        if not HAS_API or not self._api_app:
+            return
+
+        config = uvicorn.Config(
+            self._api_app,
+            host=self.api_host,
+            port=self.api_port,
+            log_level="warning",  # Reduce uvicorn logging noise
+        )
+        self._api_server = uvicorn.Server(config)
+
+        logger.info(f"Starting API server at http://{self.api_host}:{self.api_port}")
+        await self._api_server.serve()
+
     async def run(self) -> None:
         """Run the edge application main loop."""
         self._running = True
@@ -216,8 +282,19 @@ class SpaxiomEdge:
             cleanup_task = asyncio.create_task(self._run_event_cleanup())
             self._tasks.append(cleanup_task)
 
+            # Start API server if available
+            if HAS_API and self._api_app:
+                api_task = asyncio.create_task(self._run_api_server())
+                self._tasks.append(api_task)
+                logger.info(
+                    f"Spaxiom Edge is running. Web UI at http://{self.api_host}:{self.api_port}"
+                )
+            else:
+                logger.info(
+                    "Spaxiom Edge is running (API disabled). Press Ctrl+C to stop."
+                )
+
             # Wait for shutdown signal
-            logger.info("Spaxiom Edge is running. Press Ctrl+C to stop.")
             await self._shutdown_event.wait()
 
         except Exception as e:

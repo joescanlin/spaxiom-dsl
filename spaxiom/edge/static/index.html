@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaxiom Edge</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    <link href="/static/css/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100" x-data="app()">
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Spaxiom Edge</span>
+            </div>
+            <div class="header-status" x-show="systemHealth">
+                <span class="status-indicator" :class="systemHealth.status"></span>
+                <span x-text="systemHealth.status"></span>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item" :class="{ active: currentPage === 'dashboard' }" @click="currentPage = 'dashboard'">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </li>
+                <li class="nav-item" :class="{ active: currentPage === 'sensors' }" @click="currentPage = 'sensors'">
+                    <span class="nav-icon">📡</span>
+                    Sensors
+                </li>
+                <li class="nav-item" :class="{ active: currentPage === 'zones' }" @click="currentPage = 'zones'">
+                    <span class="nav-icon">🗺️</span>
+                    Zones
+                </li>
+                <li class="nav-item" :class="{ active: currentPage === 'patterns' }" @click="currentPage = 'patterns'">
+                    <span class="nav-icon">🔷</span>
+                    Patterns
+                </li>
+                <li class="nav-item" :class="{ active: currentPage === 'agents' }" @click="currentPage = 'agents'">
+                    <span class="nav-icon">🤖</span>
+                    Agents
+                </li>
+                <li class="nav-item" :class="{ active: currentPage === 'settings' }" @click="currentPage = 'settings'">
+                    <span class="nav-icon">⚙️</span>
+                    Settings
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard -->
+            <div x-show="currentPage === 'dashboard'" class="page">
+                <h1 class="page-title">Dashboard</h1>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" x-text="systemInfo?.sensors_count || 0"></div>
+                        <div class="stat-label">Sensors</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" x-text="systemInfo?.patterns_count || 0"></div>
+                        <div class="stat-label">Patterns</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" x-text="systemInfo?.agents_count || 0"></div>
+                        <div class="stat-label">Agents</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" x-text="formatUptime(systemHealth?.uptime_seconds)"></div>
+                        <div class="stat-label">Uptime</div>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h2>System Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Version:</span>
+                            <span class="info-value" x-text="systemInfo?.version || 'N/A'"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Hostname:</span>
+                            <span class="info-value" x-text="systemInfo?.hostname || 'N/A'"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Platform:</span>
+                            <span class="info-value" x-text="systemInfo?.platform || 'N/A'"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Disk Usage:</span>
+                            <span class="info-value" x-text="(systemHealth?.disk_usage_percent || 0).toFixed(1) + '%'"></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Memory Usage:</span>
+                            <span class="info-value" x-text="(systemHealth?.memory_usage_percent || 0).toFixed(1) + '%'"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sensors -->
+            <div x-show="currentPage === 'sensors'" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Sensors</h1>
+                    <button class="btn btn-primary" @click="showAddSensorModal = true">+ Add Sensor</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Last Value</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="sensor in sensors" :key="sensor.id">
+                                <tr>
+                                    <td x-text="sensor.name"></td>
+                                    <td x-text="sensor.sensor_type"></td>
+                                    <td>
+                                        <span class="status-badge" :class="sensor.enabled ? 'status-ok' : 'status-disabled'" 
+                                              x-text="sensor.enabled ? 'Enabled' : 'Disabled'"></span>
+                                    </td>
+                                    <td x-text="sensorHealth[sensor.id]?.last_value ?? 'N/A'"></td>
+                                    <td class="actions">
+                                        <button class="btn btn-sm" @click="testSensor(sensor.id)">Test</button>
+                                        <button class="btn btn-sm btn-danger" @click="deleteSensor(sensor.id)">Delete</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <p x-show="sensors.length === 0" class="empty-message">No sensors registered. Click "Add Sensor" to get started.</p>
+                </div>
+            </div>
+
+            <!-- Zones -->
+            <div x-show="currentPage === 'zones'" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Zones</h1>
+                    <button class="btn btn-primary" @click="showAddZoneModal = true">+ Add Zone</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="zone in zones" :key="zone.id">
+                                <tr>
+                                    <td x-text="zone.name"></td>
+                                    <td x-text="zone.zone_type"></td>
+                                    <td class="actions">
+                                        <button class="btn btn-sm btn-danger" @click="deleteZone(zone.id)">Delete</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <p x-show="zones.length === 0" class="empty-message">No zones defined.</p>
+                </div>
+            </div>
+
+            <!-- Patterns -->
+            <div x-show="currentPage === 'patterns'" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Patterns</h1>
+                    <button class="btn btn-primary" @click="showAddPatternModal = true">+ Add Pattern</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="pattern in patterns" :key="pattern.id">
+                                <tr>
+                                    <td x-text="pattern.name"></td>
+                                    <td x-text="pattern.pattern_type"></td>
+                                    <td>
+                                        <span class="status-badge" :class="pattern.enabled ? 'status-ok' : 'status-disabled'"
+                                              x-text="pattern.enabled ? 'Enabled' : 'Disabled'"></span>
+                                    </td>
+                                    <td class="actions">
+                                        <button class="btn btn-sm btn-success" @click="deployPattern(pattern.id)">Deploy</button>
+                                        <button class="btn btn-sm btn-danger" @click="deletePattern(pattern.id)">Delete</button>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <p x-show="patterns.length === 0" class="empty-message">No patterns configured.</p>
+                </div>
+            </div>
+
+            <!-- Agents -->
+            <div x-show="currentPage === 'agents'" class="page">
+                <h1 class="page-title">Agents</h1>
+
+                <div class="agents-grid">
+                    <template x-for="agent in agents" :key="agent.id">
+                        <div class="agent-card">
+                            <div class="agent-header">
+                                <span class="status-dot" :class="agent.status"></span>
+                                <h3 x-text="agent.name"></h3>
+                            </div>
+                            <div class="agent-info">
+                                <p>Status: <span x-text="agent.status"></span></p>
+                                <p>Pattern: <span x-text="agent.pattern_id.slice(0, 8) + '...'"></span></p>
+                            </div>
+                            <div class="agent-actions">
+                                <button class="btn btn-sm btn-success" 
+                                        x-show="agent.status === 'stopped'" 
+                                        @click="startAgent(agent.id)">Start</button>
+                                <button class="btn btn-sm btn-warning" 
+                                        x-show="agent.status === 'running'" 
+                                        @click="stopAgent(agent.id)">Stop</button>
+                                <button class="btn btn-sm btn-danger" @click="deleteAgent(agent.id)">Delete</button>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <p x-show="agents.length === 0" class="empty-message">No agents deployed. Deploy a pattern to create an agent.</p>
+            </div>
+
+            <!-- Settings -->
+            <div x-show="currentPage === 'settings'" class="page">
+                <h1 class="page-title">Settings</h1>
+                <div class="info-card">
+                    <h2>System Settings</h2>
+                    <p>Settings configuration coming soon.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Sensor Modal -->
+    <div class="modal" x-show="showAddSensorModal" @click.self="showAddSensorModal = false">
+        <div class="modal-content">
+            <h2>Add Sensor</h2>
+            <form @submit.prevent="addSensor">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" x-model="newSensor.name" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select x-model="newSensor.sensor_type" required>
+                        <option value="random">Random (Test)</option>
+                        <option value="toggling">Toggling (Test)</option>
+                        <option value="gpio_digital">GPIO Digital</option>
+                        <option value="mqtt">MQTT</option>
+                        <option value="file">File</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" @click="showAddSensorModal = false">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Sensor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Zone Modal -->
+    <div class="modal" x-show="showAddZoneModal" @click.self="showAddZoneModal = false">
+        <div class="modal-content">
+            <h2>Add Zone</h2>
+            <form @submit.prevent="addZone">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" x-model="newZone.name" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select x-model="newZone.zone_type" required>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="polygon">Polygon</option>
+                        <option value="circle">Circle</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Width</label>
+                    <input type="number" x-model="newZone.geometry.width" placeholder="10">
+                </div>
+                <div class="form-group">
+                    <label>Height</label>
+                    <input type="number" x-model="newZone.geometry.height" placeholder="10">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" @click="showAddZoneModal = false">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Zone</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Pattern Modal -->
+    <div class="modal" x-show="showAddPatternModal" @click.self="showAddPatternModal = false">
+        <div class="modal-content">
+            <h2>Add Pattern</h2>
+            <form @submit.prevent="addPattern">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" x-model="newPattern.name" required>
+                </div>
+                <div class="form-group">
+                    <label>Type</label>
+                    <select x-model="newPattern.pattern_type" required>
+                        <option value="occupancy_field">Occupancy Field</option>
+                        <option value="queue_flow">Queue Flow</option>
+                        <option value="adl_tracker">ADL Tracker</option>
+                        <option value="fm_steward">FM Steward</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" @click="showAddPatternModal = false">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Pattern</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

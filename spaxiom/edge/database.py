@@ -960,7 +960,11 @@ class SettingsRepository:
                 "SELECT value FROM settings WHERE key = ?", (key,)
             ).fetchone()
             if row:
-                return json.loads(row["value"])
+                value = row["value"]
+                # SQLite JSON may return the value directly if it's a primitive
+                if isinstance(value, str):
+                    return json.loads(value)
+                return value
             return default
 
     def set(self, key: str, value: Any) -> None:
@@ -987,4 +991,12 @@ class SettingsRepository:
         """Get all settings as a dictionary."""
         with self.db.connection() as conn:
             rows = conn.execute("SELECT key, value FROM settings").fetchall()
-            return {row["key"]: json.loads(row["value"]) for row in rows}
+            result = {}
+            for row in rows:
+                value = row["value"]
+                # SQLite JSON may return the value directly if it's a primitive
+                if isinstance(value, str):
+                    result[row["key"]] = json.loads(value)
+                else:
+                    result[row["key"]] = value
+            return result

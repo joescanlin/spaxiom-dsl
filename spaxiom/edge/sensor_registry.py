@@ -298,6 +298,93 @@ class PersistentSensorRegistry:
                 return self._sensors.get(sid)
         return None
 
+    def remove(self, name: str) -> bool:
+        """Remove a sensor by name.
+
+        Args:
+            name: Sensor name
+
+        Returns:
+            True if removed, False if not found
+        """
+        for sid, record in list(self._records.items()):
+            if record.name == name:
+                return self.unregister(sid)
+        return False
+
+    def add_from_config(
+        self,
+        name: str,
+        sensor_type: str,
+        location: tuple,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> Optional[str]:
+        """Add a sensor from configuration (convenience method).
+
+        Args:
+            name: Sensor name
+            sensor_type: Type of sensor
+            location: (x, y, z) location
+            config: Type-specific config
+
+        Returns:
+            Sensor ID if successful, None if failed
+        """
+        return self.register(
+            name=name,
+            sensor_type=sensor_type,
+            location=location,
+            config=config or {},
+            enabled=True,
+        )
+
+    def instantiate_from_record(self, record: SensorRecord) -> bool:
+        """Instantiate a sensor from an existing database record.
+
+        Use this when a sensor record already exists in the DB
+        and you just want to create the runtime instance.
+
+        Args:
+            record: SensorRecord from database
+
+        Returns:
+            True if instantiated successfully, False otherwise
+        """
+        if record.id in self._sensors:
+            # Already instantiated
+            return True
+
+        try:
+            sensor = self._instantiate_sensor(record)
+            if sensor:
+                self._sensors[record.id] = sensor
+                self._records[record.id] = record
+                self._health[record.id] = SensorHealth(sensor_id=record.id, status="ok")
+                logger.debug(f"Instantiated sensor: {record.name}")
+                return True
+            return False
+        except Exception as e:
+            logger.error(f"Failed to instantiate sensor {record.name}: {e}")
+            self._health[record.id] = SensorHealth(
+                sensor_id=record.id, status="error", error=str(e)
+            )
+            return False
+
+    def check_health_for(self, name: str) -> Dict[str, Any]:
+        """Check health for a sensor by name.
+
+        Args:
+            name: Sensor name
+
+        Returns:
+            Health status dict
+        """
+        for sid, record in self._records.items():
+            if record.name == name:
+                health = self.test_sensor(sid)
+                return health.to_dict()
+        return {"status": "unknown", "error": "Sensor not found"}
+
     def get_record(self, sensor_id: str) -> Optional[SensorRecord]:
         """Get the database record for a sensor.
 
