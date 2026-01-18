@@ -26,6 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff black pytest coverage pytest-asyncio
           pip install pint>=0.23 paho-mqtt>=2.0
+          pip install fastapi uvicorn httpx  # For edge API tests
           pip install -e .
 
       - name: Lint with ruff
