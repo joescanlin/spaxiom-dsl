@@ -62,7 +62,7 @@ With Spaxiom, you can easily define complex conditions that span across space an
 ## Installation
 
 ```bash
-pip install -e .
+pip install spaxiom
 ```
 
 ## Quick Examples

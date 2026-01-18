@@ -29,6 +29,9 @@ nav:
   - Quick-Start: quickstart.md
   - INTENT: intent.md
   - Architecture: architecture.md
+  - Runtime: runtime.md
+  - Safety: safety.md
+  - Governance: governance.md
   - API:
     - Overview: api/overview.md
   - Temporal: temporal_and_entities.md

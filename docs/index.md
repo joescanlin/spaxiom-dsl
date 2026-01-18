@@ -49,7 +49,7 @@ Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intel
 ## Installation
 
 ```bash
-pip install -e .
+pip install spaxiom
 ```
 
 ## Quick Example

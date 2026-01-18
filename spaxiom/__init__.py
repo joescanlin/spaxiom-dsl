@@ -102,4 +102,4 @@ if sys.platform.startswith("linux"):
         # Add it to __all__
         __all__.append("GPIOOutput")
 
-__version__ = "0.0.2"
+__version__ = "0.1.0rc2"

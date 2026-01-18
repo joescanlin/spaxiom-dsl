@@ -34,7 +34,7 @@ def alert_person_detected():
     print("Person detected with high confidence!")
 ```
 
-See the [ONNX Person Detection example](examples/onnx_person_demo.py) for a complete implementation.
+See the [ONNX Person Detection example](https://github.com/joescanlin/spaxiom-dsl/blob/main/examples/onnx_person_demo.py) for a complete implementation.
 
 ## GPIO Hardware Integration
 
@@ -157,7 +157,7 @@ The verbose mode provides detailed information about sensor readings, condition 
 ## Other Improvements
 
 - Enhanced error handling across all modules
-- More comprehensive test coverage (over 60%)
+- Comprehensive test coverage (74%+ required)
 - Updated documentation with privacy and hardware examples
 - Various bug fixes and performance improvements
 
