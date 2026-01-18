@@ -1,0 +1,1379 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection">
+      
+      
+        <meta name="author" content="Joe Scanlin">
+      
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../safety/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Runtime - Spaxiom DSL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/intent.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#runtime-and-tick-execution" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  <img src="../images/intent-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spaxiom DSL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Runtime
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  <img src="../images/intent-logo.svg" alt="logo">
+
+    </a>
+    Spaxiom DSL
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whats_new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's New in 0.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick-Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../intent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    INTENT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phasedtickrunner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PhasedTickRunner
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PhasedTickRunner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-a-single-tick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running a Single Tick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stopping-the-runner" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stopping the Runner
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#registering-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Registering Patterns
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#safety-monitors-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Safety Monitors Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#governance-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Governance Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tick Profiling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tick Profiling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabling-profiling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enabling Profiling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tickstats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TickStats
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#getting-the-last-tick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting the Last Tick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#profiler-stats" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Profiler Stats
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#condition-evaluation-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Condition Evaluation Modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Condition Evaluation Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#polling-mode-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Polling Mode (Default)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event-driven-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Event-Driven Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tick-callbacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tick Callbacks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-complete-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: Complete Setup
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../temporal_and_entities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli_usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/smart_building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart Building
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="runtime-and-tick-execution">Runtime and Tick Execution<a class="headerlink" href="#runtime-and-tick-execution" title="Permanent link">&para;</a></h1>
+<p>Spaxiom provides a deterministic phased tick execution model that processes sensors, patterns, conditions, and callbacks in a predictable order. This page documents the <code>PhasedTickRunner</code> and related profiling tools.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The runtime executes a 4-phase tick loop:</p>
+<ol>
+<li><strong>Phase 1: Sensor Reads</strong> - Read all sensors concurrently</li>
+<li><strong>Phase 2: Pattern Updates</strong> - Update patterns in dependency order</li>
+<li><strong>Phase 3: Condition Evaluation</strong> - Evaluate conditions (polling or event-driven)</li>
+<li><strong>Phase 4: Callback Dispatch</strong> - Execute triggered callbacks with isolation</li>
+</ol>
+<h2 id="phasedtickrunner">PhasedTickRunner<a class="headerlink" href="#phasedtickrunner" title="Permanent link">&para;</a></h2>
+<p>The <code>PhasedTickRunner</code> class implements the phased tick loop.</p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasedTickRunner</span><span class="p">,</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span>
+
+<span class="c1"># Setup sensors and conditions</span>
+<span class="n">sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;temp&quot;</span><span class="p">,</span> <span class="s2">&quot;temperature&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="n">temp_high</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span>
+
+<span class="nd">@on</span><span class="p">(</span><span class="n">temp_high</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">alert</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Temperature is high!&quot;</span><span class="p">)</span>
+
+<span class="c1"># Create and run the tick runner</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">(</span><span class="n">tick_rate_hz</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_ticks</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+<h3 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tick_rate_hz</code></td>
+<td>Target tick rate in Hz</td>
+<td>10.0</td>
+</tr>
+<tr>
+<td><code>history_length</code></td>
+<td>Maximum condition history entries</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<h3 id="running-a-single-tick">Running a Single Tick<a class="headerlink" href="#running-a-single-tick" title="Permanent link">&para;</a></h3>
+<p>For testing or manual control, you can run individual ticks:</p>
+<div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_one</span><span class="p">():</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">()</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">run_single_tick</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tick </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">tick_number</span><span class="si">}</span><span class="s2"> took </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">tick_duration_ms</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="stopping-the-runner">Stopping the Runner<a class="headerlink" href="#stopping-the-runner" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">runner</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Signal the runner to stop after current tick</span>
+</code></pre></div>
+<h2 id="registering-patterns">Registering Patterns<a class="headerlink" href="#registering-patterns" title="Permanent link">&para;</a></h2>
+<p>INTENT patterns are updated in Phase 2 in dependency order:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasedTickRunner</span><span class="p">,</span> <span class="n">OccupancyField</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">()</span>
+
+<span class="c1"># Create and register patterns</span>
+<span class="n">occupancy</span> <span class="o">=</span> <span class="n">OccupancyField</span><span class="p">(</span><span class="n">zones</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;zone_a&quot;</span><span class="p">,</span> <span class="s2">&quot;zone_b&quot;</span><span class="p">])</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">register_pattern</span><span class="p">(</span><span class="n">occupancy</span><span class="p">)</span>
+
+<span class="c1"># Clear all patterns if needed</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">clear_patterns</span><span class="p">()</span>
+</code></pre></div>
+<p>Patterns are automatically sorted using topological sort based on their <code>depends_on()</code> method.</p>
+<h2 id="safety-monitors-integration">Safety Monitors Integration<a class="headerlink" href="#safety-monitors-integration" title="Permanent link">&para;</a></h2>
+<p>Safety monitors are checked at the end of each tick:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasedTickRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.safety</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafetyMonitor</span><span class="p">,</span> <span class="n">verifiable</span><span class="p">,</span> <span class="n">compare</span>
+
+<span class="c1"># Create safety property</span>
+<span class="n">pressure_ok</span> <span class="o">=</span> <span class="n">verifiable</span><span class="p">(</span><span class="n">compare</span><span class="p">(</span><span class="s2">&quot;pressure&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pressure_limit&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">failsafe</span><span class="p">(</span><span class="n">violation</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SAFETY VIOLATION: </span><span class="si">{</span><span class="n">violation</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">monitor</span> <span class="o">=</span> <span class="n">SafetyMonitor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;pressure_safety&quot;</span><span class="p">,</span>
+    <span class="nb">property</span><span class="o">=</span><span class="n">pressure_ok</span><span class="p">,</span>
+    <span class="n">on_violation</span><span class="o">=</span><span class="n">failsafe</span>
+<span class="p">)</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">()</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">register_safety_monitor</span><span class="p">(</span><span class="n">monitor</span><span class="p">)</span>
+</code></pre></div>
+<h2 id="governance-integration">Governance Integration<a class="headerlink" href="#governance-integration" title="Permanent link">&para;</a></h2>
+<p>The runner supports governance hooks:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasedTickRunner</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetentionPolicy</span><span class="p">,</span> <span class="n">ConsentManager</span><span class="p">,</span> <span class="n">Authorizer</span><span class="p">,</span> <span class="n">AuditLogger</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">()</span>
+
+<span class="c1"># Set retention policy for history buffers</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">set_retention_policy</span><span class="p">(</span><span class="n">RetentionPolicy</span><span class="p">(</span><span class="n">default_days</span><span class="o">=</span><span class="mi">30</span><span class="p">))</span>
+
+<span class="c1"># Set consent manager for data collection controls</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">set_consent_manager</span><span class="p">(</span><span class="n">ConsentManager</span><span class="p">())</span>
+
+<span class="c1"># Set authorizer for access control</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">set_authorizer</span><span class="p">(</span><span class="n">Authorizer</span><span class="p">())</span>
+
+<span class="c1"># Set audit logger for governance events</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">set_audit_logger</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">())</span>
+</code></pre></div>
+<h2 id="tick-profiling">Tick Profiling<a class="headerlink" href="#tick-profiling" title="Permanent link">&para;</a></h2>
+<p>Enable profiling to collect performance statistics across ticks.</p>
+<h3 id="enabling-profiling">Enabling Profiling<a class="headerlink" href="#enabling-profiling" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">PhasedTickRunner</span><span class="p">,</span> <span class="n">enable_profiling</span>
+
+<span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">()</span>
+<span class="n">enable_profiling</span><span class="p">(</span><span class="n">runner</span><span class="p">)</span>  <span class="c1"># Or: runner.profiler.enable()</span>
+
+<span class="c1"># Run some ticks...</span>
+<span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_ticks</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+<span class="c1"># Get aggregated stats</span>
+<span class="n">stats</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average tick: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tick_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase 1 (sensors): </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;phase1_sensor_read_avg_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase 2 (patterns): </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;phase2_pattern_update_avg_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase 3 (conditions): </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;phase3_condition_eval_avg_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Phase 4 (callbacks): </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;phase4_callback_dispatch_avg_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="tickstats">TickStats<a class="headerlink" href="#tickstats" title="Permanent link">&para;</a></h3>
+<p>Each tick produces a <code>TickStats</code> object with detailed instrumentation:</p>
+<div class="highlight"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TickStats</span><span class="p">:</span>
+    <span class="n">tick_number</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">tick_start_time</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">tick_duration_ms</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="c1"># Phase timings</span>
+    <span class="n">phase1_sensor_read_ms</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">phase2_pattern_update_ms</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">phase3_condition_eval_ms</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">phase4_callback_dispatch_ms</span><span class="p">:</span> <span class="nb">float</span>
+
+    <span class="c1"># Counts</span>
+    <span class="n">sensors_read</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">patterns_updated</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">events_emitted</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">conditions_evaluated</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">callbacks_dispatched</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">callback_failures</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="c1"># Safety monitoring</span>
+    <span class="n">safety_monitors_checked</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">safety_violations</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">safety_violation_events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+
+    <span class="c1"># Phase ordering proof</span>
+    <span class="n">phase_order</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+
+    <span class="c1"># Events emitted this tick</span>
+    <span class="n">pattern_events</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]</span>
+</code></pre></div>
+<h3 id="getting-the-last-tick">Getting the Last Tick<a class="headerlink" href="#getting-the-last-tick" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">last_tick</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">get_last_tick</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">last_tick</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Last tick: </span><span class="si">{</span><span class="n">last_tick</span><span class="o">.</span><span class="n">tick_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Callbacks fired: </span><span class="si">{</span><span class="n">last_tick</span><span class="o">.</span><span class="n">callbacks_dispatched</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="profiler-stats">Profiler Stats<a class="headerlink" href="#profiler-stats" title="Permanent link">&para;</a></h3>
+<p>The profiler provides aggregated statistics:</p>
+<table>
+<thead>
+<tr>
+<th>Statistic</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tick_count</code></td>
+<td>Total ticks recorded</td>
+</tr>
+<tr>
+<td><code>avg_tick_ms</code></td>
+<td>Average tick duration</td>
+</tr>
+<tr>
+<td><code>phase1_sensor_read_avg_ms</code></td>
+<td>Average sensor read phase time</td>
+</tr>
+<tr>
+<td><code>phase2_pattern_update_avg_ms</code></td>
+<td>Average pattern update phase time</td>
+</tr>
+<tr>
+<td><code>phase3_condition_eval_avg_ms</code></td>
+<td>Average condition eval phase time</td>
+</tr>
+<tr>
+<td><code>phase4_callback_dispatch_avg_ms</code></td>
+<td>Average callback dispatch phase time</td>
+</tr>
+<tr>
+<td><code>callback_failures</code></td>
+<td>Total callback failures</td>
+</tr>
+<tr>
+<td><code>sensors_read_total</code></td>
+<td>Total sensor reads</td>
+</tr>
+<tr>
+<td><code>conditions_evaluated_total</code></td>
+<td>Total condition evaluations</td>
+</tr>
+<tr>
+<td><code>callbacks_dispatched_total</code></td>
+<td>Total callbacks dispatched</td>
+</tr>
+</tbody>
+</table>
+<h2 id="condition-evaluation-modes">Condition Evaluation Modes<a class="headerlink" href="#condition-evaluation-modes" title="Permanent link">&para;</a></h2>
+<p>Conditions can operate in different evaluation modes:</p>
+<h3 id="polling-mode-default">Polling Mode (Default)<a class="headerlink" href="#polling-mode-default" title="Permanent link">&para;</a></h3>
+<p>Conditions are evaluated every tick:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Condition</span>
+
+<span class="c1"># Evaluated every tick</span>
+<span class="n">temp_high</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="event-driven-mode">Event-Driven Mode<a class="headerlink" href="#event-driven-mode" title="Permanent link">&para;</a></h3>
+<p>Conditions are only evaluated when their dependencies change:</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Set dependencies for event-driven evaluation</span>
+<span class="n">temp_high</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">temp_high</span><span class="o">.</span><span class="n">dependencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">sensor</span><span class="p">]</span>  <span class="c1"># Only evaluate when sensor changes</span>
+<span class="n">temp_high</span><span class="o">.</span><span class="n">_effective_mode</span> <span class="o">=</span> <span class="s2">&quot;event-driven&quot;</span>
+</code></pre></div>
+<h2 id="tick-callbacks">Tick Callbacks<a class="headerlink" href="#tick-callbacks" title="Permanent link">&para;</a></h2>
+<p>Register callbacks for tick lifecycle events:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">on_tick_start</span><span class="p">(</span><span class="n">tick_number</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Starting tick </span><span class="si">{</span><span class="n">tick_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">on_tick_end</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tick </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">tick_number</span><span class="si">}</span><span class="s2"> completed in </span><span class="si">{</span><span class="n">stats</span><span class="o">.</span><span class="n">tick_duration_ms</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+
+<span class="n">runner</span><span class="o">.</span><span class="n">_on_tick_start</span> <span class="o">=</span> <span class="n">on_tick_start</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">_on_tick_end</span> <span class="o">=</span> <span class="n">on_tick_end</span>
+</code></pre></div>
+<h2 id="example-complete-setup">Example: Complete Setup<a class="headerlink" href="#example-complete-setup" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PhasedTickRunner</span><span class="p">,</span>
+    <span class="n">Sensor</span><span class="p">,</span>
+    <span class="n">Condition</span><span class="p">,</span>
+    <span class="n">on</span><span class="p">,</span>
+    <span class="n">OccupancyField</span><span class="p">,</span>
+    <span class="n">enable_profiling</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.safety</span><span class="w"> </span><span class="kn">import</span> <span class="n">SafetyMonitor</span><span class="p">,</span> <span class="n">verifiable</span><span class="p">,</span> <span class="n">compare</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetentionPolicy</span><span class="p">,</span> <span class="n">AuditLogger</span>
+
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+    <span class="c1"># Create sensors</span>
+    <span class="n">motion</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="c1"># Create condition</span>
+    <span class="n">motion_detected</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">motion</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="nd">@on</span><span class="p">(</span><span class="n">motion_detected</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_motion</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Motion detected!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Create runner</span>
+    <span class="n">runner</span> <span class="o">=</span> <span class="n">PhasedTickRunner</span><span class="p">(</span><span class="n">tick_rate_hz</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+    <span class="c1"># Enable profiling</span>
+    <span class="n">enable_profiling</span><span class="p">(</span><span class="n">runner</span><span class="p">)</span>
+
+    <span class="c1"># Register patterns</span>
+    <span class="n">occupancy</span> <span class="o">=</span> <span class="n">OccupancyField</span><span class="p">(</span><span class="n">zones</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;lobby&quot;</span><span class="p">])</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">register_pattern</span><span class="p">(</span><span class="n">occupancy</span><span class="p">)</span>
+
+    <span class="c1"># Register safety monitor</span>
+    <span class="n">safe</span> <span class="o">=</span> <span class="n">verifiable</span><span class="p">(</span><span class="n">compare</span><span class="p">(</span><span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;motion_limit&quot;</span><span class="p">)</span>
+    <span class="n">monitor</span> <span class="o">=</span> <span class="n">SafetyMonitor</span><span class="p">(</span><span class="s2">&quot;motion_safety&quot;</span><span class="p">,</span> <span class="n">safe</span><span class="p">)</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">register_safety_monitor</span><span class="p">(</span><span class="n">monitor</span><span class="p">)</span>
+
+    <span class="c1"># Set governance</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">set_retention_policy</span><span class="p">(</span><span class="n">RetentionPolicy</span><span class="p">(</span><span class="n">default_days</span><span class="o">=</span><span class="mi">7</span><span class="p">))</span>
+    <span class="n">runner</span><span class="o">.</span><span class="n">set_audit_logger</span><span class="p">(</span><span class="n">AuditLogger</span><span class="p">())</span>
+
+    <span class="c1"># Run for 100 ticks</span>
+    <span class="k">await</span> <span class="n">runner</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">max_ticks</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># Print stats</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="n">runner</span><span class="o">.</span><span class="n">profiler</span><span class="o">.</span><span class="n">get_stats</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Profile Summary:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Ticks: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;tick_count&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Avg tick: </span><span class="si">{</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;avg_tick_ms&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/joescanlin/spaxiom-dsl" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

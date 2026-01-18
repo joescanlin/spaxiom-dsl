@@ -1,0 +1,1351 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An embedded domain-specific language for spatial sensor fusion, temporal reasoning, and real-time event detection">
+      
+      
+        <meta name="author" content="Joe Scanlin">
+      
+      
+      
+        <link rel="prev" href="../safety/">
+      
+      
+        <link rel="next" href="../api/overview/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Governance - Spaxiom DSL</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../css/intent.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#data-governance" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  <img src="../images/intent-logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Spaxiom DSL
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Governance
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+      
+  <img src="../images/intent-logo.svg" alt="logo">
+
+    </a>
+    Spaxiom DSL
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/joescanlin/spaxiom-dsl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../whats_new/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    What's New in 0.1.0
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick-Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../intent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    INTENT
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../safety/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#retention-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retention Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Retention Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consent-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consent Manager
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consent Manager">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtering-events" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtering Events
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#audit-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authorization-rbac-abac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization (RBAC + ABAC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Authorization (RBAC + ABAC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#role-based-access-control-rbac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Role-Based Access Control (RBAC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#attribute-based-access-control-abac" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Attribute-Based Access Control (ABAC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#permission-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Permission Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#audit-logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Audit Logger
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Audit Logger">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#signed-audit-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signed Audit Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#querying-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Querying Logs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sealing-the-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sealing the Log
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integration-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../temporal_and_entities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Temporal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli_usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Examples
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Examples
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../examples/smart_building/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Smart Building
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="data-governance">Data Governance<a class="headerlink" href="#data-governance" title="Permanent link">&para;</a></h1>
+<p>The Governance module provides enforceable data governance primitives for Spaxiom applications, including data retention policies, consent management, authorization (RBAC/ABAC), and audit logging.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The governance module includes four main components:</p>
+<ol>
+<li><strong>RetentionPolicy</strong> - Bounded storage with TTL-based cleanup</li>
+<li><strong>ConsentManager</strong> - Zone and entity opt-out controls</li>
+<li><strong>Authorizer</strong> - Role-based (RBAC) and attribute-based (ABAC) access control</li>
+<li><strong>AuditLogger</strong> - Structured, append-only event logging</li>
+</ol>
+<h2 id="retention-policy">Retention Policy<a class="headerlink" href="#retention-policy" title="Permanent link">&para;</a></h2>
+<p>Control how long data is retained in history buffers and temporal windows.</p>
+<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetentionPolicy</span>
+
+<span class="c1"># Create a retention policy</span>
+<span class="n">policy</span> <span class="o">=</span> <span class="n">RetentionPolicy</span><span class="p">(</span>
+    <span class="n">default_days</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>         <span class="c1"># Default retention: 30 days</span>
+    <span class="n">raw_events_days</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span>       <span class="c1"># Raw sensor data: 7 days</span>
+    <span class="n">exceptions</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;SafetyIncident&quot;</span><span class="p">],</span>  <span class="c1"># Keep safety incidents forever</span>
+    <span class="n">max_entries</span><span class="o">=</span><span class="mi">10000</span>        <span class="c1"># Maximum 10,000 entries per buffer</span>
+<span class="p">)</span>
+
+<span class="c1"># Check if an event should be retained</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="n">event_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>  <span class="c1"># 8 days ago</span>
+<span class="n">should_keep</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">should_retain</span><span class="p">(</span><span class="n">event_time</span><span class="p">,</span> <span class="s2">&quot;raw_sensor&quot;</span><span class="p">)</span>  <span class="c1"># False (&gt; 7 days)</span>
+
+<span class="c1"># Apply policy to a buffer</span>
+<span class="n">events</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;event_type&quot;</span><span class="p">:</span> <span class="s2">&quot;motion&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="p">(</span><span class="mi">40</span> <span class="o">*</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">),</span> <span class="s2">&quot;event_type&quot;</span><span class="p">:</span> <span class="s2">&quot;motion&quot;</span><span class="p">},</span>  <span class="c1"># Old</span>
+<span class="p">]</span>
+<span class="n">cleaned</span> <span class="o">=</span> <span class="n">policy</span><span class="o">.</span><span class="n">apply_to_buffer</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>  <span class="c1"># Only keeps recent event</span>
+</code></pre></div>
+<h3 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>default_days</code></td>
+<td>Default retention period</td>
+<td>30</td>
+</tr>
+<tr>
+<td><code>raw_events_days</code></td>
+<td>Retention for raw sensor events</td>
+<td>7</td>
+</tr>
+<tr>
+<td><code>exceptions</code></td>
+<td>Event types retained indefinitely</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>max_entries</code></td>
+<td>Max entries per buffer (None = unlimited)</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h2 id="consent-manager">Consent Manager<a class="headerlink" href="#consent-manager" title="Permanent link">&para;</a></h2>
+<p>Manage user and zone consent for data collection, supporting GDPR-style opt-out controls.</p>
+<h3 id="basic-usage_1">Basic Usage<a class="headerlink" href="#basic-usage_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConsentManager</span>
+
+<span class="n">manager</span> <span class="o">=</span> <span class="n">ConsentManager</span><span class="p">()</span>
+
+<span class="c1"># User opts out of specific zones</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">opt_out</span><span class="p">(</span><span class="s2">&quot;user123&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;bedroom&quot;</span><span class="p">,</span> <span class="s2">&quot;bathroom&quot;</span><span class="p">],</span> <span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Privacy preference&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check if zone is opted out for a user</span>
+<span class="n">is_opted_out</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">is_opted_out</span><span class="p">(</span><span class="s2">&quot;bedroom&quot;</span><span class="p">,</span> <span class="s2">&quot;user123&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+
+<span class="c1"># User opts back in</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">opt_in</span><span class="p">(</span><span class="s2">&quot;user123&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;bedroom&quot;</span><span class="p">])</span>
+
+<span class="c1"># Globally suppress a zone (all users)</span>
+<span class="n">manager</span><span class="o">.</span><span class="n">suppress_zone</span><span class="p">(</span><span class="s2">&quot;private_area&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="filtering-events">Filtering Events<a class="headerlink" href="#filtering-events" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Filter events based on consent</span>
+<span class="n">event</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;zone&quot;</span><span class="p">:</span> <span class="s2">&quot;bedroom&quot;</span><span class="p">,</span> <span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="s2">&quot;user123&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="n">filtered</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">filter_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>  <span class="c1"># Returns None if suppressed</span>
+
+<span class="c1"># Check before emitting events</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">manager</span><span class="o">.</span><span class="n">should_suppress_event</span><span class="p">(</span><span class="s2">&quot;bedroom&quot;</span><span class="p">,</span> <span class="s2">&quot;user123&quot;</span><span class="p">):</span>
+    <span class="n">emit_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="audit-summary">Audit Summary<a class="headerlink" href="#audit-summary" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="n">summary</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="n">get_consent_summary</span><span class="p">()</span>
+<span class="c1"># {</span>
+<span class="c1">#   &quot;total_users&quot;: 5,</span>
+<span class="c1">#   &quot;zones_with_optouts&quot;: [&quot;bedroom&quot;, &quot;bathroom&quot;],</span>
+<span class="c1">#   &quot;globally_suppressed&quot;: [&quot;private_area&quot;],</span>
+<span class="c1">#   &quot;optouts_by_zone&quot;: {&quot;bedroom&quot;: 2, &quot;bathroom&quot;: 3}</span>
+<span class="c1"># }</span>
+</code></pre></div>
+<h2 id="authorization-rbac-abac">Authorization (RBAC + ABAC)<a class="headerlink" href="#authorization-rbac-abac" title="Permanent link">&para;</a></h2>
+<p>The Authorizer combines Role-Based Access Control (RBAC) with Attribute-Based Access Control (ABAC) for flexible authorization.</p>
+<h3 id="role-based-access-control-rbac">Role-Based Access Control (RBAC)<a class="headerlink" href="#role-based-access-control-rbac" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Authorizer</span><span class="p">,</span> <span class="n">Role</span>
+
+<span class="n">authz</span> <span class="o">=</span> <span class="n">Authorizer</span><span class="p">()</span>
+
+<span class="c1"># Define roles with permissions</span>
+<span class="n">operator_role</span> <span class="o">=</span> <span class="n">Role</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;operator&quot;</span><span class="p">,</span>
+    <span class="n">permissions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read:occupancy&quot;</span><span class="p">,</span> <span class="s2">&quot;read:temperature&quot;</span><span class="p">,</span> <span class="s2">&quot;write:hvac&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+<span class="n">admin_role</span> <span class="o">=</span> <span class="n">Role</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+    <span class="n">permissions</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;read:*&quot;</span><span class="p">,</span> <span class="s2">&quot;write:*&quot;</span><span class="p">,</span> <span class="s2">&quot;admin:*&quot;</span><span class="p">}</span>  <span class="c1"># Wildcards supported</span>
+<span class="p">)</span>
+
+<span class="n">authz</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="n">operator_role</span><span class="p">)</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="n">admin_role</span><span class="p">)</span>
+
+<span class="c1"># Assign roles to users</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">assign_user</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;operator&quot;</span><span class="p">)</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">assign_user</span><span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="s2">&quot;admin&quot;</span><span class="p">)</span>
+
+<span class="c1"># Check permissions</span>
+<span class="n">can_read</span> <span class="o">=</span> <span class="n">authz</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;read:occupancy&quot;</span><span class="p">)</span>  <span class="c1"># True</span>
+<span class="n">can_admin</span> <span class="o">=</span> <span class="n">authz</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;admin:users&quot;</span><span class="p">)</span>    <span class="c1"># False</span>
+<span class="n">can_admin</span> <span class="o">=</span> <span class="n">authz</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;bob&quot;</span><span class="p">,</span> <span class="s2">&quot;admin:users&quot;</span><span class="p">)</span>      <span class="c1"># True (wildcard)</span>
+</code></pre></div>
+<h3 id="attribute-based-access-control-abac">Attribute-Based Access Control (ABAC)<a class="headerlink" href="#attribute-based-access-control-abac" title="Permanent link">&para;</a></h3>
+<p>For context-aware policies based on user, resource, action, and environment attributes:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">Policy</span>
+
+<span class="c1"># Policy: Only allow access during business hours</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">business_hours_only</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+    <span class="n">hour</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">hour</span>
+    <span class="k">return</span> <span class="mi">9</span> <span class="o">&lt;=</span> <span class="n">hour</span> <span class="o">&lt;</span> <span class="mi">17</span>
+
+<span class="n">business_policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;business_hours&quot;</span><span class="p">,</span>
+    <span class="n">effect</span><span class="o">=</span><span class="s2">&quot;allow&quot;</span><span class="p">,</span>
+    <span class="n">condition</span><span class="o">=</span><span class="n">business_hours_only</span>
+<span class="p">)</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">add_policy</span><span class="p">(</span><span class="n">business_policy</span><span class="p">)</span>
+
+<span class="c1"># Policy: Deny access to sensitive resources from external IPs</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">deny_external_sensitive</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">is_external</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;environment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ip_type&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;external&quot;</span>
+    <span class="n">is_sensitive</span> <span class="o">=</span> <span class="s2">&quot;sensitive&quot;</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">[</span><span class="s2">&quot;resource&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">is_external</span> <span class="ow">and</span> <span class="n">is_sensitive</span>
+
+<span class="n">deny_policy</span> <span class="o">=</span> <span class="n">Policy</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;deny_external_sensitive&quot;</span><span class="p">,</span>
+    <span class="n">effect</span><span class="o">=</span><span class="s2">&quot;deny&quot;</span><span class="p">,</span>
+    <span class="n">condition</span><span class="o">=</span><span class="n">deny_external_sensitive</span>
+<span class="p">)</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">add_policy</span><span class="p">(</span><span class="n">deny_policy</span><span class="p">)</span>
+
+<span class="c1"># Check with context</span>
+<span class="n">context</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ip_type&quot;</span><span class="p">:</span> <span class="s2">&quot;internal&quot;</span><span class="p">}</span>
+<span class="n">allowed</span> <span class="o">=</span> <span class="n">authz</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;read:data&quot;</span><span class="p">,</span> <span class="s2">&quot;sensor_data&quot;</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="permission-format">Permission Format<a class="headerlink" href="#permission-format" title="Permanent link">&para;</a></h3>
+<p>Permissions follow the format <code>action:resource</code>:</p>
+<ul>
+<li><code>read:occupancy</code> - Read occupancy data</li>
+<li><code>write:hvac</code> - Control HVAC systems</li>
+<li><code>admin:users</code> - Administer users</li>
+<li><code>read:*</code> - Read any resource (wildcard)</li>
+<li><code>*</code> - All permissions</li>
+</ul>
+<h2 id="audit-logger">Audit Logger<a class="headerlink" href="#audit-logger" title="Permanent link">&para;</a></h2>
+<p>Append-only audit logging with optional cryptographic signing for tamper-evidence.</p>
+<h3 id="basic-usage_2">Basic Usage<a class="headerlink" href="#basic-usage_2" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="n">AuditLogger</span>
+
+<span class="c1"># Create logger (in-memory for demo)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">(</span><span class="n">backend</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
+
+<span class="c1"># Log events</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+    <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;data_access&quot;</span><span class="p">,</span>
+    <span class="n">actor</span><span class="o">=</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s2">&quot;read&quot;</span><span class="p">,</span>
+    <span class="n">resource</span><span class="o">=</span><span class="s2">&quot;occupancy_zone_1&quot;</span><span class="p">,</span>
+    <span class="n">outcome</span><span class="o">=</span><span class="s2">&quot;success&quot;</span><span class="p">,</span>
+    <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Dashboard view&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+
+<span class="c1"># Log authorization failures</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+    <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;authz_failure&quot;</span><span class="p">,</span>
+    <span class="n">actor</span><span class="o">=</span><span class="s2">&quot;mallory&quot;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s2">&quot;write&quot;</span><span class="p">,</span>
+    <span class="n">resource</span><span class="o">=</span><span class="s2">&quot;admin_config&quot;</span><span class="p">,</span>
+    <span class="n">outcome</span><span class="o">=</span><span class="s2">&quot;denied&quot;</span><span class="p">,</span>
+    <span class="n">details</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Insufficient permissions&quot;</span><span class="p">}</span>
+<span class="p">)</span>
+</code></pre></div>
+<h3 id="signed-audit-logs">Signed Audit Logs<a class="headerlink" href="#signed-audit-logs" title="Permanent link">&para;</a></h3>
+<p>For tamper-evident logging, provide a signing key:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="n">signing_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">urandom</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>  <span class="c1"># Keep this secret!</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">(</span><span class="n">signing_key</span><span class="o">=</span><span class="n">signing_key</span><span class="p">)</span>
+
+<span class="c1"># Entries are automatically signed</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span>
+    <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;config_change&quot;</span><span class="p">,</span>
+    <span class="n">actor</span><span class="o">=</span><span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+    <span class="n">action</span><span class="o">=</span><span class="s2">&quot;update&quot;</span><span class="p">,</span>
+    <span class="n">resource</span><span class="o">=</span><span class="s2">&quot;system_settings&quot;</span>
+<span class="p">)</span>
+
+<span class="c1"># Verify integrity of all entries</span>
+<span class="n">is_valid</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">verify_integrity</span><span class="p">()</span>  <span class="c1"># True if no tampering</span>
+</code></pre></div>
+<h3 id="querying-logs">Querying Logs<a class="headerlink" href="#querying-logs" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="c1"># Get all entries for a specific actor</span>
+<span class="n">entries</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_entries</span><span class="p">(</span><span class="n">actor</span><span class="o">=</span><span class="s2">&quot;alice&quot;</span><span class="p">)</span>
+
+<span class="c1"># Get entries in a time range</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="n">one_hour_ago</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="mi">3600</span>
+<span class="n">entries</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_entries</span><span class="p">(</span><span class="n">since</span><span class="o">=</span><span class="n">one_hour_ago</span><span class="p">)</span>
+
+<span class="c1"># Get entries by type</span>
+<span class="n">entries</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">get_entries</span><span class="p">(</span><span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;authz_failure&quot;</span><span class="p">)</span>
+
+<span class="c1"># Export all entries as JSON-serializable dicts</span>
+<span class="n">all_entries</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">export</span><span class="p">()</span>
+</code></pre></div>
+<h3 id="sealing-the-log">Sealing the Log<a class="headerlink" href="#sealing-the-log" title="Permanent link">&para;</a></h3>
+<p>For forensic preservation, seal the log to prevent further writes:</p>
+<div class="highlight"><pre><span></span><code><span class="n">logger</span><span class="o">.</span><span class="n">seal</span><span class="p">()</span>  <span class="c1"># No more entries can be added</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">is_sealed</span><span class="p">()</span>  <span class="c1"># True</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>  <span class="c1"># Raises RuntimeError</span>
+</code></pre></div>
+<h2 id="integration-example">Integration Example<a class="headerlink" href="#integration-example" title="Permanent link">&para;</a></h2>
+<p>Combining all governance primitives:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom.governance</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">RetentionPolicy</span><span class="p">,</span>
+    <span class="n">ConsentManager</span><span class="p">,</span>
+    <span class="n">Authorizer</span><span class="p">,</span>
+    <span class="n">AuditLogger</span><span class="p">,</span>
+    <span class="n">Role</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Setup governance</span>
+<span class="n">retention</span> <span class="o">=</span> <span class="n">RetentionPolicy</span><span class="p">(</span><span class="n">default_days</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">raw_events_days</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">consent</span> <span class="o">=</span> <span class="n">ConsentManager</span><span class="p">()</span>
+<span class="n">authz</span> <span class="o">=</span> <span class="n">Authorizer</span><span class="p">()</span>
+<span class="n">audit</span> <span class="o">=</span> <span class="n">AuditLogger</span><span class="p">()</span>
+
+<span class="c1"># Configure roles</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="n">Role</span><span class="p">(</span><span class="s2">&quot;viewer&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;read:*&quot;</span><span class="p">}))</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">add_role</span><span class="p">(</span><span class="n">Role</span><span class="p">(</span><span class="s2">&quot;operator&quot;</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;read:*&quot;</span><span class="p">,</span> <span class="s2">&quot;write:controls&quot;</span><span class="p">}))</span>
+<span class="n">authz</span><span class="o">.</span><span class="n">assign_user</span><span class="p">(</span><span class="s2">&quot;alice&quot;</span><span class="p">,</span> <span class="s2">&quot;viewer&quot;</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">process_request</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="n">zone</span><span class="p">,</span> <span class="n">event_data</span><span class="p">):</span>
+    <span class="c1"># Check authorization</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">authz</span><span class="o">.</span><span class="n">check</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+        <span class="n">audit</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="s2">&quot;authz_failure&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;denied&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Unauthorized&quot;</span><span class="p">}</span>
+
+    <span class="c1"># Check consent</span>
+    <span class="k">if</span> <span class="n">consent</span><span class="o">.</span><span class="n">should_suppress_event</span><span class="p">(</span><span class="n">zone</span><span class="p">,</span> <span class="n">user_id</span><span class="p">):</span>
+        <span class="n">audit</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="s2">&quot;consent_suppression&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;suppressed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Data collection not consented&quot;</span><span class="p">}</span>
+
+    <span class="c1"># Process request...</span>
+    <span class="n">audit</span><span class="o">.</span><span class="n">log_event</span><span class="p">(</span><span class="s2">&quot;data_access&quot;</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">action</span><span class="p">,</span> <span class="n">resource</span><span class="p">,</span> <span class="s2">&quot;success&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Apply retention to any stored data</span>
+    <span class="n">stored_events</span> <span class="o">=</span> <span class="n">get_stored_events</span><span class="p">(</span><span class="n">zone</span><span class="p">)</span>
+    <span class="n">cleaned</span> <span class="o">=</span> <span class="n">retention</span><span class="o">.</span><span class="n">apply_to_buffer</span><span class="p">(</span><span class="n">stored_events</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;success&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/joescanlin/spaxiom-dsl" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
