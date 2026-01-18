@@ -4,12 +4,15 @@ import os
 import tempfile
 
 import pytest
-from fastapi.testclient import TestClient
 
-from spaxiom.core import SensorRegistry
-from spaxiom.edge.database import EdgeDatabase, SensorRepository
-from spaxiom.edge.sensor_registry import PersistentSensorRegistry
-from spaxiom.edge.api.app import create_app, setup_app_state
+# Skip all tests in this module if FastAPI is not installed
+fastapi = pytest.importorskip("fastapi", reason="FastAPI not installed")
+from fastapi.testclient import TestClient  # noqa: E402
+
+from spaxiom.core import SensorRegistry  # noqa: E402
+from spaxiom.edge.database import EdgeDatabase, SensorRepository  # noqa: E402
+from spaxiom.edge.sensor_registry import PersistentSensorRegistry  # noqa: E402
+from spaxiom.edge.api.app import create_app, setup_app_state  # noqa: E402
 
 
 @pytest.fixture
