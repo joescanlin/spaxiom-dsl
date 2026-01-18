@@ -486,8 +486,9 @@ function zoneEditor() {
             const scale = 5; // Scale factor for visualization
             const geom = zone.geometry || {};
             
-            ctx.fillStyle = zone === this.selectedZone ? 'rgba(102, 126, 234, 0.3)' : 'rgba(102, 126, 234, 0.15)';
-            ctx.strokeStyle = zone === this.selectedZone ? '#667eea' : '#9ca3af';
+            // Brand orange: #f97316
+            ctx.fillStyle = zone === this.selectedZone ? 'rgba(249, 115, 22, 0.3)' : 'rgba(249, 115, 22, 0.15)';
+            ctx.strokeStyle = zone === this.selectedZone ? '#f97316' : '#9ca3af';
             ctx.lineWidth = zone === this.selectedZone ? 2 : 1;
             
             if (zone.type === 'rectangle') {
@@ -524,13 +525,14 @@ function zoneEditor() {
             const x = (sensor.x || 0) * scale;
             const y = (sensor.y || 0) * scale;
             
-            ctx.fillStyle = '#28a745';
+            // Brand orange for sensors
+            ctx.fillStyle = '#f97316';
             ctx.beginPath();
             ctx.arc(x, y, 6, 0, Math.PI * 2);
             ctx.fill();
             
             ctx.fillStyle = '#fff';
-            ctx.font = '8px sans-serif';
+            ctx.font = '8px Inter, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText('S', x, y + 3);
             ctx.textAlign = 'left';
