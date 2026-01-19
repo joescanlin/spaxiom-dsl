@@ -1,209 +1,237 @@
 # Spaxiom CLI Usage Guide
 
-Spaxiom provides a command-line interface (CLI) for easily running Spaxiom DSL scripts. The CLI tool, `spax-run`, allows you to execute scripts that define sensors and event handlers without writing any additional runtime code.
+Spaxiom provides a command-line interface (CLI) for running Spaxiom DSL scripts and managing edge deployments. The CLI offers rich terminal output with colored tables, progress spinners, and interactive menus.
 
 ## Installation
 
-The `spax-run` command is automatically installed when you install the Spaxiom package:
+The CLI is automatically installed with the Spaxiom package:
 
 ```bash
 pip install spaxiom
 ```
 
-## Basic Usage
-
-The basic syntax for the CLI is:
+For enhanced CLI features (colored output, interactive menus, REPL shell):
 
 ```bash
-spax-run run <script_path> [options]
+pip install spaxiom[cli]
+```
+
+For edge deployment features:
+
+```bash
+pip install spaxiom[edge,cli]
+```
+
+## Commands Overview
+
+| Command | Description |
+|---------|-------------|
+| `spax run` | Run a Spaxiom DSL script |
+| `spax new` | Create a new script scaffold |
+| `spax version` | Show version and dependency info |
+| `spax edge start` | Start the edge server |
+| `spax edge status` | Show edge server status |
+| `spax edge agents` | List and manage agents |
+| `spax edge menu` | Interactive menu (arrow-key navigation) |
+| `spax edge shell` | Interactive REPL shell |
+
+## Running Scripts
+
+### Basic Usage
+
+```bash
+spax run <script_path> [options]
 ```
 
 ### Options
 
 - `--poll-ms`: Polling interval in milliseconds (default: 100)
-- `--history-length`: Maximum number of history entries to keep per condition (default: 1000)
+- `--history-length`: Maximum history entries per condition (default: 1000)
 - `--config`: YAML configuration file for sensors and zones
-- `--verbose`: Enable verbose logging for detailed runtime information
+- `--verbose`: Enable verbose logging
+
+### Examples
+
+```bash
+# Run with default settings
+spax run examples/occupancy_demo.py
+
+# Run with faster polling
+spax run examples/sequence_demo.py --poll-ms 50
+
+# Run with verbose logging
+spax run examples/demo.py --verbose
+```
 
 ## Creating New Scripts
 
-The CLI also provides a convenient command for generating new Spaxiom script scaffolds:
+Generate a new Spaxiom script scaffold:
 
 ```bash
-spax-run new <script_name> [options]
+spax new <script_name> [options]
 ```
 
 ### Options
 
-- `--output-dir`: Directory where the scaffold script will be created (default: current directory)
-- `--sensors`: Number of sensor placeholders to include (default: 2)
-- `--zones`: Number of zone placeholders to include (default: 1)
-- `--privacy/--no-privacy`: Include privacy settings for sensors (default: enabled)
+- `--output-dir`: Output directory (default: current directory)
+- `--sensors`: Number of sensor placeholders (default: 2)
+- `--zones`: Number of zone placeholders (default: 1)
+- `--privacy/--no-privacy`: Include privacy settings (default: enabled)
 
-### Creating a Demo Script
-
-To create a quick demo application:
+### Examples
 
 ```bash
-spax-run new demo
+# Create a basic demo script
+spax new demo
+
+# Create a complex script with more sensors
+spax new complex_demo --sensors 5 --zones 3
+
+# Create in a specific directory
+spax new my_app --output-dir ./projects
 ```
 
-This will generate a `demo.py` file in the current directory with:
-- 2 sensors (one with privacy settings)
-- 1 zone
-- A sample condition and event handler
-- A properly configured main function
+## Edge Commands
 
-You can customize the script with more sensors and zones:
+The `spax edge` command group manages edge deployments for production IoT environments.
+
+### Starting the Edge Server
 
 ```bash
-spax-run new complex_demo --sensors 5 --zones 3
+spax edge start [options]
 ```
 
-Then, run your generated script with:
+**Options:**
+
+- `--host`: Host to bind to (default: 0.0.0.0)
+- `--port`: Port number (default: 8080)
+- `--db`: Database path (default: ~/.spaxiom/edge.db)
+- `--reload`: Enable auto-reload for development
+
+**Example:**
 
 ```bash
-spax-run run demo.py
+# Start on default port
+spax edge start
+
+# Start on custom port with auto-reload
+spax edge start --port 8085 --reload
 ```
 
-## Examples
-
-### Running the Occupancy Demo
-
-The occupancy demo (`examples/occupancy_demo.py`) demonstrates how to create multiple sensor types and define zones for occupancy detection.
-
-To run the demo:
+### Checking Status
 
 ```bash
-spax-run run examples/occupancy_demo.py
+spax edge status [--url URL]
 ```
 
-Example output:
+Shows system health, sensor counts, active agents, and resource usage in a formatted table.
 
-```
-Importing /path/to/examples/occupancy_demo.py...
-Script has a main() function. Executing it directly.
-
-Spaxiom Occupancy Detection Demo
---------------------------------
-Zone A: Zone(x1=0, y1=0, x2=10, y2=10)
-Zone B: Zone(x1=15, y1=0, x2=25, y2=10)
-
-Setting up sensors in zones A and B...
-Sensors initialized:
-  OccupancySensor(name=pressure_A, location=(5, 5, 0), sensor_type=pressure)
-  OccupancySensor(name=thermal_A, location=(5, 5, 0), sensor_type=thermal)
-  OccupancySensor(name=pressure_B, location=(20, 5, 0), sensor_type=pressure)
-
-Starting occupancy monitoring...
-The message '** ZONE A OCCUPIED **' will appear when:
-  1. Pressure is detected in Zone A
-  2. Thermal signature is detected in Zone A
-  3. No pressure is detected in Zone B
-  4. These conditions remain true for at least 1 second
-
-Press Ctrl+C to exit
-
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-** ZONE A OCCUPIED **
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-Pressure A: off | Thermal A: ON | Pressure B: ON | Occupancy Condition: false
-Pressure A: ON | Thermal A: ON | Pressure B: off | Occupancy Condition: TRUE
-** ZONE A OCCUPIED **
-```
-
-### Running the Sequence Demo
-
-The sequence demo demonstrates how to detect a temporal sequence of events:
+### Managing Agents
 
 ```bash
-spax-run run examples/sequence_demo.py --poll-ms 50
+# List all agents
+spax edge agents list
+
+# Show agent details
+spax edge agents show <agent_id>
+
+# Start/stop agents
+spax edge agents start <agent_id>
+spax edge agents stop <agent_id>
 ```
 
-Example output:
+### Interactive Menu
 
-```
-Importing /path/to/examples/sequence_demo.py...
-Script has a main() function. Executing it directly.
-Detected async main function. Running with asyncio.
-
-Sequence Pattern Example: Door → Person → Door Close
-----------------------------------------------------
-This example detects the sequence: door open → person present → door close
-When the pattern is detected within 10 seconds, it prints 'Entry detected'
-Door front_door CLOSED at t=1685432017.81
-Person no longer detected by entry_area
-
-Starting runtime and waiting for events...
-
-[Spaxiom] Runtime started with poll interval of 50ms
-
-Simulating sequence: door open → person detected → door closed
-Door front_door OPENED at t=1685432018.81
-PERSON DETECTED by entry_area at t=1685432020.81
-Door front_door CLOSED at t=1685432022.81
-
-Waiting for sequence detection...
-Sequence successfully detected!
-
-Demo complete.
-```
-
-### Customizing Polling Rate
-
-For more responsive monitoring, you can decrease the polling interval:
+Launch an arrow-key navigable menu for common operations:
 
 ```bash
-spax-run run examples/occupancy_demo.py --poll-ms 50
+spax edge menu
 ```
 
-This will make the runtime check sensor values more frequently (every 50ms instead of the default 100ms).
+The menu provides quick access to:
 
-### Managing History Length
+- View system status
+- Manage sensors
+- Configure zones
+- Deploy patterns
+- Monitor agents
+- Access settings
 
-For memory-sensitive applications or when you need to track longer histories:
+Use arrow keys to navigate and Enter to select.
+
+### Interactive Shell
+
+Start a REPL shell with tab completion and command history:
 
 ```bash
-spax-run run examples/sequence_demo.py --history-length 2000
+spax edge shell
 ```
 
-This increases the maximum number of historical states kept for each condition from the default 1000 to 2000.
+**Shell Commands:**
 
-### Enabling Verbose Logging
+| Command | Description |
+|---------|-------------|
+| `status` | Show system status |
+| `sensors` | List all sensors |
+| `zones` | List all zones |
+| `agents` | List running agents |
+| `start <id>` | Start an agent |
+| `stop <id>` | Stop an agent |
+| `health` | Show health metrics |
+| `help` | Show available commands |
+| `exit` | Exit the shell |
 
-For troubleshooting or development, you can enable verbose logging:
+**Example session:**
+
+```
+spaxiom> status
+System: healthy
+Sensors: 12 registered
+Agents: 3 running
+
+spaxiom> agents
+ID          Pattern         Status    Ticks
+agent_001   occupancy       running   1,234
+agent_002   queue_flow      running   856
+agent_003   adl_tracker     stopped   0
+
+spaxiom> start agent_003
+Agent agent_003 started
+
+spaxiom> exit
+```
+
+## Version Information
+
+Show version and installed optional dependencies:
 
 ```bash
-spax-run run examples/sequence_demo.py --verbose
+spax version
 ```
 
-With verbose logging enabled, you'll see detailed information about:
-- Sensor readings and updates
-- Condition evaluations
-- Plugin loading
-- Internal runtime events
-- Debugging information
+Output includes:
 
-This is particularly useful when developing custom sensors or troubleshooting complex conditions.
+- Spaxiom version
+- Python version
+- Optional dependencies status (Rich, FastAPI, etc.)
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SPAXIOM_DB_PATH` | Database file path | `~/.spaxiom/edge.db` |
+| `SPAXIOM_LOG_LEVEL` | Logging level | `INFO` |
+| `SPAXIOM_API_HOST` | API server host | `0.0.0.0` |
+| `SPAXIOM_API_PORT` | API server port | `8080` |
 
 ## Getting Help
 
-To view available commands and options:
-
 ```bash
-spax-run --help
+# General help
+spax --help
+
+# Command-specific help
+spax run --help
+spax edge --help
+spax edge start --help
 ```
-
-For help on a specific command:
-
-```bash
-spax-run run --help
-```
-
-## Advanced Usage
-
-The CLI detects whether your script has a `main()` function:
-
-1. If a `main()` function is present, it will be executed directly.
-2. If the `main()` function is asynchronous (an async function), it will be run with `asyncio.run()`.
-3. If no `main()` function is found, the Spaxiom runtime will be started automatically to process any registered sensors and event handlers. 

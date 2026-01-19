@@ -36,6 +36,10 @@ nav:
     - Overview: api/overview.md
   - Temporal: temporal_and_entities.md
   - CLI: cli_usage.md
+  - Edge Deployment:
+    - Overview: edge.md
+    - API Reference: edge_api.md
+    - Security: edge_security.md
   - Examples:
     - Overview: examples/overview.md
     - Smart Building: examples/smart_building.md
