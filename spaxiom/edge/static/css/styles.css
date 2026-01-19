@@ -685,6 +685,198 @@ body {
     color: #ea580c;
 }
 
+/* Agent UI Enhancements */
+.agent-card.agent-running {
+    border-left: 4px solid #28a745;
+}
+
+.agent-card.agent-error {
+    border-left: 4px solid #dc3545;
+}
+
+.agent-stats {
+    display: flex;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+}
+
+.agent-stats .stat-item {
+    text-align: center;
+    flex: 1;
+}
+
+.agent-stats .stat-label {
+    font-size: 0.7rem;
+    color: #6c757d;
+    text-transform: uppercase;
+}
+
+.agent-stats .stat-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f97316;
+}
+
+.status-text-running {
+    color: #28a745;
+}
+
+.status-text-stopped {
+    color: #6c757d;
+}
+
+.status-text-error {
+    color: #dc3545;
+}
+
+.error-text {
+    color: #dc3545;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+/* Event Stream Status */
+.event-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+
+.event-status.connected {
+    background: #d4edda;
+    color: #155724;
+}
+
+.event-status.disconnected {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+/* Event Feed */
+.event-feed {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.event-item {
+    display: flex;
+    gap: 1rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e1e5eb;
+    font-size: 0.85rem;
+}
+
+.event-item:last-child {
+    border-bottom: none;
+}
+
+.event-time {
+    color: #6c757d;
+    min-width: 80px;
+}
+
+.event-type {
+    font-weight: 500;
+    min-width: 120px;
+}
+
+.event-agent {
+    color: #6c757d;
+    font-family: monospace;
+}
+
+.event-data {
+    color: #6c757d;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.event-agent_deployed .event-type,
+.event-pattern_event .event-type {
+    color: #f97316;
+}
+
+.event-agent_stopped .event-type {
+    color: #6c757d;
+}
+
+.event-agent_error .event-type {
+    color: #dc3545;
+}
+
+/* Agent Detail Modal */
+.agent-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e1e5eb;
+}
+
+.agent-detail-header h3 {
+    margin: 0;
+}
+
+.status-dot.large {
+    width: 16px;
+    height: 16px;
+}
+
+.detail-section {
+    margin: 1.5rem 0;
+}
+
+.detail-section h4 {
+    margin: 0 0 0.75rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+.stats-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.stat-box {
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.stat-box .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f97316;
+}
+
+.stat-box .stat-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+.config-display p {
+    margin: 0.5rem 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
 /* Accent elements */
 .accent-bar {
     height: 4px;

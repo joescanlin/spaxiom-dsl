@@ -22,10 +22,19 @@ function app() {
         showAddZoneModal: false,
         showAddPatternModal: false,
         showPatternTestModal: false,
+        showAgentDetailModal: false,
         
         // Pattern configuration
         selectedPatternType: null,
         patternTestResult: null,
+        
+        // Agent management
+        selectedAgent: null,
+        agentStats: {},
+        agentEvents: [],
+        recentEvents: [],
+        eventStreamConnected: false,
+        eventSource: null,
         
         // Form data
         newSensor: {
@@ -54,6 +63,10 @@ function app() {
             await this.loadAll();
             // Refresh data periodically
             setInterval(() => this.refreshHealth(), 5000);
+            // Refresh agent stats periodically
+            setInterval(() => this.refreshAllAgentStats(), 3000);
+            // Connect to event stream
+            this.connectEventStream();
         },
         
         // Data loading
@@ -370,6 +383,115 @@ function app() {
             } catch (error) {
                 console.error('Failed to delete agent:', error);
             }
+        },
+        
+        async restartAgent(agentId) {
+            try {
+                const response = await fetch(`/api/agents/${agentId}/restart`, { method: 'POST' });
+                if (response.ok) {
+                    await this.loadAgents();
+                } else {
+                    const error = await response.json();
+                    alert('Failed to restart agent: ' + (error.detail || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Failed to restart agent:', error);
+            }
+        },
+        
+        async refreshAgentStats(agentId) {
+            if (!agentId) return;
+            try {
+                const response = await fetch(`/api/agents/${agentId}/stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+                    this.agentStats[agentId] = stats;
+                }
+            } catch (error) {
+                console.error('Failed to load agent stats:', error);
+            }
+        },
+        
+        async refreshAllAgentStats() {
+            for (const agent of this.agents) {
+                if (agent.status === 'running') {
+                    await this.refreshAgentStats(agent.id);
+                }
+            }
+        },
+        
+        showAgentDetail(agent) {
+            this.selectedAgent = agent;
+            this.agentEvents = this.recentEvents.filter(e => e.agent_id === agent.id);
+            this.refreshAgentStats(agent.id);
+            this.showAgentDetailModal = true;
+        },
+        
+        getPatternName(patternId) {
+            const pattern = this.patterns.find(p => p.id === patternId);
+            return pattern ? pattern.name : patternId.slice(0, 8) + '...';
+        },
+        
+        // Event Stream
+        connectEventStream() {
+            if (this.eventSource) {
+                this.eventSource.close();
+            }
+            
+            this.eventSource = new EventSource('/api/events/stream');
+            
+            this.eventSource.onopen = () => {
+                this.eventStreamConnected = true;
+                console.log('Event stream connected');
+            };
+            
+            this.eventSource.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    this.handleEvent(data);
+                } catch (e) {
+                    console.error('Failed to parse event:', e);
+                }
+            };
+            
+            this.eventSource.onerror = () => {
+                this.eventStreamConnected = false;
+                console.log('Event stream disconnected, reconnecting in 5s...');
+                setTimeout(() => this.connectEventStream(), 5000);
+            };
+        },
+        
+        handleEvent(event) {
+            // Add to recent events (keep last 50)
+            this.recentEvents.unshift(event);
+            if (this.recentEvents.length > 50) {
+                this.recentEvents.pop();
+            }
+            
+            // Update agent events if detail modal is open
+            if (this.showAgentDetailModal && this.selectedAgent && event.agent_id === this.selectedAgent.id) {
+                this.agentEvents.unshift(event);
+                if (this.agentEvents.length > 50) {
+                    this.agentEvents.pop();
+                }
+            }
+            
+            // Handle specific event types
+            if (event.type === 'agent_deployed' || event.type === 'agent_stopped' || event.type === 'agent_error') {
+                this.loadAgents();
+            }
+        },
+        
+        formatEventTime(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString();
+        },
+        
+        formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleString();
         },
         
         // Zone operations

@@ -317,32 +317,77 @@
 
             <!-- Agents -->
             <div x-show="currentPage === 'agents'" class="page">
-                <h1 class="page-title">Agents</h1>
+                <div class="page-header">
+                    <h1 class="page-title">Agents</h1>
+                    <div class="header-actions">
+                        <span class="event-status" :class="eventStreamConnected ? 'connected' : 'disconnected'">
+                            <span class="status-dot" :class="eventStreamConnected ? 'running' : 'stopped'"></span>
+                            <span x-text="eventStreamConnected ? 'Live' : 'Offline'"></span>
+                        </span>
+                    </div>
+                </div>
 
                 <div class="agents-grid">
                     <template x-for="agent in agents" :key="agent.id">
-                        <div class="agent-card">
+                        <div class="agent-card" :class="{ 'agent-running': agent.status === 'running', 'agent-error': agent.status === 'error' }">
                             <div class="agent-header">
                                 <span class="status-dot" :class="agent.status"></span>
                                 <h3 x-text="agent.name"></h3>
                             </div>
-                            <div class="agent-info">
-                                <p>Status: <span x-text="agent.status"></span></p>
-                                <p>Pattern: <span x-text="agent.pattern_id.slice(0, 8) + '...'"></span></p>
+                            
+                            <div class="agent-stats" x-show="agent.status === 'running'">
+                                <div class="stat-item">
+                                    <span class="stat-label">Ticks</span>
+                                    <span class="stat-value" x-text="agentStats[agent.id]?.tick_count || 0"></span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Events</span>
+                                    <span class="stat-value" x-text="agentStats[agent.id]?.events_emitted_total || 0"></span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Avg Tick</span>
+                                    <span class="stat-value" x-text="(agentStats[agent.id]?.avg_tick_ms || 0).toFixed(1) + 'ms'"></span>
+                                </div>
                             </div>
+                            
+                            <div class="agent-info">
+                                <p><strong>Status:</strong> <span x-text="agent.status" :class="'status-text-' + agent.status"></span></p>
+                                <p><strong>Pattern:</strong> <span x-text="getPatternName(agent.pattern_id)"></span></p>
+                                <p x-show="agent.started_at"><strong>Started:</strong> <span x-text="formatTimestamp(agent.started_at)"></span></p>
+                                <p x-show="agent.last_error" class="error-text"><strong>Error:</strong> <span x-text="agent.last_error"></span></p>
+                            </div>
+                            
                             <div class="agent-actions">
                                 <button class="btn btn-sm btn-success" 
-                                        x-show="agent.status === 'stopped'" 
+                                        x-show="agent.status === 'stopped' || agent.status === 'error'" 
                                         @click="startAgent(agent.id)">Start</button>
                                 <button class="btn btn-sm btn-warning" 
                                         x-show="agent.status === 'running'" 
                                         @click="stopAgent(agent.id)">Stop</button>
+                                <button class="btn btn-sm" 
+                                        x-show="agent.status === 'running'" 
+                                        @click="restartAgent(agent.id)">Restart</button>
+                                <button class="btn btn-sm" @click="showAgentDetail(agent)">Details</button>
                                 <button class="btn btn-sm btn-danger" @click="deleteAgent(agent.id)">Delete</button>
                             </div>
                         </div>
                     </template>
                 </div>
                 <p x-show="agents.length === 0" class="empty-message">No agents deployed. Deploy a pattern to create an agent.</p>
+                
+                <!-- Live Event Feed -->
+                <div class="info-card" style="margin-top: 1.5rem;" x-show="recentEvents.length > 0">
+                    <h2>Recent Events</h2>
+                    <div class="event-feed">
+                        <template x-for="event in recentEvents.slice(0, 10)" :key="event.timestamp">
+                            <div class="event-item" :class="'event-' + event.type">
+                                <span class="event-time" x-text="formatEventTime(event.timestamp)"></span>
+                                <span class="event-type" x-text="event.type"></span>
+                                <span class="event-agent" x-text="event.agent_id ? event.agent_id.slice(0, 8) : ''"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
             </div>
 
             <!-- Settings -->
@@ -529,6 +574,77 @@
             </div>
             <div class="form-actions">
                 <button class="btn btn-primary" @click="showPatternTestModal = false">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Agent Detail Modal -->
+    <div class="modal" x-show="showAgentDetailModal" @click.self="showAgentDetailModal = false">
+        <div class="modal-content modal-lg">
+            <h2>Agent Details</h2>
+            <div x-show="selectedAgent">
+                <div class="agent-detail-header">
+                    <span class="status-dot large" :class="selectedAgent?.status"></span>
+                    <div>
+                        <h3 x-text="selectedAgent?.name"></h3>
+                        <p class="text-muted" x-text="selectedAgent?.id"></p>
+                    </div>
+                </div>
+                
+                <!-- Stats Section -->
+                <div class="detail-section">
+                    <h4>Runtime Statistics</h4>
+                    <div class="stats-row" x-show="agentStats[selectedAgent?.id]">
+                        <div class="stat-box">
+                            <div class="stat-value" x-text="agentStats[selectedAgent?.id]?.tick_count || 0"></div>
+                            <div class="stat-label">Total Ticks</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" x-text="agentStats[selectedAgent?.id]?.events_emitted_total || 0"></div>
+                            <div class="stat-label">Events Emitted</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" x-text="(agentStats[selectedAgent?.id]?.avg_tick_ms || 0).toFixed(2) + 'ms'"></div>
+                            <div class="stat-label">Avg Tick Time</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value" x-text="agentStats[selectedAgent?.id]?.callback_failures || 0"></div>
+                            <div class="stat-label">Errors</div>
+                        </div>
+                    </div>
+                    <p x-show="!agentStats[selectedAgent?.id]" class="text-muted">No stats available. Agent may not be running.</p>
+                </div>
+                
+                <!-- Configuration Section -->
+                <div class="detail-section">
+                    <h4>Configuration</h4>
+                    <div class="config-display">
+                        <p><strong>Pattern ID:</strong> <span x-text="selectedAgent?.pattern_id"></span></p>
+                        <p><strong>Status:</strong> <span x-text="selectedAgent?.status"></span></p>
+                        <p x-show="selectedAgent?.started_at"><strong>Started:</strong> <span x-text="formatTimestamp(selectedAgent?.started_at)"></span></p>
+                        <p x-show="selectedAgent?.stopped_at"><strong>Stopped:</strong> <span x-text="formatTimestamp(selectedAgent?.stopped_at)"></span></p>
+                        <p x-show="selectedAgent?.last_error" class="error-text"><strong>Last Error:</strong> <span x-text="selectedAgent?.last_error"></span></p>
+                    </div>
+                </div>
+                
+                <!-- Agent Events Section -->
+                <div class="detail-section">
+                    <h4>Recent Agent Events</h4>
+                    <div class="event-feed" x-show="agentEvents.length > 0">
+                        <template x-for="event in agentEvents.slice(0, 20)" :key="event.timestamp + event.type">
+                            <div class="event-item" :class="'event-' + event.type">
+                                <span class="event-time" x-text="formatEventTime(event.timestamp)"></span>
+                                <span class="event-type" x-text="event.type"></span>
+                                <span class="event-data" x-text="JSON.stringify(event.event || event.data || '').slice(0, 50)"></span>
+                            </div>
+                        </template>
+                    </div>
+                    <p x-show="agentEvents.length === 0" class="text-muted">No events recorded for this agent.</p>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button class="btn" @click="refreshAgentStats(selectedAgent?.id)" x-show="selectedAgent?.status === 'running'">Refresh Stats</button>
+                <button class="btn btn-primary" @click="showAgentDetailModal = false">Close</button>
             </div>
         </div>
     </div>
