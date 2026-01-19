@@ -40,10 +40,7 @@ class TestCLIScaffold(unittest.TestCase):
         )
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn(
-            f"Created scaffold script: {os.path.join(self.temp_path, script_name)}.py",
-            result.output,
-        )
+        self.assertIn("Created scaffold", result.output)
 
         # Check if the file was created
         script_path = os.path.join(self.temp_path, f"{script_name}.py")

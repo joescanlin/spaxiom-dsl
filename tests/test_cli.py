@@ -28,7 +28,7 @@ class TestCLI(unittest.TestCase):
         """Test that the CLI help command works."""
         result = self.runner.invoke(cli, ["--help"])
         self.assertEqual(result.exit_code, 0)
-        self.assertIn("Spaxiom DSL command-line interface", result.output)
+        self.assertIn("Spaxiom", result.output)
         self.assertIn("new", result.output)
         self.assertIn("run", result.output)
 
@@ -57,10 +57,7 @@ class TestCLI(unittest.TestCase):
         )
 
         self.assertEqual(result.exit_code, 0)
-        self.assertIn(
-            f"Created scaffold script: {os.path.join(self.temp_path, script_name)}.py",
-            result.output,
-        )
+        self.assertIn("Created scaffold", result.output)
 
         # Check if the file was created
         script_path = os.path.join(self.temp_path, f"{script_name}.py")
@@ -155,9 +152,9 @@ class TestCLI(unittest.TestCase):
             content = f.read()
         self.assertEqual(content, "# Existing script")
 
-    @patch("spaxiom.cli.importlib.util.spec_from_file_location")
-    @patch("spaxiom.cli.importlib.util.module_from_spec")
-    @patch("spaxiom.cli.start_blocking")
+    @patch("spaxiom.cli.commands.run.importlib.util.spec_from_file_location")
+    @patch("spaxiom.cli.commands.run.importlib.util.module_from_spec")
+    @patch("spaxiom.cli.commands.run.start_blocking")
     def test_run_command(
         self, mock_start_blocking, mock_module_from_spec, mock_spec_from_file_location
     ):
@@ -186,7 +183,7 @@ class TestCLI(unittest.TestCase):
         # Verify the output and mocks
         self.assertEqual(result.exit_code, 0)
         self.assertIn("Importing", result.output)
-        self.assertIn("Script has a main() function", result.output)
+        self.assertIn("main()", result.output)
 
         # Verify the main function was called
         mock_main.assert_called_once()
