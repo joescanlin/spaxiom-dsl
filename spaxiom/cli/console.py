@@ -48,7 +48,7 @@ except ImportError:
         def __init__(self, stderr: bool = False):
             self.stderr = stderr
 
-        def print(self, message: str, style: str = None) -> None:
+        def print(self, message: str = "", style: str = None) -> None:
             # Strip rich markup
             import re
 
