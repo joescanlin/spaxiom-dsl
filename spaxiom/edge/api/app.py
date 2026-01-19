@@ -16,6 +16,7 @@ from spaxiom.edge.api.routers import (
     agents_router,
     system_router,
     events_router,
+    auth_router,
 )
 
 logger = logging.getLogger(__name__)
@@ -68,6 +69,7 @@ def create_app(
     app.include_router(agents_router)
     app.include_router(system_router)
     app.include_router(events_router)
+    app.include_router(auth_router)
 
     # Mount static files if directory exists
     if static_dir:
