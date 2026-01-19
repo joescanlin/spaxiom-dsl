@@ -4,8 +4,10 @@ ASCII art banner for Spaxiom CLI.
 Provides branded startup banners in different styles.
 """
 
-from rich.console import Console
-from rich.panel import Panel
+from spaxiom.cli.console import HAS_RICH
+
+if HAS_RICH:
+    from rich.panel import Panel
 
 # Simple box-drawing banner (works in all terminals)
 BANNER = """[accent]
@@ -29,7 +31,7 @@ BANNER_FULL = """[accent]
 
 
 def print_banner(
-    console: Console,
+    console,
     version: str,
     subtitle: str = "Edge Runtime",
     style: str = "default",
@@ -49,7 +51,7 @@ def print_banner(
         console.print(BANNER_FULL)
         console.print(f"   {subtitle} v{version}", style="muted")
         console.print()
-    elif style == "box":
+    elif style == "box" and HAS_RICH:
         content = f"[accent]spaxiom[/accent] {subtitle}\nv{version}"
         panel = Panel(
             content,
@@ -58,6 +60,10 @@ def print_banner(
         )
         console.print(panel)
         console.print()
+    elif style == "box":
+        # Fallback without rich Panel
+        console.print(f"spaxiom {subtitle} v{version}")
+        console.print()
     else:  # default
         console.print(BANNER)
         console.print(f"   {subtitle} v{version}", style="muted")
@@ -65,7 +71,7 @@ def print_banner(
 
 
 def print_startup_complete(
-    console: Console,
+    console,
     host: str = "0.0.0.0",
     port: int = 8080,
     sensors: int = 0,
