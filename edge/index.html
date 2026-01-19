@@ -13,10 +13,10 @@
       
       
       
-        <link rel="prev" href="../temporal_and_entities/">
+        <link rel="prev" href="../cli_usage/">
       
       
-        <link rel="next" href="../edge/">
+        <link rel="next" href="../edge_api/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>CLI - Spaxiom DSL</title>
+        <title>Overview - Spaxiom DSL</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#spaxiom-cli-usage-guide" class="md-skip">
+        <a href="#edge-deployment-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              CLI
+              Overview
             
           </span>
         </div>
@@ -563,6 +563,87 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli_usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Edge Deployment
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Edge Deployment
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
     
   
   
@@ -582,7 +663,7 @@
   <span class="md-ellipsis">
     
   
-    CLI
+    Overview
   
 
     
@@ -600,7 +681,7 @@
   <span class="md-ellipsis">
     
   
-    CLI
+    Overview
   
 
     
@@ -626,6 +707,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -634,58 +726,14 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#commands-overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Commands Overview
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-scripts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Running Scripts
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Running Scripts">
+    <nav class="md-nav" aria-label="Installation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#basic-usage" class="md-nav__link">
+  <a href="#hardware-requirements" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Basic Usage
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#options" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Options
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Examples
+        Hardware Requirements
       
     </span>
   </a>
@@ -698,22 +746,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#creating-new-scripts" class="md-nav__link">
+  <a href="#quick-start" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Creating New Scripts
+        Quick Start
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Creating New Scripts">
+    <nav class="md-nav" aria-label="Quick Start">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#options_1" class="md-nav__link">
+  <a href="#1-start-the-edge-server" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Options
+        1. Start the Edge Server
       
     </span>
   </a>
@@ -721,10 +769,43 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#examples_1" class="md-nav__link">
+  <a href="#2-access-the-web-ui" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Examples
+        2. Access the Web UI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-register-sensors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Register Sensors
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-create-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Create Zones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-deploy-an-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Deploy an Agent
       
     </span>
   </a>
@@ -737,22 +818,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#edge-commands" class="md-nav__link">
+  <a href="#configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Edge Commands
+        Configuration
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Edge Commands">
+    <nav class="md-nav" aria-label="Configuration">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#starting-the-edge-server" class="md-nav__link">
+  <a href="#database-location" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Starting the Edge Server
+        Database Location
       
     </span>
   </a>
@@ -760,10 +841,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#checking-status" class="md-nav__link">
+  <a href="#server-options" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Checking Status
+        Server Options
       
     </span>
   </a>
@@ -771,32 +852,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#managing-agents" class="md-nav__link">
+  <a href="#logging" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Managing Agents
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#interactive-menu" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Menu
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#interactive-shell" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Interactive Shell
+        Logging
       
     </span>
   </a>
@@ -809,32 +868,110 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#version-information" class="md-nav__link">
+  <a href="#web-ui-features" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Version Information
+        Web UI Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Web UI Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#environment-variables" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#zone-editor" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Environment Variables
+        Zone Editor
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#getting-help" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Getting Help
+        Pattern Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-as-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running as a Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Running as a Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#systemd-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        systemd (Linux)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Next Steps
       
     </span>
   </a>
@@ -845,87 +982,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
-        
-          
-          <label class="md-nav__link" for="__nav_12" id="__nav_12_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Edge Deployment
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_12">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Edge Deployment
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../edge/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1131,270 +1187,221 @@
   
 
 
-<h1 id="spaxiom-cli-usage-guide">Spaxiom CLI Usage Guide<a class="headerlink" href="#spaxiom-cli-usage-guide" title="Permanent link">&para;</a></h1>
-<p>Spaxiom provides a command-line interface (CLI) for running Spaxiom DSL scripts and managing edge deployments. The CLI offers rich terminal output with colored tables, progress spinners, and interactive menus.</p>
+<h1 id="edge-deployment-guide">Edge Deployment Guide<a class="headerlink" href="#edge-deployment-guide" title="Permanent link">&para;</a></h1>
+<p>Spaxiom Edge provides a complete deployment solution for running INTENT patterns on edge devices like Raspberry Pi. It includes persistent storage, a REST API, and a web-based management interface.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>The Edge system provides:</p>
+<ul>
+<li><strong>Persistent Storage</strong>: SQLite database for sensors, zones, patterns, and agents</li>
+<li><strong>REST API</strong>: Full HTTP API for integration and management</li>
+<li><strong>Web UI</strong>: Browser-based interface for monitoring and configuration</li>
+<li><strong>Agent Management</strong>: Deploy, monitor, and control pattern agents</li>
+<li><strong>Production Hardening</strong>: Authentication, HTTPS, monitoring, and backups</li>
+</ul>
 <h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<p>The CLI is automatically installed with the Spaxiom package:</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom
+<p>Install Spaxiom with edge dependencies:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom<span class="o">[</span>edge<span class="o">]</span>
 </code></pre></div>
-<p>For enhanced CLI features (colored output, interactive menus, REPL shell):</p>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom<span class="o">[</span>cli<span class="o">]</span>
-</code></pre></div>
-<p>For edge deployment features:</p>
+<p>For the full experience with CLI enhancements:</p>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom<span class="o">[</span>edge,cli<span class="o">]</span>
 </code></pre></div>
-<h2 id="commands-overview">Commands Overview<a class="headerlink" href="#commands-overview" title="Permanent link">&para;</a></h2>
+<h3 id="hardware-requirements">Hardware Requirements<a class="headerlink" href="#hardware-requirements" title="Permanent link">&para;</a></h3>
+<p><strong>Development:</strong></p>
+<ul>
+<li>Raspberry Pi 5 (8GB) recommended</li>
+<li>Any Linux/macOS/Windows system with Python 3.9+</li>
+</ul>
+<p><strong>Production:</strong></p>
+<ul>
+<li>Raspberry Pi 5 (4GB) or better</li>
+<li>16GB+ microSD card (Class 10 or better)</li>
+<li>Stable power supply</li>
+</ul>
+<h2 id="quick-start">Quick Start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
+<h3 id="1-start-the-edge-server">1. Start the Edge Server<a class="headerlink" href="#1-start-the-edge-server" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>start
+</code></pre></div>
+<p>Or with custom options:</p>
+<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </span>--port<span class="w"> </span><span class="m">8085</span><span class="w"> </span>--db<span class="w"> </span>./my_edge.db
+</code></pre></div>
+<h3 id="2-access-the-web-ui">2. Access the Web UI<a class="headerlink" href="#2-access-the-web-ui" title="Permanent link">&para;</a></h3>
+<p>Open your browser to <code>http://localhost:8080</code> (or your configured port).</p>
+<p>The web UI provides:</p>
+<ul>
+<li><strong>Dashboard</strong>: System overview with health metrics</li>
+<li><strong>Sensors</strong>: Register and configure sensors</li>
+<li><strong>Zones</strong>: Define spatial zones with visual editor</li>
+<li><strong>Patterns</strong>: Browse and configure INTENT patterns</li>
+<li><strong>Agents</strong>: Deploy and monitor pattern agents</li>
+<li><strong>Settings</strong>: System configuration</li>
+</ul>
+<h3 id="3-register-sensors">3. Register Sensors<a class="headerlink" href="#3-register-sensors" title="Permanent link">&para;</a></h3>
+<p>Via the API:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/sensors<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;front_door_motion&quot;,</span>
+<span class="s1">    &quot;sensor_type&quot;: &quot;motion&quot;,</span>
+<span class="s1">    &quot;location&quot;: {&quot;x&quot;: 10.0, &quot;y&quot;: 5.0, &quot;z&quot;: 0.0}</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<p>Or via the web UI Sensors page.</p>
+<h3 id="4-create-zones">4. Create Zones<a class="headerlink" href="#4-create-zones" title="Permanent link">&para;</a></h3>
+<p>Define spatial regions for pattern detection:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/zones<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;entrance&quot;,</span>
+<span class="s1">    &quot;zone_type&quot;: &quot;room&quot;,</span>
+<span class="s1">    &quot;bounds&quot;: {&quot;x1&quot;: 0, &quot;y1&quot;: 0, &quot;x2&quot;: 20, &quot;y2&quot;: 15}</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<h3 id="5-deploy-an-agent">5. Deploy an Agent<a class="headerlink" href="#5-deploy-an-agent" title="Permanent link">&para;</a></h3>
+<p>Create an agent to run a pattern:</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/agents<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;entrance_occupancy&quot;,</span>
+<span class="s1">    &quot;pattern_type&quot;: &quot;occupancy_field&quot;,</span>
+<span class="s1">    &quot;zone_id&quot;: &quot;zone_123&quot;,</span>
+<span class="s1">    &quot;config&quot;: {</span>
+<span class="s1">      &quot;threshold&quot;: 0.7,</span>
+<span class="s1">      &quot;min_sensors&quot;: 2</span>
+<span class="s1">    }</span>
+<span class="s1">  }&#39;</span>
+</code></pre></div>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="database-location">Database Location<a class="headerlink" href="#database-location" title="Permanent link">&para;</a></h3>
+<p>Default: <code>~/.spaxiom/edge.db</code></p>
+<p>Override with environment variable:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SPAXIOM_DB_PATH</span><span class="o">=</span>/var/lib/spaxiom/edge.db
+</code></pre></div>
+<p>Or command line:</p>
+<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </span>--db<span class="w"> </span>/path/to/database.db
+</code></pre></div>
+<h3 id="server-options">Server Options<a class="headerlink" href="#server-options" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>spax run</code></td>
-<td>Run a Spaxiom DSL script</td>
-</tr>
-<tr>
-<td><code>spax new</code></td>
-<td>Create a new script scaffold</td>
-</tr>
-<tr>
-<td><code>spax version</code></td>
-<td>Show version and dependency info</td>
-</tr>
-<tr>
-<td><code>spax edge start</code></td>
-<td>Start the edge server</td>
-</tr>
-<tr>
-<td><code>spax edge status</code></td>
-<td>Show edge server status</td>
-</tr>
-<tr>
-<td><code>spax edge agents</code></td>
-<td>List and manage agents</td>
-</tr>
-<tr>
-<td><code>spax edge menu</code></td>
-<td>Interactive menu (arrow-key navigation)</td>
-</tr>
-<tr>
-<td><code>spax edge shell</code></td>
-<td>Interactive REPL shell</td>
-</tr>
-</tbody>
-</table>
-<h2 id="running-scripts">Running Scripts<a class="headerlink" href="#running-scripts" title="Permanent link">&para;</a></h2>
-<h3 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>run<span class="w"> </span>&lt;script_path&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>--poll-ms</code>: Polling interval in milliseconds (default: 100)</li>
-<li><code>--history-length</code>: Maximum history entries per condition (default: 1000)</li>
-<li><code>--config</code>: YAML configuration file for sensors and zones</li>
-<li><code>--verbose</code>: Enable verbose logging</li>
-</ul>
-<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Run with default settings</span>
-spax<span class="w"> </span>run<span class="w"> </span>examples/occupancy_demo.py
-
-<span class="c1"># Run with faster polling</span>
-spax<span class="w"> </span>run<span class="w"> </span>examples/sequence_demo.py<span class="w"> </span>--poll-ms<span class="w"> </span><span class="m">50</span>
-
-<span class="c1"># Run with verbose logging</span>
-spax<span class="w"> </span>run<span class="w"> </span>examples/demo.py<span class="w"> </span>--verbose
-</code></pre></div>
-<h2 id="creating-new-scripts">Creating New Scripts<a class="headerlink" href="#creating-new-scripts" title="Permanent link">&para;</a></h2>
-<p>Generate a new Spaxiom script scaffold:</p>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>new<span class="w"> </span>&lt;script_name&gt;<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<h3 id="options_1">Options<a class="headerlink" href="#options_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><code>--output-dir</code>: Output directory (default: current directory)</li>
-<li><code>--sensors</code>: Number of sensor placeholders (default: 2)</li>
-<li><code>--zones</code>: Number of zone placeholders (default: 1)</li>
-<li><code>--privacy/--no-privacy</code>: Include privacy settings (default: enabled)</li>
-</ul>
-<h3 id="examples_1">Examples<a class="headerlink" href="#examples_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># Create a basic demo script</span>
-spax<span class="w"> </span>new<span class="w"> </span>demo
-
-<span class="c1"># Create a complex script with more sensors</span>
-spax<span class="w"> </span>new<span class="w"> </span>complex_demo<span class="w"> </span>--sensors<span class="w"> </span><span class="m">5</span><span class="w"> </span>--zones<span class="w"> </span><span class="m">3</span>
-
-<span class="c1"># Create in a specific directory</span>
-spax<span class="w"> </span>new<span class="w"> </span>my_app<span class="w"> </span>--output-dir<span class="w"> </span>./projects
-</code></pre></div>
-<h2 id="edge-commands">Edge Commands<a class="headerlink" href="#edge-commands" title="Permanent link">&para;</a></h2>
-<p>The <code>spax edge</code> command group manages edge deployments for production IoT environments.</p>
-<h3 id="starting-the-edge-server">Starting the Edge Server<a class="headerlink" href="#starting-the-edge-server" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </span><span class="o">[</span>options<span class="o">]</span>
-</code></pre></div>
-<p><strong>Options:</strong></p>
-<ul>
-<li><code>--host</code>: Host to bind to (default: 0.0.0.0)</li>
-<li><code>--port</code>: Port number (default: 8080)</li>
-<li><code>--db</code>: Database path (default: ~/.spaxiom/edge.db)</li>
-<li><code>--reload</code>: Enable auto-reload for development</li>
-</ul>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><span class="c1"># Start on default port</span>
-spax<span class="w"> </span>edge<span class="w"> </span>start
-
-<span class="c1"># Start on custom port with auto-reload</span>
-spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </span>--port<span class="w"> </span><span class="m">8085</span><span class="w"> </span>--reload
-</code></pre></div>
-<h3 id="checking-status">Checking Status<a class="headerlink" href="#checking-status" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>status<span class="w"> </span><span class="o">[</span>--url<span class="w"> </span>URL<span class="o">]</span>
-</code></pre></div>
-<p>Shows system health, sensor counts, active agents, and resource usage in a formatted table.</p>
-<h3 id="managing-agents">Managing Agents<a class="headerlink" href="#managing-agents" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><span class="c1"># List all agents</span>
-spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>list
-
-<span class="c1"># Show agent details</span>
-spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>show<span class="w"> </span>&lt;agent_id&gt;
-
-<span class="c1"># Start/stop agents</span>
-spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>start<span class="w"> </span>&lt;agent_id&gt;
-spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>stop<span class="w"> </span>&lt;agent_id&gt;
-</code></pre></div>
-<h3 id="interactive-menu">Interactive Menu<a class="headerlink" href="#interactive-menu" title="Permanent link">&para;</a></h3>
-<p>Launch an arrow-key navigable menu for common operations:</p>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>menu
-</code></pre></div>
-<p>The menu provides quick access to:</p>
-<ul>
-<li>View system status</li>
-<li>Manage sensors</li>
-<li>Configure zones</li>
-<li>Deploy patterns</li>
-<li>Monitor agents</li>
-<li>Access settings</li>
-</ul>
-<p>Use arrow keys to navigate and Enter to select.</p>
-<h3 id="interactive-shell">Interactive Shell<a class="headerlink" href="#interactive-shell" title="Permanent link">&para;</a></h3>
-<p>Start a REPL shell with tab completion and command history:</p>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>edge<span class="w"> </span>shell
-</code></pre></div>
-<p><strong>Shell Commands:</strong></p>
-<table>
-<thead>
-<tr>
-<th>Command</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>status</code></td>
-<td>Show system status</td>
-</tr>
-<tr>
-<td><code>sensors</code></td>
-<td>List all sensors</td>
-</tr>
-<tr>
-<td><code>zones</code></td>
-<td>List all zones</td>
-</tr>
-<tr>
-<td><code>agents</code></td>
-<td>List running agents</td>
-</tr>
-<tr>
-<td><code>start &lt;id&gt;</code></td>
-<td>Start an agent</td>
-</tr>
-<tr>
-<td><code>stop &lt;id&gt;</code></td>
-<td>Stop an agent</td>
-</tr>
-<tr>
-<td><code>health</code></td>
-<td>Show health metrics</td>
-</tr>
-<tr>
-<td><code>help</code></td>
-<td>Show available commands</td>
-</tr>
-<tr>
-<td><code>exit</code></td>
-<td>Exit the shell</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Example session:</strong></p>
-<div class="highlight"><pre><span></span><code>spaxiom&gt; status
-System: healthy
-Sensors: 12 registered
-Agents: 3 running
-
-spaxiom&gt; agents
-ID          Pattern         Status    Ticks
-agent_001   occupancy       running   1,234
-agent_002   queue_flow      running   856
-agent_003   adl_tracker     stopped   0
-
-spaxiom&gt; start agent_003
-Agent agent_003 started
-
-spaxiom&gt; exit
-</code></pre></div>
-<h2 id="version-information">Version Information<a class="headerlink" href="#version-information" title="Permanent link">&para;</a></h2>
-<p>Show version and installed optional dependencies:</p>
-<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>version
-</code></pre></div>
-<p>Output includes:</p>
-<ul>
-<li>Spaxiom version</li>
-<li>Python version</li>
-<li>Optional dependencies status (Rich, FastAPI, etc.)</li>
-</ul>
-<h2 id="environment-variables">Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Description</th>
+<th>Option</th>
+<th>Environment Variable</th>
 <th>Default</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>SPAXIOM_DB_PATH</code></td>
-<td>Database file path</td>
-<td><code>~/.spaxiom/edge.db</code></td>
-</tr>
-<tr>
-<td><code>SPAXIOM_LOG_LEVEL</code></td>
-<td>Logging level</td>
-<td><code>INFO</code></td>
-</tr>
-<tr>
+<td><code>--host</code></td>
 <td><code>SPAXIOM_API_HOST</code></td>
-<td>API server host</td>
 <td><code>0.0.0.0</code></td>
+<td>Bind address</td>
 </tr>
 <tr>
+<td><code>--port</code></td>
 <td><code>SPAXIOM_API_PORT</code></td>
-<td>API server port</td>
 <td><code>8080</code></td>
+<td>Server port</td>
+</tr>
+<tr>
+<td><code>--db</code></td>
+<td><code>SPAXIOM_DB_PATH</code></td>
+<td><code>~/.spaxiom/edge.db</code></td>
+<td>Database path</td>
+</tr>
+<tr>
+<td><code>--reload</code></td>
+<td>-</td>
+<td><code>false</code></td>
+<td>Auto-reload on changes</td>
 </tr>
 </tbody>
 </table>
-<h2 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># General help</span>
-spax<span class="w"> </span>--help
-
-<span class="c1"># Command-specific help</span>
-spax<span class="w"> </span>run<span class="w"> </span>--help
-spax<span class="w"> </span>edge<span class="w"> </span>--help
-spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </span>--help
+<h3 id="logging">Logging<a class="headerlink" href="#logging" title="Permanent link">&para;</a></h3>
+<p>Configure log level:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">export</span><span class="w"> </span><span class="nv">SPAXIOM_LOG_LEVEL</span><span class="o">=</span>DEBUG
 </code></pre></div>
+<p>Log files are stored in <code>~/.spaxiom/logs/</code> by default.</p>
+<h2 id="web-ui-features">Web UI Features<a class="headerlink" href="#web-ui-features" title="Permanent link">&para;</a></h2>
+<h3 id="dashboard">Dashboard<a class="headerlink" href="#dashboard" title="Permanent link">&para;</a></h3>
+<p>The dashboard shows:</p>
+<ul>
+<li>System health status (healthy/degraded/offline)</li>
+<li>Active sensor count</li>
+<li>Running agent count</li>
+<li>Recent events stream</li>
+<li>Resource usage (CPU, memory, disk)</li>
+</ul>
+<h3 id="zone-editor">Zone Editor<a class="headerlink" href="#zone-editor" title="Permanent link">&para;</a></h3>
+<p>The visual zone editor allows you to:</p>
+<ul>
+<li>Draw rectangular zones on a canvas</li>
+<li>Set zone properties (name, type)</li>
+<li>View sensor positions overlaid on zones</li>
+<li>Preview zone coverage</li>
+</ul>
+<h3 id="pattern-configuration">Pattern Configuration<a class="headerlink" href="#pattern-configuration" title="Permanent link">&para;</a></h3>
+<p>Each INTENT pattern type has a configuration form with:</p>
+<ul>
+<li>Pattern-specific parameters</li>
+<li>Sensor bindings</li>
+<li>Zone assignments</li>
+<li>Event handlers</li>
+</ul>
+<h3 id="agent-monitoring">Agent Monitoring<a class="headerlink" href="#agent-monitoring" title="Permanent link">&para;</a></h3>
+<p>Real-time agent monitoring includes:</p>
+<ul>
+<li>Status (running/stopped/error)</li>
+<li>Tick count and timing</li>
+<li>Events generated</li>
+<li>Error messages</li>
+<li>Start/stop/restart controls</li>
+</ul>
+<h2 id="running-as-a-service">Running as a Service<a class="headerlink" href="#running-as-a-service" title="Permanent link">&para;</a></h2>
+<h3 id="systemd-linux">systemd (Linux)<a class="headerlink" href="#systemd-linux" title="Permanent link">&para;</a></h3>
+<p>Create <code>/etc/systemd/system/spaxiom-edge.service</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[Unit]</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">Spaxiom Edge Server</span>
+<span class="na">After</span><span class="o">=</span><span class="s">network.target</span>
+
+<span class="k">[Service]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">simple</span>
+<span class="na">User</span><span class="o">=</span><span class="s">pi</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">/home/pi</span>
+<span class="na">Environment</span><span class="o">=</span><span class="s">SPAXIOM_DB_PATH=/var/lib/spaxiom/edge.db</span>
+<span class="na">ExecStart</span><span class="o">=</span><span class="s">/home/pi/.local/bin/spax edge start --port 8080</span>
+<span class="na">Restart</span><span class="o">=</span><span class="s">always</span>
+<span class="na">RestartSec</span><span class="o">=</span><span class="s">10</span>
+
+<span class="k">[Install]</span>
+<span class="na">WantedBy</span><span class="o">=</span><span class="s">multi-user.target</span>
+</code></pre></div>
+<p>Enable and start:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span><span class="nb">enable</span><span class="w"> </span>spaxiom-edge
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>spaxiom-edge
+</code></pre></div>
+<h3 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.11-slim</span>
+
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>spaxiom<span class="o">[</span>edge<span class="o">]</span>
+
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">8080</span>
+
+<span class="k">VOLUME</span><span class="w"> </span><span class="s">/data</span>
+
+<span class="k">ENV</span><span class="w"> </span><span class="nv">SPAXIOM_DB_PATH</span><span class="o">=</span>/data/edge.db
+
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;spax&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;edge&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;start&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">]</span>
+</code></pre></div>
+<p>Build and run:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>spaxiom-edge<span class="w"> </span>.
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">8080</span>:8080<span class="w"> </span>-v<span class="w"> </span>spaxiom-data:/data<span class="w"> </span>spaxiom-edge
+</code></pre></div>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../edge_api/">Edge API Reference</a> - Complete API documentation</li>
+<li><a href="../edge_security/">Edge Security</a> - Authentication, HTTPS, and hardening</li>
+<li><a href="../intent/">INTENT Patterns</a> - Available pattern types</li>
+</ul>
 
 
 
