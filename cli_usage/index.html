@@ -1256,11 +1256,23 @@ spax<span class="w"> </span>edge<span class="w"> </span>start<span class="w"> </
 spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>list
 
 <span class="c1"># Show agent details</span>
-spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>show<span class="w"> </span>&lt;agent_id&gt;
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>info<span class="w"> </span>&lt;agent_id&gt;
 
 <span class="c1"># Start/stop agents</span>
 spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>start<span class="w"> </span>&lt;agent_id&gt;
 spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>stop<span class="w"> </span>&lt;agent_id&gt;
+
+<span class="c1"># Configure summary schedules</span>
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>schedule<span class="w"> </span><span class="nb">set</span><span class="w"> </span>--name<span class="w"> </span>daily<span class="w"> </span>--cadence<span class="w"> </span>1d<span class="w"> </span>--format<span class="w"> </span>md
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>schedule<span class="w"> </span>list
+
+<span class="c1"># Generate summaries and action previews</span>
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>summary<span class="w"> </span>--since<span class="w"> </span>24h<span class="w"> </span>--format<span class="w"> </span>md<span class="w"> </span>--out<span class="w"> </span>./summary.md
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>preview<span class="w"> </span>--agent-id<span class="w"> </span>&lt;agent_id&gt;<span class="w"> </span>--window<span class="w"> </span>2h
+
+<span class="c1"># Replay scenarios and stream live events</span>
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>playback<span class="w"> </span>./scenario.json
+spax<span class="w"> </span>edge<span class="w"> </span>agents<span class="w"> </span>feed<span class="w"> </span>--agent-id<span class="w"> </span>&lt;agent_id&gt;
 </code></pre></div>
 <h3 id="interactive-menu">Interactive Menu<a class="headerlink" href="#interactive-menu" title="Permanent link">&para;</a></h3>
 <p>Launch an arrow-key navigable menu for common operations:</p>
