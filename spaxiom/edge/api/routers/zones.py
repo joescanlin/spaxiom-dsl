@@ -57,7 +57,7 @@ def _record_to_response(record) -> ZoneResponse:
         name=record.name,
         zone_type=record.zone_type,
         geometry=record.geometry,
-        parent_zone=record.parent_zone,
+        parent_zone=record.metadata.get("parent_zone"),
         created_at=record.created_at,
     )
 
@@ -92,7 +92,7 @@ async def get_zone_preview(
             "name": zone.name,
             "type": zone.zone_type,
             "geometry": geom,
-            "parent_zone": zone.parent_zone,
+            "parent_zone": zone.metadata.get("parent_zone"),
         }
 
         # Update bounds based on geometry
@@ -161,11 +161,14 @@ async def create_zone(
         )
 
     try:
+        metadata = {}
+        if zone.parent_zone:
+            metadata["parent_zone"] = zone.parent_zone
         record = repo.create(
             name=zone.name,
             zone_type=zone.zone_type,
             geometry=zone.geometry,
-            parent_zone=zone.parent_zone,
+            metadata=metadata,
         )
         return _record_to_response(record)
     except Exception as e:
@@ -205,6 +208,8 @@ async def update_zone(
         )
 
     updates = zone.model_dump(exclude_unset=True)
+    if "parent_zone" in updates:
+        updates["metadata"] = {"parent_zone": updates.pop("parent_zone")}
     updated = repo.update(zone_id, **updates)
     return _record_to_response(updated)
 

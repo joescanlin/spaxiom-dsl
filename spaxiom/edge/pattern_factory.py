@@ -92,7 +92,9 @@ class PatternFactory:
         else:
             bounds = (0, 0, 10, 10)
 
-        return Zone(name=record.name, bounds=bounds)
+        zone = Zone(*bounds)
+        zone.name = record.name
+        return zone
 
     def _resolve_sensors(self, sensor_ids: List[str]) -> List[Any]:
         """Resolve sensor IDs to sensor instances.
@@ -105,7 +107,7 @@ class PatternFactory:
         """
         sensors = []
         for sensor_id in sensor_ids:
-            sensor = self.sensor_registry.get_by_id(sensor_id)
+            sensor = self.sensor_registry.get(sensor_id)
             if sensor:
                 sensors.append(sensor)
             else:
@@ -293,7 +295,7 @@ class PatternFactory:
 
         # Check sensors exist
         for sensor_id in sensor_ids:
-            if not self.sensor_registry.get_by_id(sensor_id):
+            if not self.sensor_registry.get(sensor_id):
                 errors.append(f"Sensor '{sensor_id}' not found")
 
         # Pattern-specific validation
