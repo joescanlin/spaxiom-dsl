@@ -23,9 +23,15 @@ You can onboard sensors in two ways:
 
 - [MQTT Sensors](mqtt.md)
 - [Zigbee Sensors (via Zigbee2MQTT)](zigbee.md)
+- [Modbus Sensors (RTU/TCP)](modbus.md)
+- [HTTP/REST Webhooks](http_webhooks.md)
+- [LoRaWAN Sensors](lorawan.md)
+- [Z-Wave Sensors (via MQTT bridge)](zwave.md)
+- [Serial Sensors (RS-232/RS-485)](serial.md)
 - [GPIO Sensors (Linux/Raspberry Pi)](gpio.md)
 - [File/CSV Sensors](file_csv.md)
 - [Simulated/Synthetic Sensors](simulated.md)
+- [YAML Configuration](yaml_config.md)
 
 ## Minimum Dependencies
 

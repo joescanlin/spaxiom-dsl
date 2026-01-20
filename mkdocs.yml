@@ -44,9 +44,15 @@ nav:
     - Overview: sensors/overview.md
     - MQTT: sensors/mqtt.md
     - Zigbee (via MQTT): sensors/zigbee.md
+    - Modbus (RTU/TCP): sensors/modbus.md
+    - HTTP/REST Webhooks: sensors/http_webhooks.md
+    - LoRaWAN: sensors/lorawan.md
+    - Z-Wave (via MQTT): sensors/zwave.md
+    - Serial (RS-232/RS-485): sensors/serial.md
     - GPIO: sensors/gpio.md
     - File/CSV: sensors/file_csv.md
     - Simulated Sensors: sensors/simulated.md
+    - YAML Configuration: sensors/yaml_config.md
   - Examples:
     - Overview: examples/overview.md
     - Smart Building: examples/smart_building.md
