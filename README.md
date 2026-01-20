@@ -189,6 +189,7 @@ The documentation source files are located in the `docs/` directory. Some key se
 - [Temporal and Entity Operations](docs/temporal_and_entities.md)
 - [Quick Start Guide](docs/quickstart.md)
 - [CLI Usage](docs/cli_usage.md)
+- [Edge Deployment](docs/edge.md)
 
 ### Documentation Updates
 

@@ -133,11 +133,23 @@ Shows system health, sensor counts, active agents, and resource usage in a forma
 spax edge agents list
 
 # Show agent details
-spax edge agents show <agent_id>
+spax edge agents info <agent_id>
 
 # Start/stop agents
 spax edge agents start <agent_id>
 spax edge agents stop <agent_id>
+
+# Configure summary schedules
+spax edge agents schedule set --name daily --cadence 1d --format md
+spax edge agents schedule list
+
+# Generate summaries and action previews
+spax edge agents summary --since 24h --format md --out ./summary.md
+spax edge agents preview --agent-id <agent_id> --window 2h
+
+# Replay scenarios and stream live events
+spax edge agents playback ./scenario.json
+spax edge agents feed --agent-id <agent_id>
 ```
 
 ### Interactive Menu
