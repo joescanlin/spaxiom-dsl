@@ -162,6 +162,7 @@ The dashboard shows:
 - Running agent count
 - Recent events stream
 - Resource usage (CPU, memory, disk)
+- Demo spotlights (cleanroom, eldercare, facilities) with recommended actions
 
 ### Zone Editor
 
@@ -190,6 +191,10 @@ Real-time agent monitoring includes:
 - Events generated
 - Error messages
 - Start/stop/restart controls
+- Playbook guidance for supported INTENT patterns
+- Event summaries with recommended actions
+- Summary builder with downloadable output
+- Summary schedule management
 
 ## Running as a Service
 

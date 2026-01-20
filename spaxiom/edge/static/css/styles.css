@@ -379,6 +379,12 @@ body {
     gap: 1.5rem;
 }
 
+.agent-grid-wide {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
 .agent-card {
     background: white;
     border-radius: 12px;
@@ -417,6 +423,27 @@ body {
 .agent-actions {
     display: flex;
     gap: 0.5rem;
+}
+
+.agent-playbook {
+    background: #fff7ed;
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    border: 1px solid #fed7aa;
+}
+
+.agent-playbook h4 {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    color: #ea580c;
+}
+
+.agent-playbook ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.8rem;
+    color: #6c757d;
 }
 
 /* Modal */
@@ -840,6 +867,116 @@ body {
     margin: 0 0 0.75rem;
     font-size: 1rem;
     color: #333;
+}
+
+.summary-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.summary-output {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    max-height: 240px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+}
+
+.schedule-form {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.schedule-list {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.schedule-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e1e5eb;
+}
+
+.summary-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.summary-box h5 {
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.summary-box ul {
+    margin: 0.5rem 0 0;
+    padding-left: 1.2rem;
+}
+
+.spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.spotlight-card {
+    border: 1px solid #e1e5eb;
+    border-radius: 10px;
+    padding: 1rem;
+    background: #fdfdfd;
+}
+
+.spotlight-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.spotlight-tag {
+    background: #fff7ed;
+    color: #f97316;
+    border: 1px solid #fed7aa;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.spotlight-status {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.spotlight-desc {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+}
+
+.spotlight-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: #4b5563;
+    margin-bottom: 0.75rem;
+}
+
+.spotlight-actions {
+    margin: 0;
+    padding-left: 1.2rem;
+    font-size: 0.8rem;
+    color: #6c757d;
 }
 
 .stats-row {

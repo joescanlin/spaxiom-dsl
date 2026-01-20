@@ -157,6 +157,63 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="info-card">
+                    <h2>Demo Spotlights</h2>
+                    <div class="spotlight-grid">
+                        <div class="spotlight-card">
+                            <div class="spotlight-header">
+                                <span class="spotlight-tag">Cleanroom</span>
+                                <span class="spotlight-status">Active Agents: <strong x-text="getSpotlightData('cleanroom_risk').activeAgents"></strong></span>
+                            </div>
+                            <p class="spotlight-desc">Contamination risk monitoring with CRI scoring.</p>
+                            <div class="spotlight-meta">
+                                <span>Last Event: <strong x-text="getSpotlightData('cleanroom_risk').lastEvent"></strong></span>
+                                <span>Total Events: <strong x-text="getSpotlightData('cleanroom_risk').totalEvents"></strong></span>
+                            </div>
+                            <ul class="spotlight-actions">
+                                <template x-for="action in getSpotlightData('cleanroom_risk').actions" :key="action">
+                                    <li x-text="action"></li>
+                                </template>
+                                <li x-show="getSpotlightData('cleanroom_risk').actions.length === 0" class="text-muted">No active recommendations.</li>
+                            </ul>
+                        </div>
+                        <div class="spotlight-card">
+                            <div class="spotlight-header">
+                                <span class="spotlight-tag">Eldercare</span>
+                                <span class="spotlight-status">Active Agents: <strong x-text="getSpotlightData('adl_tracker').activeAgents"></strong></span>
+                            </div>
+                            <p class="spotlight-desc">Daily living activity tracking and wellness monitoring.</p>
+                            <div class="spotlight-meta">
+                                <span>Last Event: <strong x-text="getSpotlightData('adl_tracker').lastEvent"></strong></span>
+                                <span>Total Events: <strong x-text="getSpotlightData('adl_tracker').totalEvents"></strong></span>
+                            </div>
+                            <ul class="spotlight-actions">
+                                <template x-for="action in getSpotlightData('adl_tracker').actions" :key="action">
+                                    <li x-text="action"></li>
+                                </template>
+                                <li x-show="getSpotlightData('adl_tracker').actions.length === 0" class="text-muted">No active recommendations.</li>
+                            </ul>
+                        </div>
+                        <div class="spotlight-card">
+                            <div class="spotlight-header">
+                                <span class="spotlight-tag">Facilities</span>
+                                <span class="spotlight-status">Active Agents: <strong x-text="getSpotlightData('fm_steward').activeAgents"></strong></span>
+                            </div>
+                            <p class="spotlight-desc">Usage, supplies, and air-quality insights for maintenance.</p>
+                            <div class="spotlight-meta">
+                                <span>Last Event: <strong x-text="getSpotlightData('fm_steward').lastEvent"></strong></span>
+                                <span>Total Events: <strong x-text="getSpotlightData('fm_steward').totalEvents"></strong></span>
+                            </div>
+                            <ul class="spotlight-actions">
+                                <template x-for="action in getSpotlightData('fm_steward').actions" :key="action">
+                                    <li x-text="action"></li>
+                                </template>
+                                <li x-show="getSpotlightData('fm_steward').actions.length === 0" class="text-muted">No active recommendations.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Sensors -->
@@ -334,6 +391,15 @@
                                 <span class="status-dot" :class="agent.status"></span>
                                 <h3 x-text="agent.name"></h3>
                             </div>
+
+                            <div class="agent-playbook" x-show="getPlaybook(agent.pattern_id).length > 0">
+                                <h4>Playbook</h4>
+                                <ul>
+                                    <template x-for="item in getPlaybook(agent.pattern_id)" :key="item">
+                                        <li x-text="item"></li>
+                                    </template>
+                                </ul>
+                            </div>
                             
                             <div class="agent-stats" x-show="agent.status === 'running'">
                                 <div class="stat-item">
@@ -374,6 +440,89 @@
                     </template>
                 </div>
                 <p x-show="agents.length === 0" class="empty-message">No agents deployed. Deploy a pattern to create an agent.</p>
+
+                <div class="agent-grid-wide" style="margin-top: 1.5rem;">
+                    <div class="info-card">
+                        <h2>Summary Builder</h2>
+                        <div class="summary-controls">
+                            <div class="form-group">
+                                <label>Agent</label>
+                                <select x-model="summaryFilters.agentId">
+                                    <option value="">All agents</option>
+                                    <template x-for="agent in agents" :key="agent.id">
+                                        <option :value="agent.id" x-text="agent.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Window</label>
+                                <input type="text" x-model="summaryFilters.window" placeholder="2h">
+                            </div>
+                            <div class="form-group">
+                                <label>Format</label>
+                                <select x-model="summaryFilters.format">
+                                    <option value="md">Markdown</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" @click="generateSummary()">Generate Summary</button>
+                            <button class="btn" @click="downloadSummary()" x-show="summaryOutput">Download</button>
+                        </div>
+                        <p class="text-muted" x-show="summaryUpdatedAt">Last updated: <span x-text="formatTimestamp(summaryUpdatedAt)"></span></p>
+                        <p class="error-text" x-show="summaryError" x-text="summaryError"></p>
+                        <pre class="summary-output" x-text="summaryOutput" x-show="summaryOutput"></pre>
+                    </div>
+                    <div class="info-card">
+                        <h2>Summary Schedules</h2>
+                        <div class="schedule-form">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" x-model="newSchedule.name" placeholder="daily_summary">
+                            </div>
+                            <div class="form-group">
+                                <label>Agent</label>
+                                <select x-model="newSchedule.agentId">
+                                    <option value="">All agents</option>
+                                    <template x-for="agent in agents" :key="agent.id">
+                                        <option :value="agent.id" x-text="agent.name"></option>
+                                    </template>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Cadence</label>
+                                <input type="text" x-model="newSchedule.cadence" placeholder="24h">
+                            </div>
+                            <div class="form-group">
+                                <label>Format</label>
+                                <select x-model="newSchedule.format">
+                                    <option value="md">Markdown</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Output</label>
+                                <input type="text" x-model="newSchedule.output" placeholder="stdout">
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" @click="saveSchedule()">Save Schedule</button>
+                            </div>
+                        </div>
+                        <div class="schedule-list" x-show="summarySchedules.length > 0">
+                            <template x-for="schedule in summarySchedules" :key="schedule.name">
+                                <div class="schedule-item">
+                                    <div>
+                                        <strong x-text="schedule.name"></strong>
+                                        <p class="text-muted">Cadence: <span x-text="schedule.cadence"></span> · Format: <span x-text="schedule.format"></span></p>
+                                    </div>
+                                    <button class="btn btn-sm btn-danger" @click="removeSchedule(schedule.name)">Remove</button>
+                                </div>
+                            </template>
+                        </div>
+                        <p x-show="summarySchedules.length === 0" class="text-muted">No schedules configured.</p>
+                    </div>
+                </div>
                 
                 <!-- Live Event Feed -->
                 <div class="info-card" style="margin-top: 1.5rem;" x-show="recentEvents.length > 0">
@@ -640,6 +789,21 @@
                         </template>
                     </div>
                     <p x-show="agentEvents.length === 0" class="text-muted">No events recorded for this agent.</p>
+                </div>
+
+                <div class="detail-section" x-show="selectedAgentSummary">
+                    <h4>Summary</h4>
+                    <div class="summary-box">
+                        <p><strong>Total events:</strong> <span x-text="selectedAgentSummary.totalEvents"></span></p>
+                        <p><strong>Pattern events:</strong> <span x-text="Object.keys(selectedAgentSummary.patternEventCounts || {}).length"></span></p>
+                        <h5>Recommended Actions</h5>
+                        <ul>
+                            <template x-for="action in selectedAgentActions" :key="action">
+                                <li x-text="action"></li>
+                            </template>
+                            <li x-show="selectedAgentActions.length === 0" class="text-muted">No action needed.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="form-actions">

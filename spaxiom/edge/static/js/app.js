@@ -33,6 +33,24 @@ function app() {
         agentStats: {},
         agentEvents: [],
         recentEvents: [],
+        summarySchedules: [],
+        summaryFilters: {
+            agentId: '',
+            window: '2h',
+            format: 'md'
+        },
+        summaryOutput: '',
+        summaryUpdatedAt: null,
+        summaryError: '',
+        newSchedule: {
+            name: '',
+            agentId: '',
+            cadence: '24h',
+            format: 'md',
+            output: 'stdout'
+        },
+        selectedAgentSummary: null,
+        selectedAgentActions: [],
         eventStreamConnected: false,
         eventSource: null,
         
@@ -77,9 +95,20 @@ function app() {
                 this.loadPatterns(),
                 this.loadAgents(),
                 this.loadPatternTypes(),
+                this.loadSettings(),
                 this.loadSystemHealth(),
                 this.loadSystemInfo()
             ]);
+        },
+
+        async loadSettings() {
+            try {
+                const response = await fetch('/api/system/settings');
+                const settings = await response.json();
+                this.summarySchedules = settings.agent_summary_schedules || [];
+            } catch (error) {
+                console.error('Failed to load settings:', error);
+            }
         },
         
         async loadSensors() {
@@ -424,12 +453,251 @@ function app() {
             this.selectedAgent = agent;
             this.agentEvents = this.recentEvents.filter(e => e.agent_id === agent.id);
             this.refreshAgentStats(agent.id);
+            this.selectedAgentSummary = this.buildSummary(this.agentEvents);
+            this.selectedAgentActions = this.selectedAgentSummary.actions || [];
             this.showAgentDetailModal = true;
         },
         
         getPatternName(patternId) {
             const pattern = this.patterns.find(p => p.id === patternId);
             return pattern ? pattern.name : patternId.slice(0, 8) + '...';
+        },
+
+        getPatternType(patternId) {
+            const pattern = this.patterns.find(p => p.id === patternId);
+            return pattern ? pattern.pattern_type : null;
+        },
+
+        getPlaybook(patternId) {
+            const patternType = this.getPatternType(patternId);
+            if (!patternType) return [];
+
+            const playbooks = {
+                cleanroom_risk: [
+                    'Watch for pressure breaches and particle excursions.',
+                    'Lock down if CRI exceeds the risk threshold.',
+                    'Audit airlock violations immediately.'
+                ],
+                adl_tracker: [
+                    'Summarize daily activity counts.',
+                    'Escalate if no activity is detected in window.',
+                    'Highlight deviations from normal routine.'
+                ],
+                fm_steward: [
+                    'Restock towels and supplies when below threshold.',
+                    'Schedule cleaning after high traffic.',
+                    'Ventilate and inspect when NH3 is elevated.'
+                ]
+            };
+
+            return playbooks[patternType] || [];
+        },
+
+        buildSummary(events) {
+            const summary = {
+                totalEvents: events.length,
+                eventCounts: {},
+                patternEventCounts: {},
+                actions: []
+            };
+
+            const patternEvents = [];
+            for (const event of events) {
+                const type = event.type || 'unknown';
+                summary.eventCounts[type] = (summary.eventCounts[type] || 0) + 1;
+
+                if (type === 'pattern_event' && event.event) {
+                    patternEvents.push(event.event);
+                }
+            }
+
+            for (const event of patternEvents) {
+                const type = event.event_type || 'unknown';
+                summary.patternEventCounts[type] = (summary.patternEventCounts[type] || 0) + 1;
+            }
+
+            summary.actions = this.getRecommendations(patternEvents);
+            return summary;
+        },
+
+        getRecommendations(patternEvents) {
+            const recommendations = new Set();
+            for (const event of patternEvents) {
+                const eventType = event.event_type;
+                if (eventType === 'PressureBreach') {
+                    recommendations.add('Check door seals and pressure control.');
+                } else if (eventType === 'ParticleExcursion') {
+                    recommendations.add('Inspect filtration and pause sensitive work.');
+                } else if (eventType === 'AirlockViolation') {
+                    recommendations.add('Review airlock protocol and training.');
+                } else if (eventType === 'HighRiskMovement') {
+                    recommendations.add('Limit occupancy until CRI stabilizes.');
+                } else if (eventType === 'ServiceNeeded') {
+                    const reason = event.reason;
+                    if (reason === 'low_towels') {
+                        recommendations.add('Restock towels in the facility.');
+                    } else if (reason === 'bin_full') {
+                        recommendations.add('Empty waste bin.');
+                    } else if (reason === 'gas_high') {
+                        recommendations.add('Ventilate area and inspect ventilation.');
+                    } else if (reason === 'spill') {
+                        recommendations.add('Dispatch cleaning crew for spill.');
+                    }
+                } else if (eventType === 'ADLEvent') {
+                    recommendations.add('Confirm wellness status and note activity trend.');
+                }
+            }
+            return Array.from(recommendations);
+        },
+
+        parseWindow(windowValue) {
+            if (!windowValue) return 0;
+            const trimmed = windowValue.trim();
+            const unit = trimmed.slice(-1).toLowerCase();
+            const value = parseFloat(trimmed.slice(0, -1));
+            if (Number.isNaN(value)) return 0;
+
+            if (unit === 'm') return value * 60 * 1000;
+            if (unit === 'h') return value * 60 * 60 * 1000;
+            if (unit === 'd') return value * 24 * 60 * 60 * 1000;
+            return value * 1000;
+        },
+
+        formatSummary(summary, format) {
+            if (format === 'json') {
+                return JSON.stringify(summary, null, 2);
+            }
+
+            const lines = ['Agent Summary', ''];
+            lines.push(`Total events: ${summary.totalEvents}`);
+            lines.push('');
+            lines.push('Event counts:');
+            for (const [key, value] of Object.entries(summary.eventCounts)) {
+                lines.push(`- ${key}: ${value}`);
+            }
+
+            if (Object.keys(summary.patternEventCounts).length > 0) {
+                lines.push('');
+                lines.push('Pattern event counts:');
+                for (const [key, value] of Object.entries(summary.patternEventCounts)) {
+                    lines.push(`- ${key}: ${value}`);
+                }
+            }
+
+            lines.push('');
+            lines.push('Recommended actions:');
+            if (summary.actions.length) {
+                summary.actions.forEach(action => lines.push(`- ${action}`));
+            } else {
+                lines.push('- (none)');
+            }
+
+            return lines.join('\n');
+        },
+
+        generateSummary() {
+            this.summaryError = '';
+            const windowMs = this.parseWindow(this.summaryFilters.window);
+            const now = Date.now();
+            const filtered = this.recentEvents.filter(event => {
+                const timestamp = event.timestamp ? new Date(event.timestamp).getTime() : 0;
+                const inWindow = windowMs ? now - timestamp <= windowMs : true;
+                const matchesAgent = this.summaryFilters.agentId
+                    ? event.agent_id === this.summaryFilters.agentId
+                    : true;
+                return inWindow && matchesAgent;
+            });
+
+            const summary = this.buildSummary(filtered);
+            this.summaryUpdatedAt = new Date().toISOString();
+            this.summaryOutput = this.formatSummary(summary, this.summaryFilters.format);
+        },
+
+        downloadSummary() {
+            if (!this.summaryOutput) return;
+            const blob = new Blob([this.summaryOutput], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `spaxiom_summary_${Date.now()}.txt`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        },
+
+        async saveSchedule() {
+            if (!this.newSchedule.name) {
+                this.summaryError = 'Schedule name is required.';
+                return;
+            }
+
+            const updatedSchedules = this.summarySchedules.filter(
+                schedule => schedule.name !== this.newSchedule.name
+            );
+
+            updatedSchedules.push({
+                name: this.newSchedule.name,
+                agent_id: this.newSchedule.agentId || null,
+                cadence: this.newSchedule.cadence,
+                format: this.newSchedule.format,
+                output: this.newSchedule.output
+            });
+
+            try {
+                const response = await fetch('/api/system/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ settings: { agent_summary_schedules: updatedSchedules } })
+                });
+
+                if (response.ok) {
+                    this.summarySchedules = updatedSchedules;
+                    this.newSchedule = { name: '', agentId: '', cadence: '24h', format: 'md', output: 'stdout' };
+                } else {
+                    this.summaryError = 'Failed to save schedule.';
+                }
+            } catch (error) {
+                console.error('Failed to save schedule:', error);
+                this.summaryError = 'Failed to save schedule.';
+            }
+        },
+
+        async removeSchedule(name) {
+            const updatedSchedules = this.summarySchedules.filter(schedule => schedule.name !== name);
+            try {
+                const response = await fetch('/api/system/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ settings: { agent_summary_schedules: updatedSchedules } })
+                });
+                if (response.ok) {
+                    this.summarySchedules = updatedSchedules;
+                } else {
+                    this.summaryError = 'Failed to remove schedule.';
+                }
+            } catch (error) {
+                console.error('Failed to remove schedule:', error);
+                this.summaryError = 'Failed to remove schedule.';
+            }
+        },
+
+        getSpotlightData(typeId) {
+            const relevantPatterns = this.patterns.filter(p => p.pattern_type === typeId);
+            const patternIds = relevantPatterns.map(p => p.id);
+            const relevantAgents = this.agents.filter(a => patternIds.includes(a.pattern_id));
+            const agentIds = relevantAgents.map(a => a.id);
+
+            const relatedEvents = this.recentEvents.filter(event => agentIds.includes(event.agent_id));
+            const summary = this.buildSummary(relatedEvents);
+            const latestEvent = relatedEvents.find(event => event.timestamp);
+
+            return {
+                activeAgents: relevantAgents.length,
+                lastEvent: latestEvent ? this.formatTimestamp(latestEvent.timestamp) : 'No recent events',
+                actions: summary.actions,
+                totalEvents: summary.totalEvents
+            };
         },
         
         // Event Stream
@@ -474,6 +742,8 @@ function app() {
                 if (this.agentEvents.length > 50) {
                     this.agentEvents.pop();
                 }
+                this.selectedAgentSummary = this.buildSummary(this.agentEvents);
+                this.selectedAgentActions = this.selectedAgentSummary.actions || [];
             }
             
             // Handle specific event types
