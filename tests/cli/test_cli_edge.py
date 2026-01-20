@@ -89,6 +89,36 @@ class TestEdgeCLI(unittest.TestCase):
         self.assertEqual(result.exit_code, 0)
         self.assertIn("Show detailed agent information", result.output)
 
+    def test_edge_agents_schedule_help(self):
+        """Test edge agents schedule help."""
+        result = self.runner.invoke(cli, ["edge", "agents", "schedule", "--help"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Manage agent summary schedules", result.output)
+
+    def test_edge_agents_summary_help(self):
+        """Test edge agents summary help."""
+        result = self.runner.invoke(cli, ["edge", "agents", "summary", "--help"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Summarize recent agent events", result.output)
+
+    def test_edge_agents_preview_help(self):
+        """Test edge agents preview help."""
+        result = self.runner.invoke(cli, ["edge", "agents", "preview", "--help"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Preview recommended actions", result.output)
+
+    def test_edge_agents_playback_help(self):
+        """Test edge agents playback help."""
+        result = self.runner.invoke(cli, ["edge", "agents", "playback", "--help"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Replay a scenario file", result.output)
+
+    def test_edge_agents_feed_help(self):
+        """Test edge agents feed help."""
+        result = self.runner.invoke(cli, ["edge", "agents", "feed", "--help"])
+        self.assertEqual(result.exit_code, 0)
+        self.assertIn("Stream live agent events", result.output)
+
     @patch("spaxiom.cli.commands.edge.status.fetch_status")
     def test_edge_status_json(self, mock_fetch):
         """Test edge status with JSON output."""

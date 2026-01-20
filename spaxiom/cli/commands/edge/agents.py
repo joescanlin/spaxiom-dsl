@@ -1,8 +1,10 @@
 """spaxiom edge agents - Agent management commands."""
 
 import json
-import urllib.request
 import urllib.error
+import urllib.request
+from datetime import datetime, timedelta
+from typing import Any, Dict, List, Optional
 
 import click
 
@@ -47,6 +49,140 @@ def api_request(
         return {"error": str(e)}
 
 
+def _parse_timespec(value: Optional[str]) -> Optional[str]:
+    if not value:
+        return None
+
+    text = value.strip()
+    if not text:
+        return None
+
+    suffix = text[-1].lower()
+    if suffix in {"s", "m", "h", "d"}:
+        try:
+            amount = float(text[:-1])
+        except ValueError:
+            return text
+
+        seconds = amount
+        if suffix == "m":
+            seconds *= 60
+        elif suffix == "h":
+            seconds *= 3600
+        elif suffix == "d":
+            seconds *= 86400
+
+        since = datetime.utcnow() - timedelta(seconds=seconds)
+        return since.isoformat()
+
+    return text
+
+
+def _read_settings(host: str, port: int) -> Dict[str, Any]:
+    result = api_request("GET", "/api/system/settings", host, port)
+    if "error" in result:
+        return {"error": result["error"]}
+    return result if isinstance(result, dict) else {}
+
+
+def _write_settings(host: str, port: int, settings: Dict[str, Any]) -> Dict[str, Any]:
+    return api_request(
+        "PUT", "/api/system/settings", host, port, {"settings": settings}
+    )
+
+
+def _extract_pattern_event(event_record: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    if event_record.get("event_type") != "pattern_event":
+        return None
+    data = event_record.get("data") or {}
+    if isinstance(data, dict) and "event" in data:
+        return data.get("event")
+    if isinstance(data, dict):
+        return data
+    return None
+
+
+def _action_recommendations(events: List[Dict[str, Any]]) -> List[str]:
+    recommendations = []
+
+    for event in events:
+        event_type = event.get("event_type")
+        if not event_type:
+            continue
+
+        if event_type == "PressureBreach":
+            recommendations.append("Check door seals and pressure control.")
+        elif event_type == "ParticleExcursion":
+            recommendations.append("Inspect filtration and pause sensitive work.")
+        elif event_type == "AirlockViolation":
+            recommendations.append("Review airlock protocol and training.")
+        elif event_type == "HighRiskMovement":
+            recommendations.append("Limit occupancy until CRI stabilizes.")
+        elif event_type == "ServiceNeeded":
+            reason = event.get("reason")
+            if reason == "low_towels":
+                recommendations.append("Restock towels in the facility.")
+            elif reason == "bin_full":
+                recommendations.append("Empty waste bin.")
+            elif reason == "gas_high":
+                recommendations.append("Ventilate area and inspect ventilation.")
+            elif reason == "spill":
+                recommendations.append("Dispatch cleaning crew for spill.")
+
+    return sorted(set(recommendations))
+
+
+def _summarize_events(events: List[Dict[str, Any]]) -> Dict[str, Any]:
+    counts: Dict[str, int] = {}
+    pattern_events: List[Dict[str, Any]] = []
+
+    for record in events:
+        event_type = record.get("event_type", "unknown")
+        counts[event_type] = counts.get(event_type, 0) + 1
+
+        pattern_event = _extract_pattern_event(record)
+        if pattern_event:
+            pattern_events.append(pattern_event)
+
+    pattern_counts: Dict[str, int] = {}
+    for event in pattern_events:
+        event_type = event.get("event_type", "unknown")
+        pattern_counts[event_type] = pattern_counts.get(event_type, 0) + 1
+
+    return {
+        "total_events": len(events),
+        "event_counts": counts,
+        "pattern_event_counts": pattern_counts,
+        "actions": _action_recommendations(pattern_events),
+    }
+
+
+def _format_summary(summary: Dict[str, Any], fmt: str) -> str:
+    if fmt == "json":
+        return json.dumps(summary, indent=2)
+
+    lines = ["Agent Summary", ""]
+    lines.append(f"Total events: {summary.get('total_events', 0)}")
+    lines.append("\nEvent counts:")
+    for key, value in summary.get("event_counts", {}).items():
+        lines.append(f"- {key}: {value}")
+
+    pattern_counts = summary.get("pattern_event_counts", {})
+    if pattern_counts:
+        lines.append("\nPattern event counts:")
+        for key, value in pattern_counts.items():
+            lines.append(f"- {key}: {value}")
+
+    actions = summary.get("actions", [])
+    lines.append("\nRecommended actions:")
+    if actions:
+        lines.extend([f"- {action}" for action in actions])
+    else:
+        lines.append("- (none)")
+
+    return "\n".join(lines)
+
+
 @click.group()
 @click.option(
     "--host", "-h", default="localhost", help="Edge server host", envvar="SPAXIOM_HOST"
@@ -70,6 +206,127 @@ def agents(ctx, host, port):
     ctx.ensure_object(dict)
     ctx.obj["host"] = host
     ctx.obj["port"] = port
+
+
+@agents.group("schedule")
+@click.pass_context
+def schedule_group(ctx):
+    """Manage agent summary schedules."""
+    pass
+
+
+@schedule_group.command("list")
+@click.pass_context
+def list_schedules(ctx):
+    """List configured summary schedules."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+
+    settings = _read_settings(host, port)
+    if "error" in settings:
+        print_error(settings["error"])
+        return
+
+    schedules = settings.get("agent_summary_schedules", [])
+    if ctx.obj.get("json"):
+        click.echo(json.dumps(schedules, indent=2))
+        return
+
+    if not schedules:
+        console.print("No schedules configured.", style="muted")
+        return
+
+    for schedule in schedules:
+        console.print(
+            f"- {schedule.get('name', schedule.get('id', 'schedule'))}: "
+            f"cadence={schedule.get('cadence')} format={schedule.get('format')} "
+            f"agent={schedule.get('agent_id', 'all')} out={schedule.get('output', 'stdout')}"
+        )
+
+
+@schedule_group.command("set")
+@click.option("--name", required=True, help="Schedule name")
+@click.option("--agent-id", help="Agent ID to scope summary")
+@click.option("--cadence", default="24h", help="Cadence (e.g., 2h, 1d)")
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(["json", "md", "text"], case_sensitive=False),
+    default="md",
+    show_default=True,
+)
+@click.option("--output", default="stdout", help="Output target (stdout or file path)")
+@click.pass_context
+def set_schedule(ctx, name, agent_id, cadence, format_, output):
+    """Create or update a summary schedule."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+
+    settings = _read_settings(host, port)
+    if "error" in settings:
+        print_error(settings["error"])
+        return
+
+    schedules = settings.get("agent_summary_schedules", [])
+    updated = False
+    for schedule in schedules:
+        if schedule.get("name") == name:
+            schedule.update(
+                {
+                    "agent_id": agent_id,
+                    "cadence": cadence,
+                    "format": format_,
+                    "output": output,
+                }
+            )
+            updated = True
+
+    if not updated:
+        schedules.append(
+            {
+                "name": name,
+                "agent_id": agent_id,
+                "cadence": cadence,
+                "format": format_,
+                "output": output,
+                "created_at": datetime.utcnow().isoformat(),
+            }
+        )
+
+    result = _write_settings(host, port, {"agent_summary_schedules": schedules})
+    if "error" in result:
+        print_error(result["error"])
+        return
+
+    print_success(f"Schedule {'updated' if updated else 'created'}: {name}")
+
+
+@schedule_group.command("remove")
+@click.option("--name", required=True, help="Schedule name to remove")
+@click.pass_context
+def remove_schedule(ctx, name):
+    """Remove a summary schedule by name."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+
+    settings = _read_settings(host, port)
+    if "error" in settings:
+        print_error(settings["error"])
+        return
+
+    schedules = settings.get("agent_summary_schedules", [])
+    filtered = [schedule for schedule in schedules if schedule.get("name") != name]
+
+    if len(filtered) == len(schedules):
+        print_warning(f"No schedule named '{name}' found")
+        return
+
+    result = _write_settings(host, port, {"agent_summary_schedules": filtered})
+    if "error" in result:
+        print_error(result["error"])
+        return
+
+    print_success(f"Schedule removed: {name}")
 
 
 @agents.command("list")
@@ -153,6 +410,161 @@ def list_agents(ctx, status_filter):
             console.print(
                 f"{icon} {agent.get('id', '')[:8]} - {agent.get('name', 'Unnamed')} ({status})"
             )
+
+
+@agents.command("summary")
+@click.option("--agent-id", help="Filter by agent ID")
+@click.option("--since", default="24h", help="Time window start (e.g., 2h, 1d, ISO)")
+@click.option("--until", help="Time window end (ISO timestamp)")
+@click.option("--limit", default=500, show_default=True)
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(["json", "md", "text"], case_sensitive=False),
+    default="md",
+    show_default=True,
+)
+@click.option("--out", "out_path", type=click.Path(dir_okay=False))
+@click.pass_context
+def agent_summary(ctx, agent_id, since, until, limit, format_, out_path):
+    """Summarize recent agent events and recommended actions."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+
+    query_parts = [f"limit={int(limit)}"]
+    since_value = _parse_timespec(since)
+    until_value = _parse_timespec(until)
+    if since_value:
+        query_parts.append(f"since={since_value}")
+    if until_value:
+        query_parts.append(f"until={until_value}")
+    if agent_id:
+        query_parts.append(f"source={agent_id}")
+
+    query = "&".join(query_parts)
+    result = api_request("GET", f"/api/events?{query}", host, port)
+
+    if "error" in result:
+        print_error(result["error"])
+        return
+
+    events = result if isinstance(result, list) else result.get("events", [])
+    summary = _summarize_events(events)
+    output = _format_summary(summary, "json" if format_ == "json" else "md")
+
+    if out_path:
+        with open(out_path, "w", encoding="utf-8") as handle:
+            handle.write(output)
+        print_success(f"Summary written to {out_path}")
+        return
+
+    click.echo(output)
+
+
+@agents.command("preview")
+@click.option("--agent-id", required=True, help="Agent ID to preview actions for")
+@click.option("--window", default="2h", help="Lookback window (e.g., 2h, 1d)")
+@click.pass_context
+def agent_preview(ctx, agent_id, window):
+    """Preview recommended actions based on recent events."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+
+    since_value = _parse_timespec(window)
+    query = f"source={agent_id}"
+    if since_value:
+        query = f"{query}&since={since_value}"
+
+    result = api_request("GET", f"/api/events?{query}", host, port)
+    if "error" in result:
+        print_error(result["error"])
+        return
+
+    events = result if isinstance(result, list) else result.get("events", [])
+    summary = _summarize_events(events)
+
+    if ctx.obj.get("json"):
+        click.echo(json.dumps({"actions": summary["actions"]}, indent=2))
+        return
+
+    console.print("Recommended actions:")
+    actions = summary.get("actions", [])
+    if not actions:
+        console.print("- (none)", style="muted")
+    else:
+        for action in actions:
+            console.print(f"- {action}")
+
+
+@agents.command("playback")
+@click.argument("scenario_path", type=click.Path(exists=True, readable=True))
+@click.option(
+    "--format",
+    "format_",
+    type=click.Choice(["json", "md", "text"], case_sensitive=False),
+    default="md",
+    show_default=True,
+)
+@click.pass_context
+def agent_playback(ctx, scenario_path, format_):
+    """Replay a scenario file and summarize actions."""
+    with open(scenario_path, "r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+
+    events = payload.get("events") if isinstance(payload, dict) else payload
+    if not isinstance(events, list):
+        print_error("Scenario file must be a list of events or {" "'events': [...]}.")
+        return
+
+    normalized = []
+    for event in events:
+        if isinstance(event, dict) and "event_type" in event:
+            normalized.append({"event_type": "pattern_event", "data": event})
+
+    summary = _summarize_events(normalized)
+    output = _format_summary(summary, "json" if format_ == "json" else "md")
+    click.echo(output)
+
+
+@agents.command("feed")
+@click.option("--agent-id", help="Filter by agent ID")
+@click.option("--event-type", help="Filter by event type")
+@click.pass_context
+def agent_feed(ctx, agent_id, event_type):
+    """Stream live agent events from the edge server."""
+    host = ctx.obj["host"]
+    port = ctx.obj["port"]
+    url = f"http://{host}:{port}/api/events/stream"
+
+    try:
+        with urllib.request.urlopen(url, timeout=5) as response:
+            for raw in response:
+                line = raw.decode("utf-8").strip()
+                if not line.startswith("data: "):
+                    continue
+                payload = line[6:]
+                try:
+                    event = json.loads(payload)
+                except json.JSONDecodeError:
+                    continue
+
+                if agent_id and event.get("agent_id") != agent_id:
+                    continue
+                if event_type and event.get("type") != event_type:
+                    continue
+
+                if ctx.obj.get("json"):
+                    click.echo(json.dumps(event))
+                else:
+                    console.print(
+                        f"[{event.get('timestamp', '')}] {event.get('type', 'event')} "
+                        f"agent={event.get('agent_id', '-')}",
+                        style="info",
+                    )
+    except urllib.error.URLError as e:
+        print_error(f"Cannot connect: {e.reason}")
+    except KeyboardInterrupt:
+        pass
 
 
 @agents.command("deploy")
