@@ -13,26 +13,28 @@
       
       
       
+        <link rel="prev" href="../simulated/">
       
-        <link rel="next" href="whats_new/">
+      
+        <link rel="next" href="../../examples/overview/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>Spaxiom DSL</title>
+        <title>YAML Configuration - Spaxiom DSL</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="css/intent.css">
+      <link rel="stylesheet" href="../../css/intent.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-spaxiom-dsl" class="md-skip">
+        <a href="#yaml-configuration-guide" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+    <a href="../.." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
       
-  <img src="images/intent-logo.svg" alt="logo">
+  <img src="../../images/intent-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              YAML Configuration
             
           </span>
         </div>
@@ -203,9 +205,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+    <a href="../.." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
       
-  <img src="images/intent-logo.svg" alt="logo">
+  <img src="../../images/intent-logo.svg" alt="logo">
 
     </a>
     Spaxiom DSL
@@ -229,37 +231,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -275,92 +250,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#system-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System Architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Features
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-sections" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Sections
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        License
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -372,7 +261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="whats_new/" class="md-nav__link">
+      <a href="../../whats_new/" class="md-nav__link">
         
   
   
@@ -399,7 +288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="quickstart/" class="md-nav__link">
+      <a href="../../quickstart/" class="md-nav__link">
         
   
   
@@ -426,7 +315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="intent/" class="md-nav__link">
+      <a href="../../intent/" class="md-nav__link">
         
   
   
@@ -453,7 +342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -480,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="runtime/" class="md-nav__link">
+      <a href="../../runtime/" class="md-nav__link">
         
   
   
@@ -507,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="safety/" class="md-nav__link">
+      <a href="../../safety/" class="md-nav__link">
         
   
   
@@ -534,7 +423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="governance/" class="md-nav__link">
+      <a href="../../governance/" class="md-nav__link">
         
   
   
@@ -615,7 +504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/overview/" class="md-nav__link">
+      <a href="../../api/overview/" class="md-nav__link">
         
   
   
@@ -650,7 +539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="temporal_and_entities/" class="md-nav__link">
+      <a href="../../temporal_and_entities/" class="md-nav__link">
         
   
   
@@ -677,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cli_usage/" class="md-nav__link">
+      <a href="../../cli_usage/" class="md-nav__link">
         
   
   
@@ -758,7 +647,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge/" class="md-nav__link">
+      <a href="../../edge/" class="md-nav__link">
         
   
   
@@ -786,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge_api/" class="md-nav__link">
+      <a href="../../edge_api/" class="md-nav__link">
         
   
   
@@ -814,7 +703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge_security/" class="md-nav__link">
+      <a href="../../edge_security/" class="md-nav__link">
         
   
   
@@ -846,8 +735,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -858,13 +749,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
           <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
@@ -885,7 +774,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -903,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         
   
   
@@ -931,7 +820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/mqtt/" class="md-nav__link">
+      <a href="../mqtt/" class="md-nav__link">
         
   
   
@@ -959,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/zigbee/" class="md-nav__link">
+      <a href="../zigbee/" class="md-nav__link">
         
   
   
@@ -987,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/modbus/" class="md-nav__link">
+      <a href="../modbus/" class="md-nav__link">
         
   
   
@@ -1015,7 +904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/http_webhooks/" class="md-nav__link">
+      <a href="../http_webhooks/" class="md-nav__link">
         
   
   
@@ -1043,7 +932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/lorawan/" class="md-nav__link">
+      <a href="../lorawan/" class="md-nav__link">
         
   
   
@@ -1071,7 +960,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/zwave/" class="md-nav__link">
+      <a href="../zwave/" class="md-nav__link">
         
   
   
@@ -1099,7 +988,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/serial/" class="md-nav__link">
+      <a href="../serial/" class="md-nav__link">
         
   
   
@@ -1127,7 +1016,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/gpio/" class="md-nav__link">
+      <a href="../gpio/" class="md-nav__link">
         
   
   
@@ -1155,7 +1044,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/file_csv/" class="md-nav__link">
+      <a href="../file_csv/" class="md-nav__link">
         
   
   
@@ -1183,7 +1072,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/simulated/" class="md-nav__link">
+      <a href="../simulated/" class="md-nav__link">
         
   
   
@@ -1208,10 +1097,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="sensors/yaml_config/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    YAML Configuration
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1227,6 +1143,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-basic-yaml-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Basic YAML Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-load-sensors-from-yaml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Load Sensors from YAML
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-extend-for-other-protocols" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Extend for Other Protocols
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1300,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/overview/" class="md-nav__link">
+      <a href="../../examples/overview/" class="md-nav__link">
         
   
   
@@ -1328,7 +1297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/smart_building/" class="md-nav__link">
+      <a href="../../examples/smart_building/" class="md-nav__link">
         
   
   
@@ -1376,83 +1345,55 @@
   
 
 
-<h1 id="welcome-to-spaxiom-dsl">Welcome to Spaxiom DSL<a class="headerlink" href="#welcome-to-spaxiom-dsl" title="Permanent link">&para;</a></h1>
-<div align="center" style="margin-bottom: 2em;">
-<pre style="line-height: 1.2;">
-                ███████╗██████╗  █████╗ ██╗  ██╗██╗ ██████╗ ███╗   ███╗
-                ██╔════╝██╔══██╗██╔══██╗╚██╗██╔╝██║██╔═══██╗████╗ ████║
-                ███████╗██████╔╝███████║ ╚███╔╝ ██║██║   ██║██╔████╔██║
-                ╚════██║██╔═══╝ ██╔══██║ ██╔██╗ ██║██║   ██║██║╚██╔╝██║
-                ███████║██║     ██║  ██║██╔╝ ██╗██║╚██████╔╝██║ ╚═╝ ██║
-                ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝     ╚═╝
-</pre>
-</div>
+<h1 id="yaml-configuration-guide">YAML Configuration Guide<a class="headerlink" href="#yaml-configuration-guide" title="Permanent link">&para;</a></h1>
+<p>Once your sensors are onboarded, you can declare them in YAML so Spaxiom can auto-load them via <code>spax run --config</code>.</p>
+<blockquote>
+<p>Note: The current YAML loader (<code>spaxiom/config.py</code>) supports <strong>random</strong>, <strong>toggle</strong>, and <strong>gpio_digital</strong> sensors. Other protocols are typically bridged to MQTT or file replay and loaded in code.</p>
+</blockquote>
+<h2 id="1-basic-yaml-structure">1. Basic YAML Structure<a class="headerlink" href="#1-basic-yaml-structure" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="nt">sensors</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">temperature_sensor</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">random</span>
+<span class="w">    </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">hz</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">    </span><span class="nt">privacy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
 
-<p>Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intelligent systems that work with:</p>
-<ul>
-<li><strong>Spatial Data</strong>: Zones, sensors, and physical spaces</li>
-<li><strong>Temporal Logic</strong>: Time-based conditions and historical analysis</li>
-<li><strong>Event Processing</strong>: Triggering actions based on complex conditions</li>
-<li><strong>Entity Management</strong>: Tracking and querying objects in your system</li>
-<li><strong>Physical Units</strong>: Working with measurements in a type-safe manner</li>
-</ul>
-<h2 id="system-architecture">System Architecture<a class="headerlink" href="#system-architecture" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>     ╔═══════════╗                   ╔═══════════╗
-     ║ SENSORS   ║                   ║ DETECTION ║
-     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
-     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
-     ╚═══════════╝                   ╚═══════════╝
-           │                               ▲
-           ▼                               │
-     ╔═══════════╗     ╔═══════════╗     ╔═══════════╗
-     ║           ║     ║           ║     ║           ║
-     ║  SPATIAL  ║════&gt;║ TEMPORAL  ║════&gt;║   EVENTS  ║
-     ║           ║     ║           ║     ║           ║
-     ╚═══════════╝     ╚═══════════╝     ╚═══════════╝
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door_toggle</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">toggle</span>
+<span class="w">    </span><span class="nt">toggle_interval</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span>
+<span class="w">    </span><span class="nt">high_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1.0</span>
+<span class="w">    </span><span class="nt">low_value</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">1</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpio_button</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpio_digital</span>
+<span class="w">    </span><span class="nt">pin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">17</span>
+<span class="w">    </span><span class="nt">pull_up</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">active_state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">    </span><span class="nt">location</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">2</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">0</span><span class="p p-Indicator">]</span>
 </code></pre></div>
-<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
-<ul>
-<li>🏠 <strong>Spatial Zones</strong>: Define and work with 2D spatial regions</li>
-<li>⚡ <strong>Sensors</strong>: Interface with various sensor types and data streams</li>
-<li>⏱️ <strong>Temporal Logic</strong>: Create conditions that must be true for specific durations</li>
-<li>🔄 <strong>Event Callbacks</strong>: Register event handlers triggered by complex conditions</li>
-<li>👥 <strong>Entity Tracking</strong>: Maintain collections of entities with flexible attributes</li>
-<li>📏 <strong>Physical Units</strong>: Work with measurements and conversions seamlessly</li>
-<li>🧩 <strong>Logical Operators</strong>: Combine conditions using intuitive &amp;, |, and ~ operators</li>
-</ul>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom
+<h2 id="2-load-sensors-from-yaml">2. Load Sensors from YAML<a class="headerlink" href="#2-load-sensors-from-yaml" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>spax<span class="w"> </span>run<span class="w"> </span>./my_script.py<span class="w"> </span>--config<span class="w"> </span>sensors.yaml
 </code></pre></div>
-<h2 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Zone</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">within</span>
+<p>Or in Python:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_sensors_from_yaml</span>
 
-<span class="c1"># Define a zone and sensor</span>
-<span class="n">office_zone</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">motion_sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;motion1&quot;</span><span class="p">,</span> <span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-
-<span class="c1"># Create condition based on sensor data</span>
-<span class="n">motion_detected</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">motion_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
-
-<span class="c1"># Make it temporal - must be true for 5 seconds</span>
-<span class="n">sustained_motion</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">motion_detected</span><span class="p">)</span>
-
-<span class="c1"># Register an event handler</span>
-<span class="nd">@on</span><span class="p">(</span><span class="n">sustained_motion</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">alert_sustained_motion</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Motion has been detected for 5 seconds!&quot;</span><span class="p">)</span>
+<span class="n">sensors</span> <span class="o">=</span> <span class="n">load_sensors_from_yaml</span><span class="p">(</span><span class="s2">&quot;sensors.yaml&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="documentation-sections">Documentation Sections<a class="headerlink" href="#documentation-sections" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="quickstart/">Quick Start Guide</a>: Get up and running with Spaxiom</li>
-<li><a href="api/overview/">API Reference</a>: Detailed documentation of all Spaxiom components</li>
-<li><a href="temporal_and_entities/">Temporal and Entity Operations</a>: Working with time and entities</li>
-<li><a href="cli_usage/">CLI Usage</a>: Using the command-line interface</li>
-<li><a href="edge/">Edge Deployment</a>: Edge server, web UI, and deployment workflow</li>
-<li><a href="sensors/overview/">Sensor Onboarding</a>: Protocol guides for MQTT, Zigbee, GPIO, CSV, and simulated sensors</li>
-<li><a href="examples/overview/">Examples</a>: Real-world examples and use cases</li>
-</ul>
-<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
-<p>Spaxiom DSL is released under the MIT License. </p>
+<h2 id="3-extend-for-other-protocols">3. Extend for Other Protocols<a class="headerlink" href="#3-extend-for-other-protocols" title="Permanent link">&para;</a></h2>
+<p>If you use MQTT, File, or other adaptors, register them in code until YAML support is extended.</p>
+<p>Example (MQTT in code + YAML for GPIO):</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTSensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_sensors_from_yaml</span>
+
+<span class="n">load_sensors_from_yaml</span><span class="p">(</span><span class="s2">&quot;sensors.yaml&quot;</span><span class="p">)</span>
+
+<span class="n">temp</span> <span class="o">=</span> <span class="n">MQTTSensor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;temp_mqtt&quot;</span><span class="p">,</span>
+    <span class="n">broker_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">topic</span><span class="o">=</span><span class="s2">&quot;sensors/temperature&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div>
 
 
 
@@ -1518,10 +1459,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>

@@ -13,26 +13,28 @@
       
       
       
+        <link rel="prev" href="../modbus/">
       
-        <link rel="next" href="whats_new/">
+      
+        <link rel="next" href="../lorawan/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
     
     
       
-        <title>Spaxiom DSL</title>
+        <title>HTTP/REST Webhooks - Spaxiom DSL</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -51,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="css/intent.css">
+      <link rel="stylesheet" href="../../css/intent.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -76,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#welcome-to-spaxiom-dsl" class="md-skip">
+        <a href="#httprest-webhook-onboarding" class="md-skip">
           Skip to content
         </a>
       
@@ -92,9 +94,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+    <a href="../.." title="Spaxiom DSL" class="md-header__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
       
-  <img src="images/intent-logo.svg" alt="logo">
+  <img src="../../images/intent-logo.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -111,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Home
+              HTTP/REST Webhooks
             
           </span>
         </div>
@@ -203,9 +205,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
+    <a href="../.." title="Spaxiom DSL" class="md-nav__button md-logo" aria-label="Spaxiom DSL" data-md-component="logo">
       
-  <img src="images/intent-logo.svg" alt="logo">
+  <img src="../../images/intent-logo.svg" alt="logo">
 
     </a>
     Spaxiom DSL
@@ -229,37 +231,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -275,92 +250,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#system-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        System Architecture
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#key-features" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Key Features
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Installation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Quick Example
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#documentation-sections" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Documentation Sections
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#license" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        License
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -372,7 +261,7 @@
   
   
     <li class="md-nav__item">
-      <a href="whats_new/" class="md-nav__link">
+      <a href="../../whats_new/" class="md-nav__link">
         
   
   
@@ -399,7 +288,7 @@
   
   
     <li class="md-nav__item">
-      <a href="quickstart/" class="md-nav__link">
+      <a href="../../quickstart/" class="md-nav__link">
         
   
   
@@ -426,7 +315,7 @@
   
   
     <li class="md-nav__item">
-      <a href="intent/" class="md-nav__link">
+      <a href="../../intent/" class="md-nav__link">
         
   
   
@@ -453,7 +342,7 @@
   
   
     <li class="md-nav__item">
-      <a href="architecture/" class="md-nav__link">
+      <a href="../../architecture/" class="md-nav__link">
         
   
   
@@ -480,7 +369,7 @@
   
   
     <li class="md-nav__item">
-      <a href="runtime/" class="md-nav__link">
+      <a href="../../runtime/" class="md-nav__link">
         
   
   
@@ -507,7 +396,7 @@
   
   
     <li class="md-nav__item">
-      <a href="safety/" class="md-nav__link">
+      <a href="../../safety/" class="md-nav__link">
         
   
   
@@ -534,7 +423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="governance/" class="md-nav__link">
+      <a href="../../governance/" class="md-nav__link">
         
   
   
@@ -615,7 +504,7 @@
   
   
     <li class="md-nav__item">
-      <a href="api/overview/" class="md-nav__link">
+      <a href="../../api/overview/" class="md-nav__link">
         
   
   
@@ -650,7 +539,7 @@
   
   
     <li class="md-nav__item">
-      <a href="temporal_and_entities/" class="md-nav__link">
+      <a href="../../temporal_and_entities/" class="md-nav__link">
         
   
   
@@ -677,7 +566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="cli_usage/" class="md-nav__link">
+      <a href="../../cli_usage/" class="md-nav__link">
         
   
   
@@ -758,7 +647,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge/" class="md-nav__link">
+      <a href="../../edge/" class="md-nav__link">
         
   
   
@@ -786,7 +675,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge_api/" class="md-nav__link">
+      <a href="../../edge_api/" class="md-nav__link">
         
   
   
@@ -814,7 +703,7 @@
   
   
     <li class="md-nav__item">
-      <a href="edge_security/" class="md-nav__link">
+      <a href="../../edge_security/" class="md-nav__link">
         
   
   
@@ -846,8 +735,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -858,13 +749,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_13" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
         
           
           <label class="md-nav__link" for="__nav_13" id="__nav_13_label" tabindex="">
@@ -885,7 +774,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_13">
             <span class="md-nav__icon md-icon"></span>
             
@@ -903,7 +792,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/overview/" class="md-nav__link">
+      <a href="../overview/" class="md-nav__link">
         
   
   
@@ -931,7 +820,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/mqtt/" class="md-nav__link">
+      <a href="../mqtt/" class="md-nav__link">
         
   
   
@@ -959,7 +848,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/zigbee/" class="md-nav__link">
+      <a href="../zigbee/" class="md-nav__link">
         
   
   
@@ -987,7 +876,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/modbus/" class="md-nav__link">
+      <a href="../modbus/" class="md-nav__link">
         
   
   
@@ -1012,10 +901,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="sensors/http_webhooks/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HTTP/REST Webhooks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -1031,6 +947,59 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#option-a-webhook-mqtt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option A: Webhook → MQTT
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#option-b-webhook-edge-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option B: Webhook → Edge API
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1043,7 +1012,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/lorawan/" class="md-nav__link">
+      <a href="../lorawan/" class="md-nav__link">
         
   
   
@@ -1071,7 +1040,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/zwave/" class="md-nav__link">
+      <a href="../zwave/" class="md-nav__link">
         
   
   
@@ -1099,7 +1068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/serial/" class="md-nav__link">
+      <a href="../serial/" class="md-nav__link">
         
   
   
@@ -1127,7 +1096,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/gpio/" class="md-nav__link">
+      <a href="../gpio/" class="md-nav__link">
         
   
   
@@ -1155,7 +1124,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/file_csv/" class="md-nav__link">
+      <a href="../file_csv/" class="md-nav__link">
         
   
   
@@ -1183,7 +1152,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/simulated/" class="md-nav__link">
+      <a href="../simulated/" class="md-nav__link">
         
   
   
@@ -1211,7 +1180,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sensors/yaml_config/" class="md-nav__link">
+      <a href="../yaml_config/" class="md-nav__link">
         
   
   
@@ -1300,7 +1269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/overview/" class="md-nav__link">
+      <a href="../../examples/overview/" class="md-nav__link">
         
   
   
@@ -1328,7 +1297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="examples/smart_building/" class="md-nav__link">
+      <a href="../../examples/smart_building/" class="md-nav__link">
         
   
   
@@ -1376,83 +1345,51 @@
   
 
 
-<h1 id="welcome-to-spaxiom-dsl">Welcome to Spaxiom DSL<a class="headerlink" href="#welcome-to-spaxiom-dsl" title="Permanent link">&para;</a></h1>
-<div align="center" style="margin-bottom: 2em;">
-<pre style="line-height: 1.2;">
-                ███████╗██████╗  █████╗ ██╗  ██╗██╗ ██████╗ ███╗   ███╗
-                ██╔════╝██╔══██╗██╔══██╗╚██╗██╔╝██║██╔═══██╗████╗ ████║
-                ███████╗██████╔╝███████║ ╚███╔╝ ██║██║   ██║██╔████╔██║
-                ╚════██║██╔═══╝ ██╔══██║ ██╔██╗ ██║██║   ██║██║╚██╔╝██║
-                ███████║██║     ██║  ██║██╔╝ ██╗██║╚██████╔╝██║ ╚═╝ ██║
-                ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝ ╚═════╝ ╚═╝     ╚═╝
-</pre>
-</div>
+<h1 id="httprest-webhook-onboarding">HTTP/REST Webhook Onboarding<a class="headerlink" href="#httprest-webhook-onboarding" title="Permanent link">&para;</a></h1>
+<p>Spaxiom does not provide a native HTTP webhook sensor. The recommended path is to <strong>accept webhook POSTs</strong> and forward values into Spaxiom using MQTT or by calling the Edge API to register/update sensors.</p>
+<h2 id="option-a-webhook-mqtt">Option A: Webhook → MQTT<a class="headerlink" href="#option-a-webhook-mqtt" title="Permanent link">&para;</a></h2>
+<p>Use a small service (FastAPI/Flask) to receive webhooks and publish a numeric value to MQTT.</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">fastapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">Request</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">paho.mqtt.client</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mqtt</span>
 
-<p>Spaxiom is a powerful Domain-Specific Language (DSL) designed for building intelligent systems that work with:</p>
-<ul>
-<li><strong>Spatial Data</strong>: Zones, sensors, and physical spaces</li>
-<li><strong>Temporal Logic</strong>: Time-based conditions and historical analysis</li>
-<li><strong>Event Processing</strong>: Triggering actions based on complex conditions</li>
-<li><strong>Entity Management</strong>: Tracking and querying objects in your system</li>
-<li><strong>Physical Units</strong>: Working with measurements in a type-safe manner</li>
-</ul>
-<h2 id="system-architecture">System Architecture<a class="headerlink" href="#system-architecture" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>     ╔═══════════╗                   ╔═══════════╗
-     ║ SENSORS   ║                   ║ DETECTION ║
-     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
-     ║ ●━━━━━━━━━║═══════════════════║━━━━━━━━━● ║
-     ╚═══════════╝                   ╚═══════════╝
-           │                               ▲
-           ▼                               │
-     ╔═══════════╗     ╔═══════════╗     ╔═══════════╗
-     ║           ║     ║           ║     ║           ║
-     ║  SPATIAL  ║════&gt;║ TEMPORAL  ║════&gt;║   EVENTS  ║
-     ║           ║     ║           ║     ║           ║
-     ╚═══════════╝     ╚═══════════╝     ╚═══════════╝
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+<span class="n">mqtt_client</span> <span class="o">=</span> <span class="n">mqtt</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span>
+<span class="n">mqtt_client</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">1883</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/webhook&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">webhook</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">):</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="k">await</span> <span class="n">req</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">payload</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+    <span class="n">mqtt_client</span><span class="o">.</span><span class="n">publish</span><span class="p">(</span><span class="s2">&quot;webhooks/metric&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;ok&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 </code></pre></div>
-<h2 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h2>
-<ul>
-<li>🏠 <strong>Spatial Zones</strong>: Define and work with 2D spatial regions</li>
-<li>⚡ <strong>Sensors</strong>: Interface with various sensor types and data streams</li>
-<li>⏱️ <strong>Temporal Logic</strong>: Create conditions that must be true for specific durations</li>
-<li>🔄 <strong>Event Callbacks</strong>: Register event handlers triggered by complex conditions</li>
-<li>👥 <strong>Entity Tracking</strong>: Maintain collections of entities with flexible attributes</li>
-<li>📏 <strong>Physical Units</strong>: Work with measurements and conversions seamlessly</li>
-<li>🧩 <strong>Logical Operators</strong>: Combine conditions using intuitive &amp;, |, and ~ operators</li>
-</ul>
-<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>spaxiom
+<p>Then ingest with <code>MQTTSensor</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">MQTTSensor</span>
+
+<span class="n">metric</span> <span class="o">=</span> <span class="n">MQTTSensor</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;webhook_metric&quot;</span><span class="p">,</span>
+    <span class="n">broker_host</span><span class="o">=</span><span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+    <span class="n">topic</span><span class="o">=</span><span class="s2">&quot;webhooks/metric&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </code></pre></div>
-<h2 id="quick-example">Quick Example<a class="headerlink" href="#quick-example" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">spaxiom</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sensor</span><span class="p">,</span> <span class="n">Zone</span><span class="p">,</span> <span class="n">Condition</span><span class="p">,</span> <span class="n">on</span><span class="p">,</span> <span class="n">within</span>
-
-<span class="c1"># Define a zone and sensor</span>
-<span class="n">office_zone</span> <span class="o">=</span> <span class="n">Zone</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-<span class="n">motion_sensor</span> <span class="o">=</span> <span class="n">Sensor</span><span class="p">(</span><span class="s2">&quot;motion1&quot;</span><span class="p">,</span> <span class="s2">&quot;motion&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-
-<span class="c1"># Create condition based on sensor data</span>
-<span class="n">motion_detected</span> <span class="o">=</span> <span class="n">Condition</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">motion_sensor</span><span class="o">.</span><span class="n">read</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span>
-
-<span class="c1"># Make it temporal - must be true for 5 seconds</span>
-<span class="n">sustained_motion</span> <span class="o">=</span> <span class="n">within</span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="n">motion_detected</span><span class="p">)</span>
-
-<span class="c1"># Register an event handler</span>
-<span class="nd">@on</span><span class="p">(</span><span class="n">sustained_motion</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">alert_sustained_motion</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Motion has been detected for 5 seconds!&quot;</span><span class="p">)</span>
+<h2 id="option-b-webhook-edge-api">Option B: Webhook → Edge API<a class="headerlink" href="#option-b-webhook-edge-api" title="Permanent link">&para;</a></h2>
+<p>If you run the Edge server, you can register sensors and update readings through your webhook service.</p>
+<div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/api/sensors<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/json&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>-d<span class="w"> </span><span class="s1">&#39;{</span>
+<span class="s1">    &quot;name&quot;: &quot;webhook_metric&quot;,</span>
+<span class="s1">    &quot;sensor_type&quot;: &quot;random&quot;,</span>
+<span class="s1">    &quot;location&quot;: [0, 0, 0],</span>
+<span class="s1">    &quot;config&quot;: {},</span>
+<span class="s1">    &quot;enabled&quot;: true</span>
+<span class="s1">  }&#39;</span>
 </code></pre></div>
-<h2 id="documentation-sections">Documentation Sections<a class="headerlink" href="#documentation-sections" title="Permanent link">&para;</a></h2>
+<p>Then create a custom bridge that writes values into your runtime (MQTT is simplest, Edge API is best for deployment).</p>
+<h2 id="notes">Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
 <ul>
-<li><a href="quickstart/">Quick Start Guide</a>: Get up and running with Spaxiom</li>
-<li><a href="api/overview/">API Reference</a>: Detailed documentation of all Spaxiom components</li>
-<li><a href="temporal_and_entities/">Temporal and Entity Operations</a>: Working with time and entities</li>
-<li><a href="cli_usage/">CLI Usage</a>: Using the command-line interface</li>
-<li><a href="edge/">Edge Deployment</a>: Edge server, web UI, and deployment workflow</li>
-<li><a href="sensors/overview/">Sensor Onboarding</a>: Protocol guides for MQTT, Zigbee, GPIO, CSV, and simulated sensors</li>
-<li><a href="examples/overview/">Examples</a>: Real-world examples and use cases</li>
+<li>Webhooks are typically <strong>event-driven</strong>; ensure you publish a numeric value per event.</li>
+<li>For batched webhooks, emit one MQTT message per metric.</li>
 </ul>
-<h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
-<p>Spaxiom DSL is released under the MIT License. </p>
 
 
 
@@ -1518,10 +1455,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "toc.integrate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
