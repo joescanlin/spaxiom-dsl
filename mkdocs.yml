@@ -40,6 +40,13 @@ nav:
     - Overview: edge.md
     - API Reference: edge_api.md
     - Security: edge_security.md
+  - Sensor Onboarding:
+    - Overview: sensors/overview.md
+    - MQTT: sensors/mqtt.md
+    - Zigbee (via MQTT): sensors/zigbee.md
+    - GPIO: sensors/gpio.md
+    - File/CSV: sensors/file_csv.md
+    - Simulated Sensors: sensors/simulated.md
   - Examples:
     - Overview: examples/overview.md
     - Smart Building: examples/smart_building.md

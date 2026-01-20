@@ -79,6 +79,8 @@ def alert_sustained_motion():
 - [API Reference](api/overview.md): Detailed documentation of all Spaxiom components
 - [Temporal and Entity Operations](temporal_and_entities.md): Working with time and entities
 - [CLI Usage](cli_usage.md): Using the command-line interface
+- [Edge Deployment](edge.md): Edge server, web UI, and deployment workflow
+- [Sensor Onboarding](sensors/overview.md): Protocol guides for MQTT, Zigbee, GPIO, CSV, and simulated sensors
 - [Examples](examples/overview.md): Real-world examples and use cases
 
 ## License
