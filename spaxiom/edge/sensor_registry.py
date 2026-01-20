@@ -13,6 +13,7 @@ from typing import Any, Dict, List, Optional, Type
 
 from spaxiom.core import Sensor, SensorRegistry
 from spaxiom.sensor import RandomSensor, TogglingSensor
+from spaxiom.sim.sensors import SimulatedAnalogSensor, SimulatedBinarySensor
 from spaxiom.edge.database import EdgeDatabase, SensorRepository, SensorRecord
 
 logger = logging.getLogger(__name__)
@@ -22,6 +23,8 @@ SENSOR_TYPES: Dict[str, Type[Sensor]] = {
     "random": RandomSensor,
     "toggling": TogglingSensor,
     "base": Sensor,
+    "sim_analog": SimulatedAnalogSensor,
+    "sim_binary": SimulatedBinarySensor,
 }
 
 # Try to import optional sensor types
@@ -186,6 +189,31 @@ class PersistentSensorRegistry:
                 path=config.get("path", "/tmp/sensor"),
                 sensor_type=config.get("value_type", "file"),
                 location=location,
+            )
+        elif sensor_type == "sim_analog":
+            return SimulatedAnalogSensor(
+                name=record.name,
+                location=location,
+                base=config.get("base", 0.0),
+                min_value=config.get("min_value", 0.0),
+                max_value=config.get("max_value", 1.0),
+                noise_std=config.get("noise_std", 0.05),
+                drift_per_s=config.get("drift_per_s", 0.0),
+                spike_probability=config.get("spike_probability", 0.0),
+                spike_delta=config.get("spike_delta", 0.0),
+                spike_duration_s=config.get("spike_duration_s", 1.0),
+                seed=config.get("seed"),
+                privacy=config.get("privacy", "public"),
+            )
+        elif sensor_type == "sim_binary":
+            return SimulatedBinarySensor(
+                name=record.name,
+                location=location,
+                probability_on=config.get("probability_on", 0.05),
+                min_on_s=config.get("min_on_s", 1.0),
+                min_off_s=config.get("min_off_s", 1.0),
+                seed=config.get("seed"),
+                privacy=config.get("privacy", "public"),
             )
         else:
             # Generic sensor

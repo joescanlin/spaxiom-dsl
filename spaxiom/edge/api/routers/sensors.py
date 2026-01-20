@@ -39,6 +39,8 @@ async def list_sensor_types():
     return [
         "random",
         "toggling",
+        "sim_analog",
+        "sim_binary",
         "gpio_digital",
         "gpio_analog",
         "mqtt",

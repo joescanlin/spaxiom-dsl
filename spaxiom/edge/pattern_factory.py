@@ -135,6 +135,8 @@ class PatternFactory:
                 return self._create_adl_tracker(config, zone_ids, sensor_ids)
             elif pattern_type == "fm_steward":
                 return self._create_fm_steward(config, zone_ids, sensor_ids)
+            elif pattern_type == "cleanroom_risk":
+                return self._create_cleanroom_risk(config, zone_ids, sensor_ids)
             else:
                 logger.error(f"Unknown pattern type: {pattern_type}")
                 return None
@@ -222,6 +224,44 @@ class PatternFactory:
             thresholds=config.get("thresholds", {}),
         )
 
+    def _create_cleanroom_risk(
+        self, config: Dict, zone_ids: List[str], sensor_ids: List[str]
+    ) -> Optional[Pattern]:
+        """Create a CleanroomRisk pattern."""
+        from spaxiom.intent.cleanroom import CleanroomRisk
+
+        zones = self._resolve_zones(zone_ids)
+        sensors = self._resolve_sensors(sensor_ids)
+
+        if not zones:
+            logger.error("CleanroomRisk requires at least one zone")
+            return None
+        if len(sensors) < 6:
+            logger.error(
+                "CleanroomRisk requires particle, dp, airlock, env, occupancy sensors"
+            )
+            return None
+
+        return CleanroomRisk(
+            name=config.get("zone_name", zones[0].name),
+            zone=zones[0],
+            particle_sensor=sensors[0],
+            dp_sensors={
+                "anteroom": sensors[1],
+                "corridor": sensors[2],
+            },
+            airlock_sensors=[sensors[3], sensors[4]],
+            temperature_sensor=sensors[5],
+            humidity_sensor=sensors[6] if len(sensors) > 6 else None,
+            occupancy_sensor=sensors[7] if len(sensors) > 7 else None,
+            max_particles=config.get("max_particles", 352000),
+            min_dp_anteroom_pa=config.get("min_dp_anteroom_pa", 5.0),
+            min_dp_corridor_pa=config.get("min_dp_corridor_pa", 12.5),
+            alpha=config.get("alpha", 1e-3),
+            beta=config.get("beta", 1e-6),
+            gamma=config.get("gamma", 1.0),
+        )
+
     def validate_config(
         self,
         pattern_type: str,
@@ -273,6 +313,13 @@ class PatternFactory:
         elif pattern_type == "fm_steward":
             if not sensor_ids:
                 errors.append("FmSteward requires at least one sensor")
+        elif pattern_type == "cleanroom_risk":
+            if not zone_ids:
+                errors.append("CleanroomRisk requires at least one zone")
+            if len(sensor_ids) < 6:
+                errors.append(
+                    "CleanroomRisk requires particle, dp, airlock, env, occupancy sensors"
+                )
 
         return {
             "valid": len(errors) == 0,

@@ -26,6 +26,14 @@ from .occupancy_field import OccupancyField
 from .queue_flow import QueueFlow
 from .adl_tracker import ADLTracker
 from .fm_steward import FmSteward
+from .cleanroom import (
+    CleanroomRisk,
+    PressureBreach,
+    ParticleExcursion,
+    AirlockViolation,
+    HighRiskMovement,
+    ContaminationRiskUpdated,
+)
 
 __all__ = [
     # Base classes
@@ -46,4 +54,10 @@ __all__ = [
     "QueueFlow",
     "ADLTracker",
     "FmSteward",
+    "CleanroomRisk",
+    "PressureBreach",
+    "ParticleExcursion",
+    "AirlockViolation",
+    "HighRiskMovement",
+    "ContaminationRiskUpdated",
 ]

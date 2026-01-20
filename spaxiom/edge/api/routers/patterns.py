@@ -130,6 +130,59 @@ PATTERN_TYPE_REGISTRY: Dict[str, Dict[str, Any]] = {
         "requires_sensors": True,
         "events_emitted": ["threshold_exceeded", "maintenance_due", "condition_normal"],
     },
+    "cleanroom_risk": {
+        "name": "Cleanroom Risk Monitor",
+        "description": "Fuses pressure, particles, airlocks, and occupancy into CRI",
+        "config_schema": {
+            "type": "object",
+            "properties": {
+                "zone_name": {
+                    "type": "string",
+                    "default": "ISO7_bio_room_3",
+                    "description": "Display name for the zone",
+                },
+                "max_particles": {
+                    "type": "number",
+                    "default": 352000,
+                    "description": "ISO class particle limit",
+                },
+                "min_dp_anteroom_pa": {
+                    "type": "number",
+                    "default": 5.0,
+                    "description": "Minimum anteroom differential pressure",
+                },
+                "min_dp_corridor_pa": {
+                    "type": "number",
+                    "default": 12.5,
+                    "description": "Minimum corridor differential pressure",
+                },
+                "alpha": {
+                    "type": "number",
+                    "default": 0.001,
+                    "description": "Breach-seconds weight",
+                },
+                "beta": {
+                    "type": "number",
+                    "default": 0.000001,
+                    "description": "Particle excursion weight",
+                },
+                "gamma": {
+                    "type": "number",
+                    "default": 1.0,
+                    "description": "Airlock violations weight",
+                },
+            },
+        },
+        "requires_zones": True,
+        "requires_sensors": True,
+        "events_emitted": [
+            "contamination_risk_updated",
+            "pressure_breach",
+            "particle_excursion",
+            "airlock_violation",
+            "high_risk_movement",
+        ],
+    },
     "dwell_monitor": {
         "name": "Dwell Monitor",
         "description": "Monitors how long entities stay in zones",

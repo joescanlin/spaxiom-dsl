@@ -5,6 +5,7 @@ import click
 from spaxiom.cli.commands.edge.start import start_cmd
 from spaxiom.cli.commands.edge.status import status_cmd
 from spaxiom.cli.commands.edge.agents import agents
+from spaxiom.cli.commands.edge.demo import demo_cmd
 
 
 @click.group()
@@ -31,6 +32,7 @@ def edge(ctx):
 edge.add_command(start_cmd, name="start")
 edge.add_command(status_cmd, name="status")
 edge.add_command(agents, name="agents")
+edge.add_command(demo_cmd, name="demo")
 
 # Optional commands that require extra dependencies
 try:
