@@ -223,13 +223,21 @@ class PatternFactory:
 
         sensors = self._resolve_sensors(sensor_ids)
 
-        if not sensors:
-            logger.error("FmSteward requires at least one sensor")
+        if len(sensors) < 5:
+            logger.error("FmSteward requires door, towel, bin, gas, and floor sensors")
             return None
 
         return FmSteward(
-            sensors=sensors,
-            thresholds=config.get("thresholds", {}),
+            door_counter=sensors[0],
+            towel_sensor=sensors[1],
+            bin_sensor=sensors[2],
+            gas_sensor=sensors[3],
+            floor_sensor=sensors[4],
+            entries_threshold=config.get("entries_threshold", 120),
+            towel_threshold_pct=config.get("towel_threshold_pct", 15.0),
+            bin_threshold_pct=config.get("bin_threshold_pct", 85.0),
+            gas_threshold_ppm=config.get("gas_threshold_ppm", 15.0),
+            name=config.get("name", "fm_steward"),
         )
 
     def _create_cleanroom_risk(
@@ -321,8 +329,10 @@ class PatternFactory:
             if len(sensor_ids) < 4:
                 errors.append("ADLTracker requires bed, fridge, bath, and hall sensors")
         elif pattern_type == "fm_steward":
-            if not sensor_ids:
-                errors.append("FmSteward requires at least one sensor")
+            if len(sensor_ids) < 5:
+                errors.append(
+                    "FmSteward requires door, towel, bin, gas, and floor sensors"
+                )
         elif pattern_type == "cleanroom_risk":
             if not zone_ids:
                 errors.append("CleanroomRisk requires at least one zone")
