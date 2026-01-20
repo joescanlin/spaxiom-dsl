@@ -86,28 +86,16 @@ PATTERN_TYPE_REGISTRY: Dict[str, Dict[str, Any]] = {
         "config_schema": {
             "type": "object",
             "properties": {
-                "activities": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string"},
-                            "zone_id": {"type": "string"},
-                            "expected_duration_minutes": {"type": "number"},
-                        },
-                    },
-                    "description": "List of activities to track",
-                },
-                "anomaly_threshold_hours": {
-                    "type": "number",
-                    "default": 4,
-                    "description": "Hours without activity before anomaly alert",
+                "name": {
+                    "type": "string",
+                    "default": "adl_tracker",
+                    "description": "Display name for the ADL tracker",
                 },
             },
         },
         "requires_zones": True,
         "requires_sensors": True,
-        "events_emitted": ["activity_started", "activity_ended", "anomaly_detected"],
+        "events_emitted": ["ADLEvent"],
     },
     "fm_steward": {
         "name": "Facility Management Steward",

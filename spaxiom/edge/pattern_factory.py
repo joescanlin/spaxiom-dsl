@@ -203,10 +203,16 @@ class PatternFactory:
         if not zones:
             logger.error("ADLTracker requires at least one zone")
             return None
+        if len(sensors) < 4:
+            logger.error("ADLTracker requires bed, fridge, bath, and hall sensors")
+            return None
 
         return ADLTracker(
-            zones=zones,
-            sensors=sensors,
+            bed_sensor=sensors[0],
+            fridge_sensor=sensors[1],
+            bath_sensor=sensors[2],
+            hall_sensor=sensors[3],
+            name=config.get("name", zones[0].name),
         )
 
     def _create_fm_steward(
@@ -312,6 +318,8 @@ class PatternFactory:
         elif pattern_type == "adl_tracker":
             if not zone_ids:
                 errors.append("ADLTracker requires at least one zone")
+            if len(sensor_ids) < 4:
+                errors.append("ADLTracker requires bed, fridge, bath, and hall sensors")
         elif pattern_type == "fm_steward":
             if not sensor_ids:
                 errors.append("FmSteward requires at least one sensor")

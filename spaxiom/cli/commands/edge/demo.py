@@ -30,3 +30,24 @@ def demo_cleanroom(db_path: str | None = None) -> None:
     print_info(f"Zone ID: {ids['zone_id']}")
     print_info(f"Pattern ID: {ids['pattern_id']}")
     print_info(f"Agent ID: {ids['agent_id']}")
+
+
+@demo_cmd.command("eldercare")
+@click.option("--db-path", type=click.Path(), help="Database file path")
+def demo_eldercare(db_path: str | None = None) -> None:
+    """Seed the elder-care ADL demo into the edge database."""
+    try:
+        from spaxiom.edge import EdgeDatabase
+        from spaxiom.edge.demos.eldercare import seed_eldercare_demo
+    except ImportError as e:
+        print_error(f"Edge module not available: {e}")
+        raise click.Abort()
+
+    db = EdgeDatabase(db_path or "spaxiom.db")
+    db.init()
+    ids = seed_eldercare_demo(db)
+
+    print_success("Elder-care demo seeded")
+    print_info(f"Zone ID: {ids['zone_id']}")
+    print_info(f"Pattern ID: {ids['pattern_id']}")
+    print_info(f"Agent ID: {ids['agent_id']}")
