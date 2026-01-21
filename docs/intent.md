@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="../images/intent-logo.svg" alt="INTENT Logo" width="200">
+  <img src="../images/intent-logo-v9.svg" alt="INTENT Logo" width="200">
 </div>
 
 # Intelligent Network for Temporal & Embodied Neuro-symbolic Tasks (INTENT)

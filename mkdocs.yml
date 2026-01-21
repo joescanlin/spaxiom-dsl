@@ -5,10 +5,10 @@ repo_url: https://github.com/joescanlin/spaxiom-dsl
 
 theme:
   name: material
-  logo: images/intent-logo.svg
+  logo: images/logo-connected-nodes.svg
   palette:
-    primary: indigo
-    accent: blue
+    primary: orange
+    accent: orange
   features:
     - navigation.instant
     - navigation.tracking
