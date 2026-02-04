@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spaxiom Edge Kiosk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/kiosk.css">
+</head>
+<body>
+    <div class="kiosk">
+        <header class="topbar">
+            <div class="brand">
+                <img src="/static/images/logo-connected-nodes.svg" alt="Spaxiom">
+                <div class="brand-text">
+                    <div class="brand-title">Spaxiom Edge</div>
+                    <div class="brand-subtitle">Kiosk Monitor</div>
+                </div>
+            </div>
+            <div class="topbar-meta">
+                <div class="meta-chip" id="hostname">hostname</div>
+                <div class="meta-chip" id="time">--:--</div>
+                <button class="mode-btn" id="setupButton">Setup Mode</button>
+            </div>
+        </header>
+
+        <main class="content">
+            <section class="panel panel-system">
+                <div class="panel-header">
+                    <h2>System Health</h2>
+                    <div class="health-pill" id="healthStatus">unknown</div>
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Uptime</div>
+                        <div class="metric-value" id="uptime">--</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">CPU</div>
+                        <div class="metric-value" id="cpu">--%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Memory</div>
+                        <div class="metric-value" id="memory">--%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Disk</div>
+                        <div class="metric-value" id="disk">--%</div>
+                    </div>
+                </div>
+                <div class="system-strip">
+                    <div class="strip-item">
+                        <span class="strip-label">Version</span>
+                        <span class="strip-value" id="version">--</span>
+                    </div>
+                    <div class="strip-item">
+                        <span class="strip-label">Platform</span>
+                        <span class="strip-value" id="platform">--</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="panel panel-stats">
+                <div class="panel-header">
+                    <h2>Active Inventory</h2>
+                    <button class="ghost-btn" id="openFullUi">Open Full UI</button>
+                </div>
+                <div class="stat-row">
+                    <div class="stat-tile">
+                        <div class="stat-number" id="sensorsCount">0</div>
+                        <div class="stat-label">Sensors</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-number" id="patternsCount">0</div>
+                        <div class="stat-label">Patterns</div>
+                    </div>
+                    <div class="stat-tile">
+                        <div class="stat-number" id="agentsCount">0</div>
+                        <div class="stat-label">Agents</div>
+                    </div>
+                </div>
+                <div class="agent-grid" id="agentGrid"></div>
+            </section>
+
+            <section class="panel panel-feed">
+                <div class="panel-header">
+                    <h2>Live Event Feed</h2>
+                    <div class="meta-chip" id="feedStatus">offline</div>
+                </div>
+                <div class="event-feed" id="eventFeed"></div>
+            </section>
+        </main>
+    </div>
+
+    <div class="modal hidden" id="pinModal">
+        <div class="modal-card">
+            <h3>Enter Setup PIN</h3>
+            <p>Setup mode allows configuration changes. Enter the admin PIN to continue.</p>
+            <input type="password" id="pinInput" inputmode="numeric" placeholder="PIN">
+            <div class="modal-actions">
+                <button class="ghost-btn" id="pinCancel">Cancel</button>
+                <button class="mode-btn" id="pinConfirm">Unlock</button>
+            </div>
+            <div class="modal-error" id="pinError"></div>
+        </div>
+    </div>
+
+    <div class="setup hidden" id="setupPane">
+        <div class="setup-header">
+            <div>
+                <h2>Setup Mode</h2>
+                <p>Guided configuration for sensors, zones, patterns, and agents.</p>
+            </div>
+            <div class="setup-actions">
+                <button class="ghost-btn" id="setupClose">Exit Setup</button>
+                <button class="mode-btn" id="setupSavePin">Update PIN</button>
+            </div>
+        </div>
+
+        <div class="setup-grid">
+            <section class="setup-card">
+                <h3>Add Sensor</h3>
+                <label>Name</label>
+                <input id="sensorName" type="text" placeholder="front_door_motion">
+                <label>Type</label>
+                <select id="sensorType">
+                    <option value="random">Random (test)</option>
+                    <option value="toggling">Toggling (test)</option>
+                    <option value="gpio_digital">GPIO Digital</option>
+                    <option value="mqtt">MQTT</option>
+                    <option value="file">File</option>
+                </select>
+                <label>Location (x, y, z)</label>
+                <div class="inline-inputs">
+                    <input id="sensorX" type="number" step="0.1" placeholder="0">
+                    <input id="sensorY" type="number" step="0.1" placeholder="0">
+                    <input id="sensorZ" type="number" step="0.1" placeholder="0">
+                </div>
+                <button class="mode-btn" id="addSensorBtn">Add Sensor</button>
+                <div class="form-message" id="sensorMessage"></div>
+            </section>
+
+            <section class="setup-card">
+                <h3>Add Zone</h3>
+                <label>Name</label>
+                <input id="zoneName" type="text" placeholder="lobby">
+                <label>Type</label>
+                <select id="zoneType">
+                    <option value="rectangle">Rectangle</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="circle">Circle</option>
+                </select>
+                <label>Geometry (x, y, width, height)</label>
+                <div class="inline-inputs">
+                    <input id="zoneX" type="number" step="0.1" placeholder="0">
+                    <input id="zoneY" type="number" step="0.1" placeholder="0">
+                    <input id="zoneW" type="number" step="0.1" placeholder="10">
+                    <input id="zoneH" type="number" step="0.1" placeholder="10">
+                </div>
+                <button class="mode-btn" id="addZoneBtn">Add Zone</button>
+                <div class="form-message" id="zoneMessage"></div>
+            </section>
+
+            <section class="setup-card">
+                <h3>Add Pattern</h3>
+                <label>Name</label>
+                <input id="patternName" type="text" placeholder="entrance_occupancy">
+                <label>Type</label>
+                <select id="patternType"></select>
+                <div class="helper-text" id="patternDescription"></div>
+                <label>Zones</label>
+                <select id="patternZones" multiple></select>
+                <label>Sensors</label>
+                <select id="patternSensors" multiple></select>
+                <div id="patternConfig"></div>
+                <button class="mode-btn" id="addPatternBtn">Add Pattern</button>
+                <div class="form-message" id="patternMessage"></div>
+            </section>
+
+            <section class="setup-card">
+                <h3>Deploy Agent</h3>
+                <label>Pattern</label>
+                <select id="agentPattern"></select>
+                <label>Agent Name</label>
+                <input id="agentName" type="text" placeholder="entrance_agent">
+                <button class="mode-btn" id="deployAgentBtn">Deploy Agent</button>
+                <div class="form-message" id="agentMessage"></div>
+            </section>
+        </div>
+
+        <div class="pin-update">
+            <h3>Update Setup PIN</h3>
+            <div class="inline-inputs">
+                <input id="pinCurrent" type="password" placeholder="Current PIN">
+                <input id="pinNew" type="password" placeholder="New PIN">
+                <input id="pinConfirm" type="password" placeholder="Confirm PIN">
+            </div>
+            <div class="form-message" id="pinMessage"></div>
+        </div>
+    </div>
+
+    <script src="/static/js/kiosk.js"></script>
+</body>
+</html>

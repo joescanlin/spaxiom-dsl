@@ -86,6 +86,13 @@ def create_app(
                     return FileResponse(str(index_path))
                 return {"message": "Spaxiom Edge API", "docs": "/api/docs"}
 
+            @app.get("/kiosk", include_in_schema=False)
+            async def serve_kiosk():
+                kiosk_path = static_path / "kiosk.html"
+                if kiosk_path.exists():
+                    return FileResponse(str(kiosk_path))
+                return {"message": "Spaxiom Edge API", "docs": "/api/docs"}
+
     # Health check at root if no static files
     if not static_dir:
 
